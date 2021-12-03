@@ -1,0 +1,8 @@
+pvt
+doc
+.RData
+.Rproj.user
+.Rhistory
+*.Rproj
+.~lock*
+.code-workspace
