@@ -51,7 +51,7 @@ geom_curve2 <- function(mapping = NULL, data = NULL,
                         angle = 90,
                         ncp = 5,
                         arrow = NULL,
-                        lineend = "butt",
+                        lineend = "round",
                         inflect = FALSE,
                         na.rm = FALSE,
                         show.legend = NA,
@@ -84,7 +84,7 @@ GeomCurve2 <-
     # the following `default_aes =` statement is missing in ggplot2 `GeomCurve`
     default_aes = aes(colour = "black", fill = "black", size = 0.5, linetype = 1, alpha = NA),
     draw_panel = function(data, panel_params, coord, curvature = 0.5, angle = 90,
-                          ncp = 5, arrow = NULL, lineend = "butt", inflect = FALSE, na.rm = FALSE) {
+                          ncp = 5, arrow = NULL, lineend = "round", inflect = FALSE, na.rm = FALSE) {
       if (!coord$is_linear()) {
         warning("geom_curve is not implemented for non-linear coordinates",
                 call. = FALSE)
@@ -307,7 +307,7 @@ fig$e0diff$plot <-
         fig$e0diff$cnst$segment_nudge_y,
       x = ex_diff_q0.5_2020, xend = ex_diff_q0.5_2020 + ex_diff_q0.5_2021
     ),
-    lineend = 'butt',
+    lineend = 'round',
     arrow = arrow(length = unit(1.2, 'mm'), angle = 30),
     size = fig$e0diff$cnst$segment_size,
     color = fig$e0diff$cnst$color_positive,
@@ -322,7 +322,7 @@ fig$e0diff$plot <-
         fig$e0diff$cnst$segment_nudge_y,
       x = ex_diff_q0.5_2020, xend = ex_diff_q0.5_2020 + ex_diff_q0.5_2021
     ),
-    lineend = 'butt',
+    lineend = 'round',
     arrow = arrow(length = unit(1.2, 'mm'), angle = 30),
     size = fig$e0diff$cnst$segment_size,
     color = fig$e0diff$cnst$color_negative,
