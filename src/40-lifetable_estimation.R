@@ -21,7 +21,8 @@ paths$input <- list(
 )
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
-  lifetables = './out/lifetables.rds'
+  lifetables = './out/lifetables.rds',
+  sexdiff = './out/sexdiff.rds'
 )
 
 # global configuration
@@ -115,6 +116,12 @@ lifetables$input <-
 # (13) ex_diff
 # (14) ex_diff_lag
 # (15) bbi
+# (16) lx_lag
+# (17) Lx_lag
+# (18) Tx_lag
+# (19) e0_arriaga_direct
+# (20) e0_arriaga_indirect
+# (21) e0_arriaga_total
 lifetables$simulation <-
   array(
     dim = c(
@@ -123,7 +130,7 @@ lifetables$simulation <-
       region_iso = lifetables$cnst$nregions,
       sex = 3,
       sim_id = cnst$n_sim+1,
-      var_id = 15
+      var_id = 21
     ),
     dimnames = list(
       0:85,
@@ -133,7 +140,9 @@ lifetables$simulation <-
       1:(cnst$n_sim+1),
       c('population_py', 'death_total', 'death_covid',
         'nmx', 'npx', 'nqx', 'lx', 'ndx', 'nLx', 'Tx', 'ex',
-        'ex_lag', 'ex_diff', 'ex_diff_lag', 'bbi')
+        'ex_lag', 'ex_diff', 'ex_diff_lag', 'bbi',
+        'lx_lag', 'nLx_lag', 'Tx_lag',
+        'e0_arriaga_direct', 'e0_arriaga_indirect', 'e0_arriaga_total')
     )
   )
 lifetables$simulation[,,,,,'population_py'] <-
@@ -164,6 +173,7 @@ lifetables$simulation[,,,,,'nmx'] <-
 # npx
 lifetables$simulation[,,,,,'npx'] <-
   exp(-lifetables$simulation[,,,,,'nmx'])
+lifetables$simulation[86,,,,,'npx'] <- 0
 # nqx
 lifetables$simulation[,,,,,'nqx'] <-
   1-lifetables$simulation[,,,,,'npx']
@@ -217,6 +227,34 @@ I <- compareNA(sign(lifetables$simulation[,,,,,'ex_diff_lag']), 1)
 lifetables$simulation[,,,,,'bbi'][I] <-
   -lifetables$simulation[,,,,,'bbi'][I]
 
+# Calculate Arriaga decomposition ---------------------------------
+
+lifetables$simulation[,,,,,'lx_lag'] <-
+  lifetables$simulation[,c(NA,1:(lifetables$cnst$nyears-1)),,,,'lx']
+lifetables$simulation[,,,,,'nLx_lag'] <-
+  lifetables$simulation[,c(NA,1:(lifetables$cnst$nyears-1)),,,,'nLx']
+lifetables$simulation[,,,,,'Tx_lag'] <-
+  lifetables$simulation[,c(NA,1:(lifetables$cnst$nyears-1)),,,,'Tx']
+
+lifetables$simulation[,,,,,'e0_arriaga_direct'] <-
+  (
+    lifetables$simulation[,,,,,'nLx']/lifetables$simulation[,,,,,'lx']-
+      lifetables$simulation[,,,,,'nLx_lag']/lifetables$simulation[,,,,,'lx_lag']
+  ) * lifetables$simulation[,,,,,'lx']
+
+lifetables$simulation[,,,,,'e0_arriaga_indirect'] <-
+  (
+    lifetables$simulation[,,,,,'lx_lag']/
+      lifetables$simulation[,,,,,'lx']-
+      apply(lifetables$simulation[,,,,,'lx_lag'], 2:5, function (x) c(x[-1], 0))/
+      apply(lifetables$simulation[,,,,,'lx'], 2:5, function (x) c(x[-1], 0))
+  ) * apply(lifetables$simulation[,,,,,'Tx'], 2:5, function (x) c(x[-1], 0))
+lifetables$simulation[86,,,,,'e0_arriaga_indirect'] <- 0
+
+lifetables$simulation[,,,,,'e0_arriaga_total'] <-
+  lifetables$simulation[,,,,,'e0_arriaga_direct'] +
+  lifetables$simulation[,,,,,'e0_arriaga_indirect']
+
 # Calculate sex differences ---------------------------------------
 
 sexdiff <- list()
@@ -224,15 +262,32 @@ sexdiff$simulation <-
   lifetables$simulation[,,,'F',,]-
   lifetables$simulation[,,,'M',,]
 
+# add additional variable to array
+D <- dim(sexdiff$simulation)
+D[5] <- D[5]+1
+Dn <- dimnames(sexdiff$simulation)
+Dn[[5]] <- c(Dn[[5]], 'ex_diff_sign')
+sexdiff$temp <- array(NA, D, Dn)
+sexdiff$temp[,,,,-16] <- sexdiff$simulation
+sexdiff$simulation <- sexdiff$temp
+
+# +2: ex increase for both sexes
+# -2: ex decrease for both sexes
+# 0: mixed increase-decrease by sex
+sexdiff$simulation[,,,,'ex_diff_sign'] <-
+  sign(lifetables$simulation[,,,'F',,'ex_diff'])+
+  sign(lifetables$simulation[,,,'M',,'ex_diff'])
+
 # Calculates CI over simulations ----------------------------------
 
+# ci's for life tables
 lifetables$ci <-
   apply(
     lifetables$simulation[
       ,,,,-1,
-      c('nmx', 'npx', 'nqx', 'lx', 'ex', 'ex_diff', 'bbi')
+      c('nmx', 'npx', 'nqx', 'lx', 'ex', 'ex_diff', 'bbi', 'e0_arriaga_total')
     ],
-    c(1:4, 6),
+    -5,
     quantile, prob = cnst$quantiles, names = FALSE, na.rm = TRUE,
     simplify = TRUE
   ) %>%
@@ -241,6 +296,22 @@ V <- dimnames(lifetables$ci); V[[6]] <- paste0('q', cnst$quantiles)
 names(attr(lifetables$ci, 'dim'))[6] <- 'quantile'
 dimnames(lifetables$ci) <- V
 
+# ci's for sex-differences of life table statistics
+sexdiff$ci <-
+  apply(
+    sexdiff$simulation[
+      ,,,-1,
+      c('nmx', 'npx', 'nqx', 'lx', 'ex', 'ex_diff', 'bbi', 'ex_diff_sign')
+    ],
+    -4,
+    quantile, prob = cnst$quantiles, names = FALSE, na.rm = TRUE,
+    simplify = TRUE
+  ) %>%
+  aperm(c(2:5,1))
+V <- dimnames(sexdiff$ci); V[[5]] <- paste0('q', cnst$quantiles)
+names(attr(sexdiff$ci, 'dim'))[5] <- 'quantile'
+dimnames(sexdiff$ci) <- V
+
 # Test ------------------------------------------------------------
 
 lifetables$simulation['0','2021',,'T',1,'population_py'] ==
@@ -248,19 +319,36 @@ lifetables$simulation['0','2021',,'T',1,'population_py'] ==
   filter(age_start == 0, year == 2021, sex == 'Total') %>%
   select(population_py)
 
-# Export ----------------------------------------------------------
+# Transform to data frame -----------------------------------------
 
 # export results of analysis
 lifetables$ci_df <-
-  as.data.frame.table(lifetables$ci)
+  as.data.frame.table(lifetables$ci, stringsAsFactors = FALSE)
 names(lifetables$ci_df) <-
   c(names(attr(lifetables$ci, 'dim')), 'value')
-
 lifetables$ci_df <-
   lifetables$ci_df %>%
   as_tibble() %>%
   pivot_wider(id_cols = c(age, year, region_iso, sex),
               names_from = c(var_id, quantile),
-              values_from = value)
+              values_from = value) %>%
+  mutate(across(c(age, year), ~as.integer(.x)))
+
+# export results of analysis
+sexdiff$ci_df <-
+  as.data.frame.table(sexdiff$ci, stringsAsFactors = FALSE)
+names(sexdiff$ci_df) <-
+  c(names(attr(sexdiff$ci, 'dim')), 'value')
+sexdiff$ci_df <-
+  sexdiff$ci_df %>%
+  as_tibble() %>%
+  pivot_wider(id_cols = c(age, year, region_iso),
+              names_from = c(var_id, quantile),
+              values_from = value) %>%
+  mutate(across(c(age, year), ~as.integer(.x)))
+
+# Export ----------------------------------------------------------
 
 saveRDS(lifetables$ci_df, paths$output$lifetables)
+
+saveRDS(sexdiff$ci_df, paths$output$sexdiff)
