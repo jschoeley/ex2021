@@ -1,6 +1,13 @@
 # figure specs
 fig_spec <- list()
 
+# Fonts -----------------------------------------------------------
+
+library(showtext)
+font_add_google('Roboto', 'roboto')
+font_add_google('Roboto Condensed', 'robotocondensed')
+showtext_auto()
+
 # ggplot theme ----------------------------------------------------
 
 # ggplot theme by Jonas Schöley

@@ -3,7 +3,6 @@
 # Init ------------------------------------------------------------
 
 library(yaml); library(tidyverse)
-#extrafont::font_import(prompt = FALSE)
 
 # Constants -------------------------------------------------------
 
@@ -122,6 +121,14 @@ FormatTable <- function (x) {
 
 dat$lifetables <- readRDS(paths$input$lifetables)
 
+# completeness of data
+dat$lt_input <- readRDS('./out/lt_input.rds')
+dat$completeness <-
+  dat$lt_input %>%
+  filter(year == 2021, age_start == 0, sex == 'Male') %>%
+  select(year, region_iso, death_total_nweeksmiss) %>%
+  mutate(as_of = 52-death_total_nweeksmiss)
+
 # Prepare data ----------------------------------------------------
 
 fig$e0diff <- list()
@@ -142,7 +149,8 @@ fig$e0diff$data <-
     region_position =
       as.integer(fct_reorder(region_iso, -(ex_diff_q0.5_2020+ex_diff_q0.5_2021)))
   ) %>%
-  left_join(region_meta, by = c('region_iso' = 'region_code_iso3166_2'))
+  left_join(region_meta, by = c('region_iso' = 'region_code_iso3166_2')) %>%
+  left_join(dat$completeness)
 
 # Parameterize figure ---------------------------------------------
 
@@ -152,7 +160,7 @@ fig$e0diff$cnst <- within(fig$e0diff$cnst, {
   vertical_gap = 0.3
   curvature = 0.7
   size_vline = 3
-  ribbons_size = 7*0.7
+  ribbons_size = 7*1
   segment_size = 1.2
   segment_nudge_y = -0.12
   color_vline = '#FFFFFF'
@@ -168,9 +176,9 @@ fig$e0diff$cnst <- within(fig$e0diff$cnst, {
   text_x_position2 = text_x_position_min+(text_x_position_max-text_x_position_min)/2
   text_x_position3 = text_x_position_max
   text_x_position4 = 2.1
-  font_table = 'Roboto Condensed'
-  font_countries = 'Roboto Condensed'
-  font_xaxis = 'Roboto Condensed'
+  font_table = 'robotocondensed'
+  font_countries = 'robotocondensed'
+  font_xaxis = 'robotocondensed'
   fontsize_table = 3.3
 })
 
@@ -193,7 +201,7 @@ fig$e0diff$plot <-
     color = fig$e0diff$cnst$color_ribbon, size = 1
   ) +
   geom_vline(
-    xintercept = seq(-3, 1, 0.5),
+    xintercept = seq(-3.5, 1, 0.5),
     color = '#FFFFFF', size = 0.5
   ) +
 
@@ -364,15 +372,26 @@ fig$e0diff$plot <-
     hjust = 1, fontface = 'bold',
     size = fig$e0diff$cnst$fontsize_table
   ) +
+  # geom_text(
+  #   aes(
+  #     y = region_position,
+  #     label = FormatTable(bbi_q0.5_2021*100),
+  #     color = as.character(sign(bbi_q0.5_2021))
+  #   ),
+  #   x = fig$e0diff$cnst$text_x_position4,
+  #   family = fig$e0diff$cnst$font_table, hjust = 1,
+  #   fontface = 'bold',
+  #   size = fig$e0diff$cnst$fontsize_table
+  # ) +
   geom_text(
     aes(
       y = region_position,
-      label = FormatTable(bbi_q0.5_2021*100),
-      color = as.character(sign(bbi_q0.5_2021))
+      label = as_of
     ),
+    color = 'black',
     x = fig$e0diff$cnst$text_x_position4,
     family = fig$e0diff$cnst$font_table, hjust = 1,
-    fontface = 'bold',
+    #fontface = 'bold',
     size = fig$e0diff$cnst$fontsize_table
   ) +
 
@@ -425,19 +444,19 @@ fig$e0diff$plot <-
     'text',
     x = fig$e0diff$cnst$text_x_position4,
     y = fig$e0diff$cnst$n_countries+1,
-    label = 'BBI%',
-    color = 'black', parse = FALSE,
+    label = 'As of\nweek', vjust = 0,
+    color = 'black', parse = FALSE, lineheight = 0.7,
     family = fig$e0diff$cnst$font_table, hjust = 1,
-    fontface = 'bold',
+    #fontface = 'bold',
     size = fig$e0diff$cnst$fontsize_table
   ) +
   
 # Scales and labels -----------------------------------------------
 
   scale_x_continuous(
-    breaks = seq(-3, 1, 0.5),
+    breaks = seq(-3.5, 1, 0.5),
     labels = c(
-      '-36 months', '-30', '-24', '-18', '-12', '-6',
+      '-42 months', '-36', '-30', '-24', '-18', '-12', '-6',
       'Life\nexpectancy\nin 2019',
       '+6', '+12 months'
     )
@@ -459,24 +478,75 @@ fig$e0diff$plot <-
   ) +
   theme(plot.background = element_rect(colour = NA, fill = '#FFFFFF')) +
   coord_cartesian(
-    xlim = c(-36/12, 23/12),
-    ylim = c(0, fig$e0diff$cnst$n_countries+1.7)
+    xlim = c(-40/12, 23/12),
+    ylim = c(0, fig$e0diff$cnst$n_countries+1.8)
   ) +
   labs(
     title = 'Bounce backs amid continued losses',
-    subtitle = 'Life expectancy changes since COVID-19',
-    caption = '@jschoeley',
+    subtitle = 'Life expectancy changes since COVID-19. Estimates for 2021 preliminary and adjusted for missing data.',
+    caption = '@jschoeley @jm_aburto @ridhikash07 @MaxiKniffka',
     y = NULL, x = NULL
   )
 fig$e0diff$plot
 
+# Arriaga decomposition -------------------------------------------
+
+fig$arriaga <- list()
+fig$arriaga$cnst <- list(
+  age_breaks = c(0, 15, 45, 65, 75, 85, Inf),
+  fill_year = c('2020' = '#A1A1A1', '2021' = '#821024'),
+  width_year = c('2020' = 0.6, '2021' = 0.3)
+)
+fig$arriaga$data <-
+  dat$lifetables %>%
+  filter(sex == 'T', region_iso %in% cnst$regions_for_analysis) %>%
+  mutate(age_group = cut(as.integer(age), fig$arriaga$cnst$age_breaks, right = FALSE)) %>%
+  select(region_iso, age, sex, year, age_group, e0_arriaga_total_q0.5) %>%
+  group_by(region_iso, sex, year, age_group) %>%
+  summarise(e0_arriaga_total_q0.5 = sum(e0_arriaga_total_q0.5)) %>%
+  ungroup() %>%
+  group_by(region_iso, sex, year) %>%
+  mutate(e0_diff = sum(e0_arriaga_total_q0.5)) %>%
+  ungroup()
+
+fig$arriaga$plot <-
+  fig$arriaga$data %>%
+  ggplot(aes(x = e0_arriaga_total_q0.5*12, y = age_group)) +
+  geom_col(data = . %>% filter(year == 2020),
+           fill = fig$arriaga$cnst$fill_year['2020'],
+           width = fig$arriaga$cnst$width_year['2020']) +
+  geom_col(data = . %>% filter(year == 2021),
+           fill = fig$arriaga$cnst$fill_year['2021'],
+           width = fig$arriaga$cnst$width_year['2021']) +
+  geom_text(
+    aes(label = paste0('Delta~e[0]^2020==',formatC(e0_diff*12, format = 'f', digits = 1, flag = '+'))),
+    x = 3, y = 1, color = fig$arriaga$cnst$fill_year['2020'], parse = TRUE,
+    hjust = 0, size = 3,
+    data = . %>% filter(year == 2020) %>% group_by(region_iso) %>% slice(1)
+  ) +
+  geom_text(
+    aes(label = paste0('Delta~e[0]^2021==',formatC(e0_diff*12, format = 'f', digits = 1, flag = '+'))),
+    x = 3, y = 2.3, color = fig$arriaga$cnst$fill_year['2021'],
+    hjust = 0, size = 3, parse = TRUE,
+    data = . %>% filter(year == 2021) %>% group_by(region_iso) %>% slice(1)
+  ) +
+  facet_wrap(~region_iso) +
+  fig_spec$MyGGplotTheme(
+    grid = '', family = fig$e0diff$cnst$font_xaxis, axis = '',
+    size = 10, show_legend = FALSE
+  ) +
+  labs(
+    x = 'Agewise contributions to months of life expectancy change',
+    y = 'Age group'
+  )
+fig$arriaga$plot
+
 # Export ----------------------------------------------------------
 
-extrafont::loadfonts()
 fig_spec$ExportFigure(
   fig$e0diff$plot, device = 'svg',
   filename = 'e0diff',
   path = paths$output$out,
   #width = 164, height = 195
-  width = 1.3*164, height = 150
+  width = 180, height = 200
 )
