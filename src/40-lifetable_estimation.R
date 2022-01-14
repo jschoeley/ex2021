@@ -22,7 +22,8 @@ paths$input <- list(
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
   lifetables = './out/lifetables.rds',
-  sexdiff = './out/sexdiff.rds'
+  sexdiff = './out/sexdiff.rds',
+  e0avgdiff = './out/e0avgdiff.rds'
 )
 
 # global configuration
@@ -278,6 +279,17 @@ sexdiff$simulation[,,,,'ex_diff_sign'] <-
   sign(lifetables$simulation[,,,'F',,'ex_diff'])+
   sign(lifetables$simulation[,,,'M',,'ex_diff'])
 
+# Calculate average ex change 2016 to 2019 ------------------------
+
+e0avgdiff <- list()
+
+e0avgdiff$simulation <- apply(
+  lifetables$simulation[,2:5,,,,'ex_diff'],
+  MARGIN = c(1, 3:5),
+  mean
+) %>%
+  aperm(c(1,3,2,4))
+
 # Calculates CI over simulations ----------------------------------
 
 # ci's for life tables
@@ -312,6 +324,19 @@ V <- dimnames(sexdiff$ci); V[[5]] <- paste0('q', cnst$quantiles)
 names(attr(sexdiff$ci, 'dim'))[5] <- 'quantile'
 dimnames(sexdiff$ci) <- V
 
+# ci's for sex-differences of life table statistics
+e0avgdiff$ci <-
+  apply(
+    e0avgdiff$simulation[,,,-1],
+    -4,
+    quantile, prob = cnst$quantiles, names = FALSE, na.rm = TRUE,
+    simplify = TRUE
+  ) %>%
+  aperm(c(2:4,1))
+V <- dimnames(e0avgdiff$ci); V[[4]] <- paste0('q', cnst$quantiles)
+names(attr(e0avgdiff$ci, 'dim'))[4] <- 'quantile'
+dimnames(e0avgdiff$ci) <- V
+
 # Test ------------------------------------------------------------
 
 lifetables$simulation['0','2021',,'T',1,'population_py'] ==
@@ -321,7 +346,6 @@ lifetables$simulation['0','2021',,'T',1,'population_py'] ==
 
 # Transform to data frame -----------------------------------------
 
-# export results of analysis
 lifetables$ci_df <-
   as.data.frame.table(lifetables$ci, stringsAsFactors = FALSE)
 names(lifetables$ci_df) <-
@@ -334,7 +358,6 @@ lifetables$ci_df <-
               values_from = value) %>%
   mutate(across(c(age, year), ~as.integer(.x)))
 
-# export results of analysis
 sexdiff$ci_df <-
   as.data.frame.table(sexdiff$ci, stringsAsFactors = FALSE)
 names(sexdiff$ci_df) <-
@@ -347,8 +370,20 @@ sexdiff$ci_df <-
               values_from = value) %>%
   mutate(across(c(age, year), ~as.integer(.x)))
 
+e0avgdiff$ci_df <-
+  as.data.frame.table(e0avgdiff$ci, stringsAsFactors = FALSE)
+names(e0avgdiff$ci_df) <-
+  c(names(attr(e0avgdiff$ci, 'dim')), 'value')
+e0avgdiff$ci_df <-
+  e0avgdiff$ci_df %>%
+  as_tibble() %>%
+  pivot_wider(id_cols = c(age, sex, region_iso),
+              names_from = c(quantile),
+              values_from = value) %>%
+  mutate(across(c(age), ~as.integer(.x)))
+
 # Export ----------------------------------------------------------
 
 saveRDS(lifetables$ci_df, paths$output$lifetables)
-
 saveRDS(sexdiff$ci_df, paths$output$sexdiff)
+saveRDS(e0avgdiff$ci_df, paths$output$e0avgdiff)
