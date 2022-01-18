@@ -50,6 +50,14 @@ compareNA <- function(v1, v2) {
   return(same)
 }
 
+QuantileWithMean <- function (x, prob = cnst$quantiles) {
+  q <- quantile(x, prob = prob, names = FALSE, na.rm = FALSE)
+  m <- mean(x, na.rm = TRUE)
+  result <- c(m, q)
+  names(result) <- c('mean', paste0('q', prob))
+  return(result)
+}
+
 # Data ------------------------------------------------------------
 
 lt_input <- list()
@@ -263,13 +271,22 @@ sexdiff$simulation <-
   lifetables$simulation[,,,'F',,]-
   lifetables$simulation[,,,'M',,]
 
-# add additional variable to array
+# add additional variables to array
+# var_id:
+# (22) sign of sex difference
+# (23) change in sex difference from 2019
+# (24) drop in sex difference from 2019
+# (25) rise in sex difference from 2019
 D <- dim(sexdiff$simulation)
-D[5] <- D[5]+1
+D[5] <- D[5]+4
 Dn <- dimnames(sexdiff$simulation)
-Dn[[5]] <- c(Dn[[5]], 'ex_diff_sign')
+Dn[[5]] <- c(
+  Dn[[5]], 'ex_diff_sign', 'ex_diff_change_from_2019',
+  'ex_diff_drop_from_2019_flag',
+  'ex_diff_rise_from_2019_flag'
+)
 sexdiff$temp <- array(NA, D, Dn)
-sexdiff$temp[,,,,-16] <- sexdiff$simulation
+sexdiff$temp[,,,,-(22:25)] <- sexdiff$simulation
 sexdiff$simulation <- sexdiff$temp
 
 # +2: ex increase for both sexes
@@ -278,6 +295,16 @@ sexdiff$simulation <- sexdiff$temp
 sexdiff$simulation[,,,,'ex_diff_sign'] <-
   sign(lifetables$simulation[,,,'F',,'ex_diff'])+
   sign(lifetables$simulation[,,,'M',,'ex_diff'])
+
+sexdiff$simulation[,,,,'ex_diff_change_from_2019'] <-
+  sexdiff$simulation[,,,,'ex_diff'] -
+  sexdiff$simulation[,rep('2019', dim(sexdiff$simulation)[2]),,,'ex_diff']
+
+sexdiff$simulation[,,,,'ex_diff_drop_from_2019_flag'] <-
+  sexdiff$simulation[,,,,'ex_diff_change_from_2019'] < 0
+
+sexdiff$simulation[,,,,'ex_diff_rise_from_2019_flag'] <-
+  sexdiff$simulation[,,,,'ex_diff_change_from_2019'] >= 0
 
 # Calculate average ex change 2016 to 2019 ------------------------
 
@@ -300,11 +327,11 @@ lifetables$ci <-
       c('nmx', 'npx', 'nqx', 'lx', 'ex', 'ex_diff', 'bbi', 'e0_arriaga_total')
     ],
     -5,
-    quantile, prob = cnst$quantiles, names = FALSE, na.rm = TRUE,
+    QuantileWithMean,
     simplify = TRUE
   ) %>%
   aperm(c(2:6,1))
-V <- dimnames(lifetables$ci); V[[6]] <- paste0('q', cnst$quantiles)
+V <- dimnames(lifetables$ci)
 names(attr(lifetables$ci, 'dim'))[6] <- 'quantile'
 dimnames(lifetables$ci) <- V
 
@@ -313,14 +340,15 @@ sexdiff$ci <-
   apply(
     sexdiff$simulation[
       ,,,-1,
-      c('nmx', 'npx', 'nqx', 'lx', 'ex', 'ex_diff', 'bbi', 'ex_diff_sign')
+      c('nmx', 'npx', 'nqx', 'lx', 'ex', 'ex_diff', 'bbi', 'ex_diff_sign',
+        'ex_diff_change_from_2019', 'ex_diff_drop_from_2019_flag', 'ex_diff_rise_from_2019_flag')
     ],
     -4,
-    quantile, prob = cnst$quantiles, names = FALSE, na.rm = TRUE,
+    QuantileWithMean,
     simplify = TRUE
   ) %>%
   aperm(c(2:5,1))
-V <- dimnames(sexdiff$ci); V[[5]] <- paste0('q', cnst$quantiles)
+V <- dimnames(sexdiff$ci)
 names(attr(sexdiff$ci, 'dim'))[5] <- 'quantile'
 dimnames(sexdiff$ci) <- V
 
@@ -329,11 +357,11 @@ e0avgdiff$ci <-
   apply(
     e0avgdiff$simulation[,,,-1],
     -4,
-    quantile, prob = cnst$quantiles, names = FALSE, na.rm = TRUE,
+    QuantileWithMean,
     simplify = TRUE
   ) %>%
   aperm(c(2:4,1))
-V <- dimnames(e0avgdiff$ci); V[[4]] <- paste0('q', cnst$quantiles)
+V <- dimnames(e0avgdiff$ci)
 names(attr(e0avgdiff$ci, 'dim'))[4] <- 'quantile'
 dimnames(e0avgdiff$ci) <- V
 

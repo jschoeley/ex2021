@@ -19,7 +19,7 @@ paths$input <- list(
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
   fig_arriaga = './out',
-  rds_arriaga = './out/rds_arriaga.rds'
+  rds_arriaga = './out/arriaga.rds'
 )
 
 # global configuration
@@ -131,12 +131,17 @@ fig$arriaga$cnst <- list(
   color_year = c('2020' = '#A1A1A1', '2021' = '#821024'),
   size_year = c('2020' = 2, '2021' = 0.5),
   segment_nudge_y = -0.12,
-  segment_size = 0.5,
+  segment_size = 0.7,
   color_positive = '#005784',
   color_negative = '#B70D0D',
   color_vline = 'white',
   vertical_gap = 0.3,
-  curvature = 0.7
+  curvature = 0.7,
+  arrow_length = 0.5,
+  n_countries = length(unique(fig$arriaga$data$age_position)),
+  color_ribbon = 'white',
+  size_ribbon = 4.5,
+  font_plot = 'robotocondensed'
 )
 
 # Prepare data ----------------------------------------------------
@@ -172,6 +177,16 @@ fig$arriaga$data <-
 fig$arriaga$plot <-
   fig$arriaga$data %>%
   ggplot(aes(y = age_position, yend = age_position)) +
+  geom_hline(
+    yintercept =
+      seq(1, fig$arriaga$cnst$n_countries, 2),
+    color = fig$arriaga$cnst$color_ribbon,
+    size = fig$arriaga$cnst$size_ribbon
+  ) +
+  geom_vline(
+    xintercept = seq(-1, 0.5, 0.5)*12,
+    color = '#FFFFFF', size = 0.2
+  ) +
   geom_segment(
     aes(
       y = age_position-fig$arriaga$cnst$segment_nudge_y,
@@ -194,6 +209,12 @@ fig$arriaga$plot <-
     data =
       . %>% filter(e0_arriaga_total_q0.5_2020 <= 0)
   ) +
+  # central vline
+  geom_vline(
+    xintercept = 0,
+    color = fig$arriaga$cnst$color_vline,
+    size = 0.8, lty = 1
+  ) +
   geom_segment(
     aes(
       y = age_position - fig$arriaga$cnst$vertical_gap -
@@ -205,7 +226,7 @@ fig$arriaga$plot <-
                 e0_arriaga_total_q0.5_2021)*12
     ),
     lineend = 'round',
-    arrow = arrow(length = unit(1.2, 'mm'), angle = 30),
+    arrow = arrow(length = unit(fig$arriaga$cnst$arrow_length, 'mm'), angle = 30),
     size = fig$arriaga$cnst$segment_size,
     color = fig$arriaga$cnst$color_positive,
     data =
@@ -221,11 +242,11 @@ fig$arriaga$plot <-
       xend = (e0_arriaga_total_q0.5_2020 + e0_arriaga_total_q0.5_2021)*12
     ),
     lineend = 'round',
-    arrow = arrow(length = unit(1.2, 'mm'), angle = 30),
+    arrow = arrow(length = unit(fig$arriaga$cnst$arrow_length, 'mm'), angle = 30),
     size = fig$arriaga$cnst$segment_size,
     color = fig$arriaga$cnst$color_negative,
     data =
-      . %>% filter(e0_arriaga_total_q0.5_2020 <= 0)
+      . %>% filter(e0_arriaga_total_q0.5_2021 <= 0)
   ) +
   geom_curve2(
     aes(
@@ -279,49 +300,55 @@ fig$arriaga$plot <-
     data =
       . %>% filter(e0_arriaga_total_q0.5_2020 > 0, e0_arriaga_total_q0.5_2021 > 0)
   ) +
-  # central vline
-  geom_vline(
-    xintercept = 0,
-    color = fig$arriaga$cnst$color_vline,
-    size = 0.5, lty = 1
+  # geom_text(
+  #   aes(
+  #     label = paste0('Delta~e[0]^{19/20}==',
+  #                    formatC(e0_diff_2020*12,
+  #                            format = 'f', digits = 1,
+  #                            flag = '+')
+  #     )
+  #   ),
+  #   x = 3, y = 1,
+  #   color = fig$arriaga$cnst$color_year['2020'], parse = TRUE,
+  #   hjust = 0, size = 3,
+  #   data = . %>% group_by(region_iso) %>% slice(1)
+  # ) +
+  # geom_text(
+  #   aes(
+  #     label = paste0('Delta~e[0]^{20/21}==',
+  #                    formatC(e0_diff_2021*12,
+  #                            format = 'f', digits = 1,
+  #                            flag = '+')
+  #     )
+  #   ),
+  #   x = 3, y = 2.3, color = fig$arriaga$cnst$color_year['2021'],
+  #   hjust = 0, size = 3, parse = TRUE,
+  #   data = . %>% group_by(region_iso) %>% slice(1)
+  # ) +
+  scale_x_continuous(
+    breaks = seq(-1, 0.5, 0.5)*12,
+    labels = c(
+      '-12 months', '-6',
+      'Life\nexpectancy\nin 2019',
+      '+6 months'
+    )
   ) +
-  geom_text(
-    aes(
-      label = paste0('Delta~e[0]^{19/20}==',
-                     formatC(e0_diff_2020*12,
-                             format = 'f', digits = 1,
-                             flag = '+')
-      )
-    ),
-    x = 3, y = 1,
-    color = fig$arriaga$cnst$color_year['2020'], parse = TRUE,
-    hjust = 0, size = 3,
-    data = . %>% group_by(region_iso) %>% slice(1)
+  scale_y_continuous(
+    breaks = unique(fig$arriaga$data$age_position),
+    labels = fig$arriaga$cnst$age_names,
+    expand = c(0,0.3)
   ) +
-  geom_text(
-    aes(
-      label = paste0('Delta~e[0]^{20/21}==',
-                     formatC(e0_diff_2021*12,
-                             format = 'f', digits = 1,
-                             flag = '+')
-      )
-    ),
-    x = 3, y = 2.3, color = fig$arriaga$cnst$color_year['2021'],
-    hjust = 0, size = 3, parse = TRUE,
-    data = . %>% group_by(region_iso) %>% slice(1)
-  ) +
-  scale_y_continuous(breaks = NULL) +
   facet_wrap(~region_name, ncol = 4) +
   fig_spec$MyGGplotTheme(
-    grid = '', family = fig$e0diff$cnst$font_xaxis, axis = '',
+    grid = '', family = fig$arriaga$cnst$font_plot, axis = '',
     size = 10, show_legend = FALSE
   ) +
   theme(
-    panel.background = element_rect(fill = 'grey95', color = NA),
+    panel.background = element_rect(fill = 'grey95', color = 'grey95'),
     strip.background = element_rect(fill = 'grey90', color = 'grey95')
   ) +
   labs(
-    x = 'Agewise contributions to months of life expectancy change',
+    x = 'Agewise contributions to months of life expectancy change since 2019',
     y = 'Age group'
   )
 fig$arriaga$plot
