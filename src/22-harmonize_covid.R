@@ -89,7 +89,19 @@ dat$coverage_cleaned <-
   ) %>%
   select(
     region_iso, year, date, sex, age_start, age_width, death_covid
-  )
+  ) %>% # calculate covid deaths per year (de-cumulate)
+  drop_na(death_covid) %>%
+  group_by(region_iso, year, sex) %>%
+  mutate(date_range = case_when(date == min(date) ~ 'min', date == max(date) ~ 'max', TRUE ~ 'NA')) %>%
+  filter(date_range %in% c('min', 'max')) %>%
+  pivot_wider(names_from = date_range, values_from = c(death_covid, date)) %>%
+  ungroup() %>%
+  mutate(
+    death_covid = death_covid_max - death_covid_min
+  ) %>%
+  select(region_iso, year, date = date_max, sex, age_start, age_width, death_covid) %>%
+  # truncate eventual negative artifacts to 0
+  mutate(death_covid = ifelse(death_covid < 0, 0, death_covid))
 
 # Age harmonization -----------------------------------------------
 
@@ -177,7 +189,7 @@ dat$coverage_ready_for_join <-
   ungroup() %>%
   # add id
   mutate(
-    id = GenerateRowID(region_iso, sex, age_start, year)
+    id = GenerateRowID(region_iso, sex, year, age_start)
   ) %>%
   select(id, death_covid, death_covid_date, death_covid_nageraw)
 
@@ -190,8 +202,12 @@ dat$covid <-
     dat$coverage_ready_for_join,
     by = 'id'
   ) %>%
+  # set COVID deaths pre 2020 to 0
+  mutate(
+    death_covid = ifelse(year >= 2020, death_covid, 0)
+  ) %>%
   select(id, death_covid, death_covid_date, death_covid_nageraw)
-
+  
 # Diagnostic plots ------------------------------------------------
 
 fig$covid_raw_data <-
@@ -213,7 +229,7 @@ fig$covid_raw_data <-
 dat$coverage_most_recent_date <-
   dat$coverage_ungrouped %>%
   group_by(region_iso) %>%
-  summarise(min_date = min(death_covid_date))
+  summarise(min_date = max(death_covid_date))
 
 fig$covid_pclm <-
   dat$coverage_ungrouped %>%
