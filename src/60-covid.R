@@ -1,8 +1,12 @@
+source("https://raw.githubusercontent.com/timriffe/covid_age/master/R/00_Functions.R")
 library(dplyr)
-rates <- read_rds("U:/gits/ex2021/dat/coverage/rates.rds") %>% 
-  filter(Country != "Lithuania")
-totals.rates <- read_rds("U:/Jonas/totals_rates.rds")%>% 
-  filter(Country != "Lithuania")
+library(ggrepel)
+
+##reading in vaccination data
+setwd('.')
+
+rates <- read_rds("./dat/coverage/rates_v2.rds") %>%  
+  filter(Country != "Northern Ireland")
 ###fill in missing dates and select dates and vaccination status
 
 vacc2 <- rates %>% 
@@ -10,7 +14,10 @@ vacc2 <- rates %>%
   group_by(Country) %>% 
   mutate(Date = as.Date(Date)) %>%
   tidyr::complete(Date = seq.Date(min(Date), max(Date), by="day")) %>% 
-  fill(`rate`)
+  fill(`rate`) %>% 
+  ungroup() %>% 
+  tidyr::complete(Date, nesting(Country), fill=list(rate=0))
+
 
 vacc3 <- rates %>% 
   filter(Measure == "Vaccination3") %>% 
@@ -22,68 +29,58 @@ vacc3 <- rates %>%
 vacc3_nov <- vacc3 %>% 
   filter(Date == "2021-11-30") %>% 
   select(Country, rate)
+names(vacc3_nov)[2] <- "rate_v3_nov"
 
 
-totals_vacc2 <- totals.rates %>% 
-  filter(Measure == "Vaccination2") %>% 
-  group_by(Country) %>% 
-  mutate(Date = as.Date(Date)) %>%
-  tidyr::complete(Date = seq.Date(min(Date), max(Date), by="day")) %>% 
-  fill(`rate`)
 
 vacc2_august <- vacc2 %>% 
   filter(Date == "2021-08-31") %>% 
   select(Country, rate)
+names(vacc2_august)[2] <- "rate_v2_aug"
 
-vacc2_september <- vacc2 %>% 
-  filter(Date == "2021-09-30") %>% 
-  select(Country, rate)
 
-totals_vacc2_september <- totals_vacc2 %>% 
-  filter(Date == "2021-09-30") %>% 
-  select(Country, rate)
 
-totals_vacc2_august <- totals_vacc2 %>% 
-  filter(Date == "2021-08-30") %>% 
-  select(Country, rate)
+vacc2_integral <- vacc2 %>%
+  filter(Date >= "2021-01-01" , Date <= "2021-12-31" ) %>% 
+  group_by(Country) %>% 
+  summarise(
+    vac_int = rate %>% mean(na.rm = T)) %>% 
+  filter(Country != "Northern Ireland",
+         Country != "Finland")
+names(vacc2_integral)[2] <- "rate_v2_int"
 
-# min30 <- vacc2 %>% 
-#   filter(rate >=0.3) %>% 
+##all vaccine measures
+vacc <- merge(vacc2_august, vacc2_integral, all=TRUE)
+vacc <- merge(vacc, vacc3_nov, all=TRUE)
+
+# vacc2_integral2 <- vacc2 %>%
+#   filter(Date >= "2021-01-01" , Date <= "2021-12-31" ) %>% 
+#   arrange(Country, Date) %>% 
 #   group_by(Country) %>% 
-# mutate(ticker = row_number()) %>% 
-#   filter(ticker == "1",
-#          Country != "Finland",
-#          Country != "Northern Ireland")
-# 
-# min50 <- vacc2 %>% 
-#   filter(rate >=0.5) %>% 
-#   group_by(Country) %>% 
-#   mutate(ticker = row_number()) %>% 
-#   filter(ticker == "1",
-#          Country != "Finland",
-#          Country != "Northern Ireland")
+#   mutate(areabelow = lag(rate, default = 0) + (rate - lag(rate, default = 0))/2) 
+#   #mutate(areabelow = cumsum(areabelow)) 
+#   summarise(areabelow = sum(areabelow)) %>% 
+#   mutate(areabelow = areabelow / 356)
 
 
-#####only those countries with lost of e0 from 2020 to 2021
-vacc2_august_lost <- vacc2 %>% 
-  filter(Date == "2021-08-31") %>% 
-  select(Country, rate) %>% 
-  filter(Country == "Bulgaria"|
-         Country == "Slovakia"|
-           Country == "USA"|
-           Country == "Poland"|
-           Country == "Estonia"|
-           Country == "Chile"|
-           Country == "Hungary"|
-           Country == "Czech Republic"|
-           Country == "Croatia"|
-           Country == "Scotland")
+
+#plotting
+data11 <- merge(data, vacc2_integral_65)
+data11$ex_diff_q0.5_2021_month <- data11$ex_diff_q0.5_2021 * 12
+data11$diff_all <- (data11$ex_diff_q0.5_2020 + data11$ex_diff_q0.5_2021)*12
+
+
 
 
 
 ###prepare the data for ex
 data <- as_tibble(fig$e0diff$data)
 names(data)[25] <- "Country"
+
+data_new <- read_rds("U:/gits/ex2021/out/e0avgdiff.rds") %>% 
+  filter(age == "0",
+         sex == "T")
+
 
 e60 <- as_tibble(dat$lifetables) %>% 
   filter(age == "60", 
@@ -92,20 +89,78 @@ e60 <- as_tibble(dat$lifetables) %>%
   select(region_iso, ex_diff_q0.5)
 names(e60)[2] <- "e60_diff_q0.5_2021"
 
+e02019 <- as_tibble(dat$lifetables) %>% 
+  filter(age == "0", 
+         year == "2019",
+         sex == "T") %>% 
+   select(region_iso, ex_q0.5)
 
-dekompo <- as_tibble(fig$arriaga$data) %>% 
-  filter(year== "2021",
-         sex == "T",
-         age_group == "[65,75)"|
-           age_group == "[75,85)"|
-           age_group == "[85,Inf)") %>% 
-  group_by(region_iso) %>% 
-  summarise(dekompo_65 = sum(e0_arriaga_total_q0.5))
+
+e02021 <- as_tibble(dat$lifetables) %>% 
+  filter(age == "0", 
+         year == "2021",
+         sex == "T") %>% 
+  select(region_iso, ex_q0.5)
+names(e02021)[2] <- "e0_2021"
+
+# names(e60)[2] <- "e60_diff_q0.5_2021"
+
+
+# dekompo20_21 <- as_tibble(fig$arriaga$data) %>% 
+#   filter(year== "2021",
+#          sex == "T",
+#          age_group == "[65,75)"|
+#            age_group == "[75,85)"|
+#            age_group == "[85,Inf)") %>% 
+#   group_by(region_iso) %>% 
+#   summarise(dekompo_65_20_21 = sum(e0_arriaga_total_q0.5 * 12))
+# 
+# dekompo19_21 <- as_tibble(fig$arriaga$data) %>% 
+#   filter(year== "2021"|
+#            year == "2020",
+#          sex == "T",
+#          age_group == "[65,75)"|
+#            age_group == "[75,85)"|
+#            age_group == "[85,Inf)") %>% 
+#   group_by(region_iso) %>% 
+#   summarise(dekompo_65_10_21 = sum(e0_arriaga_total_q0.5) * 12)
 
 data <- merge(data, e60)
-data <- merge(data, dekompo)
+#data <- merge(data, dekompo20_21)
+#data <- merge(data, dekompo19_21)
+data <- merge(data, data_new)
+data <- merge(data, e02019)
+data <- merge(data, e02021)
+
+data10 <- merge(data, vacc2_integral)
 
 
+
+
+data10 %>% 
+  ggplot() +
+  geom_point(mapping = aes(x = e0201 , y = e0_2021, size = vac_int))+
+  geom_text_repel(mapping = aes(x = e0201 , y = e0_2021, label = region_iso)) +
+ # scale_shape_manual(values=1:36) +
+  scale_size_area()+
+  coord_fixed()+
+  geom_abline()+
+  labs(x="Percentage Vaccinated 60+ at the end of August", y="Change in e0 from 2020 to 2021 in months", 
+       title = "Change in e0 from 2020 to 2021 and Vaccination Uptake 60+")
+
+
+data10 %>% 
+  ggplot() +
+  geom_point(mapping = aes(x = vac_int , y = e0_2021 - e0201))+
+  geom_text_repel(mapping = aes(x = vac_int , y =  e0_2021 - e0201, label = region_iso)) +
+  # scale_shape_manual(values=1:36) +
+  scale_size_area()+
+  geom_abline()+
+  labs(x="Percentage Vaccinated 60+ at the end of August", y="Change in e0 from 2020 to 2021 in months", 
+       title = "Change in e0 from 2020 to 2021 and Vaccination Uptake 60+")
+
+
+data$e0201 <- data$ex_q0.5 + (2* data$mean)
 ###### full vaccination 60+ at the end of august 2021
 data2 <- merge(data, vacc2_august)
 data2$diff_all <- (data2$ex_diff_q0.5_2020 + data2$ex_diff_q0.5_2021)*12
@@ -124,7 +179,7 @@ data2 %>%
   scale_shape_manual(values=1:27) +
   labs(x="Percentage Vaccinated 60+ at the end of August", y="Change in e0 from 2020 to 2021 in months", 
        title = "Change in e0 from 2020 to 2021 and Vaccination Uptake 60+")
-ggsave("U:/gits/ex2021/tmp/vacc_august_60.png", plot = last_plot(), dpi = 100)
+ggsave("U:/gits/ex2021/tmp/vacc_august_60.png", plot = last_plot(), dpi = 100, width = 7, height = 6)
 
 data2 %>% 
   ggplot() +
@@ -132,15 +187,8 @@ data2 %>%
   scale_shape_manual(values=1:27) +
   labs(x="Percentage Vaccinated 60+ at the end of August", y="Change in e0 from 2019 to 2021 in months", 
        title = "Change in e0 from 2019 to 2021 and Vaccination Uptake 60+")
-ggsave("U:/gits/ex2021/tmp/vacc_august_60_2019.png", plot = last_plot(), dpi = 100)
+ggsave("U:/gits/ex2021/tmp/vacc_august_60_2019.png", plot = last_plot(), dpi = 100, width = 7, height = 6)
 
-data2 %>% 
-  ggplot() +
-  geom_point(mapping = aes(x = rate, y = dekompo_65, color = Country, shape = Country)) +
-  scale_shape_manual(values=1:27) +
-  labs(x="Percentage Vaccinated 60+ at the end of August", y="Dekompositional Effekt 65+", 
-       title = "Dekompositional Effekt 2020 to 2021 and Vaccination Uptake 60+")
-ggsave("U:/gits/ex2021/tmp/vacc_august_60_dekompo.png", plot = last_plot(), dpi = 100)
 
 ##regression modell
 
@@ -185,97 +233,49 @@ data2 %>%
   scale_shape_manual(values=1:27) +
   labs(x="Rank of Percentage Vaccinated 60+ at the end of August", y="Rank of Change in e0 from 2020 to 2021 in months", 
        title = "Change in e0 from 2020 to 2021 and Vaccination Uptake 60+")
-ggsave("U:/gits/ex2021/tmp/rank_vacc_august_60_2020.png", plot = last_plot(), dpi = 100)
+ggsave("U:/gits/ex2021/tmp/rank_vacc_august_60_2020.png", plot = last_plot(), dpi = 100, width = 7, height = 6)
 
 
 
+###dekompositional effekt and vaccination uptake for 65+ at the end of august
+
+data65 <- merge(data, vacc2_65_august)
+data65$diff_all <- (data65$ex_diff_q0.5_2020 + data65$ex_diff_q0.5_2021)*12
+data65$ex_diff_q0.5_2021_month <- data65$ex_diff_q0.5_2021 * 12
+data65$e60_diff_q0.5_2021_month <- data65$e60_diff_q0.5_2021 * 12
 
 
-
-
-####fully vaccination 60+ at the end of september
-data3 <- merge(data, vacc2_september)
-data3$ex_diff_q0.5_2021_month <- data3$ex_diff_q0.5_2021 * 12
-
-##plotting with linear fit line
-ggplot(data3, aes(rate, ex_diff_q0.5_2021_month, color = Country)) + 
-  geom_point() + 
-  geom_smooth(method = "lm")
-
-data3 %>% 
+data65 %>% 
   ggplot() +
-  geom_point(mapping = aes(x = rate, y = ex_diff_q0.5_2021_month, color = Country, shape = Country)) +
+  geom_point(mapping = aes(x = rate, y = dekompo_65_20_21, color = Country, shape = Country)) +
   scale_shape_manual(values=1:27) +
-  labs(x="Percentage Vaccinated 60+ at the end of September", y="Change in e0 from 2020 to 2021 in months", 
-       title = "Change in e0 from 2020 to 2021 and Vaccination Uptake 60+")
-ggsave("U:/gits/ex2021/tmp/vacc_september_60.png", plot = last_plot(), dpi = 100)
+  labs(x="Percentage Vaccinated 65+ at the end of August", y="Decompositional Age Effekt from 2020 to 2021 65+", 
+       title = "Decompositional Age Effekt 2020 to 2021 and Vaccination Uptake 65+")
+ggsave("U:/gits/ex2021/tmp/vacc_august_60_decompo.png", plot = last_plot(), dpi = 100, width = 7, height = 6)
+
+data65 %>% 
+  ggplot() +
+  geom_point(mapping = aes(x = rate, y = dekompo_65_10_21, color = Country, shape = Country)) +
+  scale_shape_manual(values=1:27) +
+  labs(x="Percentage Vaccinated 65+ at the end of August", y="Decompositional Age Effekt from 2019 to 2021 65+", 
+       title = "Decompositional Age Effekt 2019 to 2021 and Vaccination Uptake 65+")
+ggsave("U:/gits/ex2021/tmp/vacc_august_60_decompo_2019.png", plot = last_plot(), dpi = 100, width = 7, height = 6)
 
 
-##regression modell
-model_60_sep_20_21 <- lm(ex_diff_q0.5_2021_month ~ rate, data=data3)
-summary(model_60_sep_20_21)
 
+model_dekompo1 <- lm(dekompo_65_20_21 ~ rate, data=data65)
+summary(model_dekompo1)
+
+model_dekompo2 <- lm(dekompo_65_10_21 ~ rate, data=data65)
+summary(model_dekompo2)
 
 ###correlations
-cor.test(data3$ex_diff_q0.5_2021_month, data3$rate, method = "pearson")
-cor.test(data3$ex_diff_q0.5_2021_month, data3$rate, method = "spearman")
+cor.test(data65$dekompo_65_20_21, data65$rate, method = "pearson")
+cor.test(data65$dekompo_65_20_21, data65$rate, method = "spearman")
 
 
-
-####total vaccination at the end of august
-data4 <- merge(data, totals_vacc2_august)
-data4$ex_diff_q0.5_2021_month <- data4$ex_diff_q0.5_2021 * 12
-
-##plotting with linear fit line
-ggplot(data4, aes(rate, ex_diff_q0.5_2021_month, color = country_name)) + 
-  geom_point() + 
-  geom_smooth(method = "lm")
-
-data4 %>% 
-  ggplot() +
-  geom_point(mapping = aes(x = rate, y = ex_diff_q0.5_2021_month, color = Country, shape = Country)) +
-  scale_shape_manual(values=1:27) +
-  labs(x="Percentage Vaccinated at the end of August", y="Change in e0 from 2020 to 2021 in months", 
-       title = "Change in e0 from 2020 to 2021 and Vaccination Uptake")
-ggsave("U:/gits/ex2021/tmp/total_vacc_august.png", plot = last_plot(), dpi = 100)
-
-
-##regression modell
-model_tot_aug_20_21 <- lm(ex_diff_q0.5_2021_month ~ rate, data=data4)
-summary(model_tot_aug_20_21)
-
-
-###correlations
-cor.test(data4$ex_diff_q0.5_2021_month, data4$rate, method = "pearson")
-cor.test(data4$ex_diff_q0.5_2021_month, data4$rate, method = "spearman")
-
-
-####total vaccination at the end of september
-data7 <- merge(data, totals_vacc2_september)
-data7$ex_diff_q0.5_2021_month <- data7$ex_diff_q0.5_2021 * 12
-
-##plotting with linear fit line
-ggplot(data7, aes(rate, ex_diff_q0.5_2021_month, color = country_name)) + 
-  geom_point() + 
-  geom_smooth(method = "lm")
-
-data7 %>% 
-  ggplot() +
-  geom_point(mapping = aes(x = rate, y = ex_diff_q0.5_2021_month, color = Country, shape = Country)) +
-  scale_shape_manual(values=1:27) +
-  labs(x="Percentage Vaccinated at the end of September", y="Change in e0 from 2020 to 2021 in months", 
-       title = "Change in e0 from 2020 to 2021 and Vaccination Uptake")
-ggsave("U:/gits/ex2021/tmp/total_vacc_september.png", plot = last_plot(), dpi = 100)
-
-
-##regression modell
-model_tot_sep_20_21 <- lm(ex_diff_q0.5_2021_month ~ rate, data=data7)
-summary(model_tot_sep_20_21)
-
-
-###correlations
-cor.test(data7$ex_diff_q0.5_2021_month, data7$rate, method = "pearson")
-cor.test(data7$ex_diff_q0.5_2021_month, data7$rate, method = "spearman")
+cor.test(data65$dekompo_65_10_21, data65$rate, method = "pearson")
+cor.test(data65$dekompo_65_10_21, data65$rate, method = "spearman")
 
 
 
@@ -283,6 +283,7 @@ cor.test(data7$ex_diff_q0.5_2021_month, data7$rate, method = "spearman")
 ####3rd vaccination at the end of november
 data9 <- merge(data, vacc3_nov)
 data9$ex_diff_q0.5_2021_month <- data9$ex_diff_q0.5_2021 * 12
+data9$diff_all <- (data9$ex_diff_q0.5_2020 + data9$ex_diff_q0.5_2021)*12
 
 
 data9 %>% 
@@ -291,7 +292,16 @@ data9 %>%
   scale_shape_manual(values=1:27) +
   labs(x="Percentage Boosterd 60+ at the end of November", y="Change in e0 from 2020 to 2021 in months", 
        title = "Change in e0 from 2020 to 2021 and Vaccination Uptake")
-ggsave("U:/gits/ex2021/tmp/vacc3_november.png", plot = last_plot(), dpi = 100)
+ggsave("U:/gits/ex2021/tmp/vacc3_november.png", plot = last_plot(), dpi = 100, width = 7, height = 6)
+
+
+data9 %>% 
+  ggplot() +
+  geom_point(mapping = aes(x = rate, y = diff_all, color = Country, shape = Country)) +
+  scale_shape_manual(values=1:27) +
+  labs(x="Percentage Boosterd 60+ at the end of November", y="Change in e0 from 2020 to 2021 in months", 
+       title = "Change in e0 from 2019 to 2021 and Vaccination Uptake")
+ggsave("U:/gits/ex2021/tmp/vacc3_november_2019.png", plot = last_plot(), dpi = 100, width = 7, height = 6)
 
 
 ##regression modell
@@ -309,139 +319,29 @@ cor.test(data9$ex_diff_q0.5_2021_month, data9$rate, method = "spearman")
 
 
 
+#plotting
+data10 <- merge(data, vacc2_integral)
+data10$ex_diff_q0.5_2021_month <- data10$ex_diff_q0.5_2021 * 12
+data10$diff_all <- (data10$ex_diff_q0.5_2020 + data10$ex_diff_q0.5_2021)*12
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-####time until 30 % got vaccinated
-data5 <- merge(data, min30)
-data5$ex_diff_q0.5_2021_month <- data5$ex_diff_q0.5_2021 * 12
-
-##plotting with linear fit line
-ggplot(data5, aes(Date, ex_diff_q0.5_2021_month, color = country_name)) + 
-  geom_point() + 
-  geom_smooth(method = "lm")
-
-data5 %>% 
+data10 %>% 
   ggplot() +
-  geom_point(mapping = aes(x = Date, y = ex_diff_q0.5_2021_month, color = Country, shape = Country)) +
-  scale_shape_manual(values=1:27) +
-  labs(x="Time where 30% of Population 60+ were Vaccinated", y="Change in e0 from 2020 to 2021 in months", 
-       title = "Change in e0 from 2020 to 2021 and Timing of Vaccination Uptake 60+")
-ggsave("U:/gits/ex2021/tmp/vacc_30perc_60.png", plot = last_plot(), dpi = 100)
-
-##regression modell
-model <- lm(ex_diff_q0.5_2021_month ~ Date, data=data5)
-summary(model)
+  geom_point(mapping = aes(x = vac_int, y = ex_diff_q0.5_2021_month, color = Country, shape = Country)) +
+  scale_shape_manual(values=1:23) +
+  labs(x="Integral Vaccination Measure 60+ [0, 1]", y="Change in e0 from 2020 to 2021 in months", 
+       title = "Change in e0 from 2020 to 2021 and Integral Vaccination Measure")
+ggsave("U:/gits/ex2021/tmp/vacc2_integral.png", plot = last_plot(), dpi = 100, width = 7, height = 6)
 
 
-###correlations
-#cor.test(data5$ex_diff_q0.5_2021_month, data5$Date, method = "pearson")
-
-
-
-####time until 50% vaccinated
-data6 <- merge(data, min50)
-data6$ex_diff_q0.5_2021_month <- data6$ex_diff_q0.5_2021 * 12
-
-##plotting with linear fit line
-ggplot(data6, aes(Date, ex_diff_q0.5_2021_month, color = country_name)) + 
-  geom_point() + 
-  geom_smooth(method = "lm")
-
-data6 %>% 
+data10 %>% 
   ggplot() +
-  geom_point(mapping = aes(x = Date, y = ex_diff_q0.5_2021_month, color = Country, shape = Country)) +
-  scale_shape_manual(values=1:27) +
-  labs(x="Time where 50% of Population 60+ were Vaccinated", y="Change in e0 from 2020 to 2021 in months", 
-       title = "Change in e0 from 2020 to 2021 and Timing of Vaccination Uptake 60+")
-ggsave("U:/gits/ex2021/tmp/vacc_50perc_60.png", plot = last_plot(), dpi = 100)
-##regression modell
-model <- lm(ex_diff_q0.5_2021_month ~ Date, data=data6)
-summary(model)
+  geom_point(mapping = aes(x = vac_int, y = diff_all, color = Country, shape = Country)) +
+  scale_shape_manual(values=1:23) +
+  labs(x="Integral Vaccination Measure 60+ [0, 1]", y="Change in e0 from 2019 to 2021 in months", 
+       title = "Change in e0 from 2019 to 2021 and Integral Vaccination Measure")
+ggsave("U:/gits/ex2021/tmp/vacc2_integral_2019.png", plot = last_plot(), dpi = 100, width = 7, height = 6)
+  
+  
 
-
-###correlations
-cor.test(data6$ex_diff_q0.5_2021_month, data6$rate, method = "pearson")
-
-
-
-####vacc until august for countries with lost
-
-data8 <- merge(data, vacc2_august_lost)
-data8$diff_all <- (data8$ex_diff_q0.5_2020 + data8$ex_diff_q0.5_2021)*12
-data8$ex_diff_q0.5_2021_month <- data8$ex_diff_q0.5_2021 * 12
-
-##plotting with linear fit line
-ggplot(data8, aes(rate, ex_diff_q0.5_2021_month, color = country_name)) + 
-  geom_point() + 
-  geom_smooth(method = "lm")
-
-data8 %>% 
-  ggplot() +
-  geom_point(mapping = aes(x = rate, y = diff_all, color = Country, shape = Country)) +
-  scale_shape_manual(values=1:27) +
-  labs(x="Percentage Vaccinated at the end of August", y="Change in e0 from 2020 to 2021 in months", 
-       title = "Change in e0 from 2020 to 2021 and Vaccination Uptake")
-ggsave("U:/gits/ex2021/tmp/total_vacc_september_lost.png", plot = last_plot(), dpi = 100)
-
-##regression modell
-model <- lm(ex_diff_q0.5_2021_month ~ rate, data=data8)
-summary(model)
-
-
-###correlations
-cor.test(data8$ex_diff_q0.5_2021_month, data8$rate, method = "pearson")
-
+  
 
