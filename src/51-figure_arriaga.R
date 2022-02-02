@@ -107,16 +107,6 @@ GeomCurve2 <-
     }
   )
 
-BounceBack <- function (delta1, delta2) {
-  bb <- (1 - (delta1 + delta2) / delta1)*100
-  ifelse(delta1 > 0 & delta2 > 0, NA, bb)
-}
-
-FormatTable <- function (x) {
-  lab <- formatC(x, digits = 1, format = 'f', flag = '+')
-  ifelse(lab == 'NA', '\u00b7', lab)
-}
-
 # Load ex differences ---------------------------------------------
 
 dat$lifetables <- readRDS(paths$input$lifetables)
@@ -124,31 +114,31 @@ dat$lifetables <- readRDS(paths$input$lifetables)
 # Parameterize figure ---------------------------------------------
 
 fig$arriaga <- list()
-fig$arriaga$cnst <- list(
-  age_breaks = c(0, 15, 45, 65, 75, 85, Inf),
-  age_names = c('0-14', '15-44', '45-64', '65-74',
-                '75-84', '85+'),
-  color_year = c('2020' = '#A1A1A1', '2021' = '#821024'),
-  size_year = c('2020' = 2, '2021' = 0.5),
-  segment_nudge_y = -0.12,
-  segment_size = 0.7,
-  color_positive = '#005784',
-  color_negative = '#B70D0D',
-  color_vline = 'white',
-  vertical_gap = 0.3,
-  curvature = 0.7,
-  arrow_length = 0.5,
-  n_countries = length(unique(fig$arriaga$data$age_position)),
-  color_ribbon = 'white',
-  size_ribbon = 4.5,
+fig$arriaga$cnst <- list(); fig$arriaga$cnst <- within(fig$arriaga$cnst, {
+  age_breaks = c(0, 20, 40, 60, 80, Inf)
+  age_names = c('0-19', '20-39', '40-59', '60-79', '80+')
+  color_year = c('2020' = '#A1A1A1', '2021' = '#821024')
+  size_year = c('2020' = 2, '2021' = 0.5)
+  segment_nudge_y = -0.12
+  segment_size = 0.8
+  color_positive = '#005784'
+  color_negative = '#B70D0D'
+  color_vline = 'white'
+  vertical_gap = 0.3
+  curvature = 0.7
+  arrow_length = 0.5
+  n_age = length(age_breaks)
+  color_ribbon = 'white'
+  size_ribbon = 6
   font_plot = 'robotocondensed'
-)
+})
 
 # Prepare data ----------------------------------------------------
 
 fig$arriaga$data <-
   dat$lifetables %>%
-  filter(sex == 'T', region_iso %in% cnst$regions_for_analysis) %>%
+  filter(sex == 'T', region_iso %in% cnst$regions_for_analysis,
+         year >= 2020, projected == 'actual') %>%
   mutate(
     age_group = cut(as.integer(age),
                     fig$arriaga$cnst$age_breaks,
@@ -156,16 +146,16 @@ fig$arriaga$data <-
                     labels = fig$arriaga$cnst$age_names),
     age_position = as.integer(age_group)
   ) %>%
-  select(region_iso, age, sex, year, age_position, e0_arriaga_total_q0.5) %>%
-  group_by(region_iso, sex, year, age_position) %>%
-  summarise(e0_arriaga_total_q0.5 = sum(e0_arriaga_total_q0.5)) %>%
+  select(region_iso, age, age_group, sex, year, age_position, e0_cntrb_t_q0.5) %>%
+  group_by(region_iso, sex, year, age_group, age_position) %>%
+  summarise(e0_cntrb_t_q0.5 = sum(e0_cntrb_t_q0.5)) %>%
   ungroup() %>%
   group_by(region_iso, sex, year) %>%
-  mutate(e0_diff = sum(e0_arriaga_total_q0.5)) %>%
+  mutate(e0_diff = sum(e0_cntrb_t_q0.5)) %>%
   ungroup() %>%
   pivot_wider(
     names_from = year,
-    values_from = c(e0_arriaga_total_q0.5, e0_diff)
+    values_from = c(e0_cntrb_t_q0.5, e0_diff)
   ) %>%
   ungroup() %>%
   left_join(
@@ -179,7 +169,7 @@ fig$arriaga$plot <-
   ggplot(aes(y = age_position, yend = age_position)) +
   geom_hline(
     yintercept =
-      seq(1, fig$arriaga$cnst$n_countries, 2),
+      seq(1, fig$arriaga$cnst$n_age, 2),
     color = fig$arriaga$cnst$color_ribbon,
     size = fig$arriaga$cnst$size_ribbon
   ) +
@@ -191,23 +181,23 @@ fig$arriaga$plot <-
     aes(
       y = age_position-fig$arriaga$cnst$segment_nudge_y,
       yend = age_position-fig$arriaga$cnst$segment_nudge_y,
-      x = 0, xend = e0_arriaga_total_q0.5_2020*12
+      x = 0, xend = e0_cntrb_t_q0.5_2020*12
     ),
     size = fig$arriaga$cnst$segment_size,
     color = fig$arriaga$cnst$color_positive,
     data =
-      . %>% filter(e0_arriaga_total_q0.5_2020 > 0)
+      . %>% filter(e0_cntrb_t_q0.5_2020 > 0)
   ) +
   geom_segment(
     aes(
       y = age_position-fig$arriaga$cnst$segment_nudge_y,
       yend = age_position-fig$arriaga$cnst$segment_nudge_y,
-      x = 0, xend = e0_arriaga_total_q0.5_2020*12
+      x = 0, xend = e0_cntrb_t_q0.5_2020*12
     ),
     size = fig$arriaga$cnst$segment_size,
     color = fig$arriaga$cnst$color_negative,
     data =
-      . %>% filter(e0_arriaga_total_q0.5_2020 <= 0)
+      . %>% filter(e0_cntrb_t_q0.5_2020 <= 0)
   ) +
   # central vline
   geom_vline(
@@ -221,16 +211,15 @@ fig$arriaga$plot <-
         fig$arriaga$cnst$segment_nudge_y,
       yend = age_position - fig$arriaga$cnst$vertical_gap -
         fig$arriaga$cnst$segment_nudge_y,
-      x = e0_arriaga_total_q0.5_2020*12,
-      xend = (e0_arriaga_total_q0.5_2020 +
-                e0_arriaga_total_q0.5_2021)*12
+      x = e0_cntrb_t_q0.5_2020*12,
+      xend = (e0_cntrb_t_q0.5_2020 + e0_cntrb_t_q0.5_2021)*12
     ),
     lineend = 'round',
     arrow = arrow(length = unit(fig$arriaga$cnst$arrow_length, 'mm'), angle = 30),
     size = fig$arriaga$cnst$segment_size,
     color = fig$arriaga$cnst$color_positive,
     data =
-      . %>% filter(e0_arriaga_total_q0.5_2021 > 0)
+      . %>% filter(e0_cntrb_t_q0.5_2021 > 0)
   ) +
   geom_segment(
     aes(
@@ -238,99 +227,78 @@ fig$arriaga$plot <-
         fig$arriaga$cnst$segment_nudge_y,
       yend = age_position - fig$arriaga$cnst$vertical_gap -
         fig$arriaga$cnst$segment_nudge_y,
-      x = e0_arriaga_total_q0.5_2020*12,
-      xend = (e0_arriaga_total_q0.5_2020 + e0_arriaga_total_q0.5_2021)*12
+      x = e0_cntrb_t_q0.5_2020*12,
+      xend = (e0_cntrb_t_q0.5_2020 + e0_cntrb_t_q0.5_2021)*12
     ),
     lineend = 'round',
     arrow = arrow(length = unit(fig$arriaga$cnst$arrow_length, 'mm'), angle = 30),
     size = fig$arriaga$cnst$segment_size,
     color = fig$arriaga$cnst$color_negative,
     data =
-      . %>% filter(e0_arriaga_total_q0.5_2021 <= 0)
+      . %>% filter(e0_cntrb_t_q0.5_2021 <= 0)
   ) +
+  # bounce back
   geom_curve2(
     aes(
       y = age_position-fig$arriaga$cnst$segment_nudge_y,
       yend = age_position - fig$arriaga$cnst$segment_nudge_y -
         fig$arriaga$cnst$vertical_gap,
-      x = e0_arriaga_total_q0.5_2020*12, xend = e0_arriaga_total_q0.5_2020*12
+      x = e0_cntrb_t_q0.5_2020*12, xend = e0_cntrb_t_q0.5_2020*12
     ),
     inflect = FALSE, curvature = 1*fig$arriaga$cnst$curvature,
     size = fig$arriaga$cnst$segment_size,
     color = fig$arriaga$cnst$color_positive,
     data =
-      . %>% filter(e0_arriaga_total_q0.5_2020 <= 0, e0_arriaga_total_q0.5_2021 > 0)
+      . %>% filter(e0_cntrb_t_q0.5_2020 <= 0, e0_cntrb_t_q0.5_2021 > 0)
   ) +
+  # compound losses
   geom_curve2(
     aes(
       y = age_position - fig$arriaga$cnst$segment_nudge_y,
       yend = age_position - fig$arriaga$cnst$vertical_gap -
         fig$arriaga$cnst$segment_nudge_y,
-      x = e0_arriaga_total_q0.5_2020*12, xend = e0_arriaga_total_q0.5_2020*12
+      x = e0_cntrb_t_q0.5_2020*12, xend = e0_cntrb_t_q0.5_2020*12
     ),
     inflect = TRUE, curvature = 1*fig$arriaga$cnst$curvature,
     size = fig$arriaga$cnst$segment_size,
     color = fig$arriaga$cnst$color_negative,
     data =
-      . %>% filter(e0_arriaga_total_q0.5_2020 <= 0, e0_arriaga_total_q0.5_2021 <= 0)
+      . %>% filter(e0_cntrb_t_q0.5_2020 <= 0, e0_cntrb_t_q0.5_2021 <= 0)
   ) +
+  # late losses
   geom_curve2(
     aes(
       y = age_position - fig$arriaga$cnst$segment_nudge_y,
       yend = age_position - fig$arriaga$cnst$vertical_gap -
         fig$arriaga$cnst$segment_nudge_y,
-      x = e0_arriaga_total_q0.5_2020*12, xend = e0_arriaga_total_q0.5_2020*12
+      x = e0_cntrb_t_q0.5_2020*12, xend = e0_cntrb_t_q0.5_2020*12
     ),
     inflect = FALSE, curvature = -1*fig$arriaga$cnst$curvature,
     size = fig$arriaga$cnst$segment_size,
     color = fig$arriaga$cnst$color_negative,
     data =
-      . %>% filter(e0_arriaga_total_q0.5_2020 > 0, e0_arriaga_total_q0.5_2021 <= 0)
+      . %>% filter(e0_cntrb_t_q0.5_2020 > 0, e0_cntrb_t_q0.5_2021 <= 0)
   ) +
+  # compound gains
   geom_curve2(
     aes(
       y = age_position - fig$arriaga$cnst$segment_nudge_y,
       yend = age_position - fig$arriaga$cnst$vertical_gap -
         fig$arriaga$cnst$segment_nudge_y,
-      x = e0_arriaga_total_q0.5_2020*12, xend = e0_arriaga_total_q0.5_2020*12
+      x = e0_cntrb_t_q0.5_2020*12, xend = e0_cntrb_t_q0.5_2020*12
     ),
     inflect = TRUE, curvature = -1*fig$arriaga$cnst$curvature,
     size = fig$arriaga$cnst$segment_size,
     color = fig$arriaga$cnst$color_positive,
     data =
-      . %>% filter(e0_arriaga_total_q0.5_2020 > 0, e0_arriaga_total_q0.5_2021 > 0)
+      . %>% filter(e0_cntrb_t_q0.5_2020 > 0, e0_cntrb_t_q0.5_2021 > 0)
   ) +
-  # geom_text(
-  #   aes(
-  #     label = paste0('Delta~e[0]^{19/20}==',
-  #                    formatC(e0_diff_2020*12,
-  #                            format = 'f', digits = 1,
-  #                            flag = '+')
-  #     )
-  #   ),
-  #   x = 3, y = 1,
-  #   color = fig$arriaga$cnst$color_year['2020'], parse = TRUE,
-  #   hjust = 0, size = 3,
-  #   data = . %>% group_by(region_iso) %>% slice(1)
-  # ) +
-  # geom_text(
-  #   aes(
-  #     label = paste0('Delta~e[0]^{20/21}==',
-  #                    formatC(e0_diff_2021*12,
-  #                            format = 'f', digits = 1,
-  #                            flag = '+')
-  #     )
-  #   ),
-  #   x = 3, y = 2.3, color = fig$arriaga$cnst$color_year['2021'],
-  #   hjust = 0, size = 3, parse = TRUE,
-  #   data = . %>% group_by(region_iso) %>% slice(1)
-  # ) +
   scale_x_continuous(
-    breaks = seq(-1, 0.5, 0.5)*12,
+    breaks = seq(-3, 0.5, 0.5)*12,
     labels = c(
-      '-12 months', '-6',
-      'Life\nexpectancy\nin 2019',
-      '+6 months'
+      '-36', '-30' , '-24', '-18', '-12', '-6',
+      'LE\nin 2019',
+      '+6'
     )
   ) +
   scale_y_continuous(
@@ -338,6 +306,7 @@ fig$arriaga$plot <-
     labels = fig$arriaga$cnst$age_names,
     expand = c(0,0.3)
   ) +
+  coord_cartesian(xlim = c(NA, 0.2*12)) +
   facet_wrap(~region_name, ncol = 4) +
   fig_spec$MyGGplotTheme(
     grid = '', family = fig$arriaga$cnst$font_plot, axis = '',

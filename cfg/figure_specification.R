@@ -139,7 +139,7 @@ fig_spec$sex_colors <-
 # Export function -------------------------------------------------
 
 #' Export ggplot
-#' 
+#'
 #' @author Jonas Schöley
 fig_spec$ExportFigure <-
   function(figure,
@@ -152,14 +152,14 @@ fig_spec$ExportFigure <-
            dpi = 300,
            add_date = FALSE) {
     require(ggplot2)
-    
+
     if (missing(filename)) {
       filename <- tolower(gsub('\\.', '_', make.names(deparse(substitute(figure)))))
     }
     if (isTRUE(add_date)) {
       filename <- paste0(Sys.Date(), '-', filename)
     }
-    
+
     arguments <-
       list(
         filename = paste0(filename, '.', device),
@@ -173,14 +173,14 @@ fig_spec$ExportFigure <-
         device = device
       )
     if (device == 'pdf') {
-      arguments$useDingbats <- FALSE 
+      arguments$useDingbats <- FALSE
     }
-    
+
     do.call(ggsave, arguments)
   }
 
 #' Export ggplots Stored in List
-#' 
+#'
 #' @author Jonas Schöley
 fig_spec$ExportFiguresFromList <- function(lst, path, ...) {
   figure_names <- tolower(gsub('\\.+', '_', make.names(names(lst))))
