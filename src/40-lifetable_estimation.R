@@ -1,7 +1,7 @@
 # Estimate life tables and associated statistics with CIs
 #
-# Simulation based inference based on Poisson samples of
-# observed death counts
+# Simulation based life table inference based on Poisson samples of
+# observed death counts. Implemented in a huge array.
 
 # Init ------------------------------------------------------------
 
@@ -25,7 +25,7 @@ paths$output <- list(
   sexdiff = './out/sexdiff.rds',
   e0avgdiff = './out/e0avgdiff.rds',
   codecomp = './out/codecomp.rds',
-  codecomp_cntf = './out/codecomp_cntf'
+  arriaga_cntfc = './out/arriaga_cntfc.rds'
 )
 
 # global configuration
@@ -151,7 +151,8 @@ lifetables$input <-
 # (25) <e0_cntrb_t_noncovid> total contrib. of noncovid mortality
 #                            changes to e0 changes
 # ADDITIONAL INDICATORS
-# (26) <bbi>           Bounce-back indicator
+# (26) <bbi>                Bounce-back indicator
+# (27) <ex_diff_2_year>     Life-expectancy change from 2 years prior
 lifetables$simulation <-
   array(
     dim = c(
@@ -160,7 +161,7 @@ lifetables$simulation <-
       region_iso = lifetables$cnst$nregions,
       sex = 3,
       sim_id = cnst$n_sim+1,
-      var_id = 26,
+      var_id = 27,
       projected = 2
     ),
     dimnames = list(
@@ -175,7 +176,7 @@ lifetables$simulation <-
         'nLx_lag', 'Tx_lag',
         'e0_cntrb_d', 'e0_cntrb_i', 'e0_cntrb_t',
         'nmx_lag', 'R_covid', 'R_covid_lag',
-        'e0_cntrb_t_covid', 'e0_cntrb_t_noncovid', 'bbi'),
+        'e0_cntrb_t_covid', 'e0_cntrb_t_noncovid', 'bbi', 'ex_diff_2_year'),
       c('actual', 'projected')
     )
   )
@@ -216,8 +217,7 @@ tmp$nmx_cntf <-
   tmp$nmx
 lifetables$simulation[,,,,1,'death_total','projected'] <-
   tmp$nmx_cntf*lifetables$simulation[,,,,1,'population_py','projected']
-lifetables$simulation[,,,,1,'death_covid','projected'] <-
-  lifetables$input$death_covid
+lifetables$simulation[,,,,,'death_covid','projected'] <- 0
 
 # simulate total death counts
 lifetables$simulation[,,,,-1,'death_total',] <-
@@ -226,11 +226,11 @@ lifetables$simulation[,,,,-1,'death_total',] <-
         simplify = TRUE) %>%
   aperm(c(2,3,4,5,1,6))
 # simulate covid death counts
-lifetables$simulation[,,,,-1,'death_covid',] <-
-  apply(lifetables$simulation[,,,,1,'death_covid',],
-        MARGIN = 1:5, function (lambda) rpois(n = cnst$n_sim, lambda),
+lifetables$simulation[,,,,-1,'death_covid','actual'] <-
+  apply(lifetables$simulation[,,,,1,'death_covid','actual'],
+        MARGIN = 1:4, function (lambda) rpois(n = cnst$n_sim, lambda),
         simplify = TRUE) %>%
-  aperm(c(2,3,4,5,1,6))
+  aperm(c(2,3,4,5,1))
 
 # Calculate lifetables over simulated counts ----------------------
 
@@ -368,6 +368,11 @@ tmp$I <- compareNA(sign(lifetables$simulation[,,,,,'ex_diff_lag',]), 1)
 lifetables$simulation[,,,,,'bbi',][tmp$I] <-
   -lifetables$simulation[,,,,,'bbi',][tmp$I]
 
+# 2 year life expectancy difference
+lifetables$simulation[,,,,,'ex_diff_2_year',] <-
+  lifetables$simulation[,,,,,'ex_diff',] +
+  lifetables$simulation[,,,,,'ex_diff_lag',]
+
 # Calculate sex differences ---------------------------------------
 
 sexdiff <- list()
@@ -429,10 +434,113 @@ codecomp <- list()
 
 codecomp$simulation <-
   apply(
-    lifetables$simulation[,,,,,c('e0_cntrb_t_covid', 'e0_cntrb_t_noncovid', 'e0_cntrb_t'),],
+    lifetables$simulation[
+      ,,,,,
+      c('e0_cntrb_t_covid', 'e0_cntrb_t_noncovid', 'e0_cntrb_t'),
+    ],
     # apply function to vector of data by age
     MARGIN = c(2:7), FUN = sum
   )
+
+
+# Counterfactual Arriaga decomposition ----------------------------
+
+# decompose annual changes in e0 into age specific mortality changes
+
+# see Arriaga (1984)
+# Measuring and explaining the change in life expectancies
+# DOI 10.2307/2061029
+
+arriaga_cntfc <- list()
+arriaga_cntfc$simulation <-
+  array(
+    dim = c(
+      age = lifetables$cnst$nage,
+      year = lifetables$cnst$nyears,
+      region_iso = lifetables$cnst$nregions,
+      sex = 3,
+      sim_id = cnst$n_sim+1,
+      var_id = 22
+    ),
+    dimnames = list(
+      0:85,
+      config$skeleton$year$min:config$skeleton$year$max,
+      sort(config$skeleton$region),
+      c('F', 'M', 'T'),
+      1:(cnst$n_sim+1),
+      c('death_total_actual', 'death_total_expected',
+        'death_covid_actual', 'death_covid_expected',
+        'nmx_actual', 'nmx_expected',
+        'ex_actual_minus_expected',
+        'ex_actual', 'ex_expected',
+        'lx_actual', 'lx_expected',
+        'nLx_actual', 'nLx_expected',
+        'Tx_actual', 'Tx_expected',
+        'e0_cntrb_d', 'e0_cntrb_i', 'e0_cntrb_t',
+        'R_covid_actual', 'R_covid_expected',
+        'e0_cntrb_t_covid', 'e0_cntrb_t_noncovid')
+    )
+  )
+
+arriaga_cntfc$simulation[,,,,,'death_total_actual'] <-
+  lifetables$simulation[,,,,,'death_total','actual']
+arriaga_cntfc$simulation[,,,,,'death_total_expected'] <-
+  lifetables$simulation[,,,,,'death_total','projected']
+arriaga_cntfc$simulation[,,,,,'death_covid_actual'] <-
+  lifetables$simulation[,,,,,'death_covid','actual']
+arriaga_cntfc$simulation[,,,,,'death_covid_expected'] <-
+  lifetables$simulation[,,,,,'death_covid','projected']
+
+arriaga_cntfc$simulation[,,,,,'nmx_actual'] <-
+  lifetables$simulation[,,,,,'nmx','actual']
+arriaga_cntfc$simulation[,,,,,'nmx_expected'] <-
+  lifetables$simulation[,,,,,'nmx','projected']
+
+arriaga_cntfc$simulation[,,,,,'lx_actual'] <-
+  lifetables$simulation[,,,,,'lx','actual']
+arriaga_cntfc$simulation[,,,,,'lx_expected'] <-
+  lifetables$simulation[,,,,,'lx','projected']
+
+arriaga_cntfc$simulation[,,,,,'nLx_actual'] <-
+  lifetables$simulation[,,,,,'nLx','actual']
+arriaga_cntfc$simulation[,,,,,'nLx_expected'] <-
+  lifetables$simulation[,,,,,'nLx','projected']
+
+arriaga_cntfc$simulation[,,,,,'Tx_actual'] <-
+  lifetables$simulation[,,,,,'Tx','actual']
+arriaga_cntfc$simulation[,,,,,'Tx_expected'] <-
+  lifetables$simulation[,,,,,'Tx','projected']
+
+arriaga_cntfc$simulation[,,,,,'ex_actual_minus_expected'] <-
+  lifetables$simulation[,,,,,'ex','actual'] -
+  lifetables$simulation[,,,,,'ex','projected']
+
+arriaga_cntfc$simulation[,,,,,'e0_cntrb_d'] <-
+  (
+    arriaga_cntfc$simulation[,,,,,'nLx_actual']/
+      arriaga_cntfc$simulation[,,,,,'lx_actual'] -
+      arriaga_cntfc$simulation[,,,,,'nLx_expected']/
+      arriaga_cntfc$simulation[,,,,,'lx_expected']
+  ) * arriaga_cntfc$simulation[,,,,,'lx_actual']
+
+arriaga_cntfc$simulation[,,,,,'e0_cntrb_i'] <-
+  (
+    arriaga_cntfc$simulation[,,,,,'lx_expected']/
+      arriaga_cntfc$simulation[,,,,,'lx_actual']-
+      apply(arriaga_cntfc$simulation[,,,,,'lx_expected'],
+            # apply function to vector of data by age
+            2:5, function (x) c(x[-1], 0))/
+      apply(arriaga_cntfc$simulation[,,,,,'lx_actual'],
+            # apply function to vector of data by age
+            2:5, function (x) c(x[-1], 0))
+  ) * apply(arriaga_cntfc$simulation[,,,,,'Tx_actual'],
+            # apply function to vector of data by age
+            2:5, function (x) c(x[-1], 0))
+arriaga_cntfc$simulation[86,,,,,'e0_cntrb_i'] <- 0
+
+arriaga_cntfc$simulation[,,,,,'e0_cntrb_t'] <-
+  arriaga_cntfc$simulation[,,,,,'e0_cntrb_d'] +
+  arriaga_cntfc$simulation[,,,,,'e0_cntrb_i']
 
 # Calculates CI over simulations ----------------------------------
 
@@ -472,7 +580,7 @@ V <- dimnames(sexdiff$ci)
 names(attr(sexdiff$ci, 'dim'))[6] <- 'quantile'
 dimnames(sexdiff$ci) <- V
 
-# ci's for sex-differences of life table statistics
+# ci's for average e0 annual change
 e0avgdiff$ci <-
   apply(
     e0avgdiff$simulation[,,,-1,],
@@ -497,6 +605,19 @@ codecomp$ci <-
 V <- dimnames(codecomp$ci)
 names(attr(codecomp$ci, 'dim'))[6] <- 'quantile'
 dimnames(codecomp$ci) <- V
+
+# ci's for age specific contributions to e0 deviations from expectation
+arriaga_cntfc$ci <-
+  apply(
+    arriaga_cntfc$simulation[,,,,-1,],
+    -5,
+    QuantileWithMean,
+    simplify = TRUE
+  ) %>%
+  aperm(c(2:6,1))
+V <- dimnames(arriaga_cntfc$ci)
+names(attr(arriaga_cntfc$ci, 'dim'))[6] <- 'quantile'
+dimnames(arriaga_cntfc$ci) <- V
 
 # Transform to data frame -----------------------------------------
 
@@ -547,6 +668,18 @@ codecomp$ci_df <-
               names_from = c(var_id, quantile),
               values_from = value)
 
+arriaga_cntfc$ci_df <-
+  as.data.frame.table(arriaga_cntfc$ci, stringsAsFactors = FALSE)
+names(arriaga_cntfc$ci_df) <-
+  c(names(attr(arriaga_cntfc$ci, 'dim')), 'value')
+arriaga_cntfc$ci_df <-
+  arriaga_cntfc$ci_df %>%
+  filter(year >= 2020) %>% 
+  as_tibble() %>%
+  pivot_wider(id_cols = c(sex, region_iso, year, age),
+              names_from = c(var_id, quantile),
+              values_from = value)
+
 # Test ------------------------------------------------------------
 
 lifetables$simulation['0','2021',,'T',1,'population_py','projected'] ==
@@ -585,3 +718,4 @@ saveRDS(lifetables$ci_df, paths$output$lifetables)
 saveRDS(sexdiff$ci_df, paths$output$sexdiff)
 saveRDS(e0avgdiff$ci_df, paths$output$e0avgdiff)
 saveRDS(codecomp$ci_df, paths$output$codecomp)
+saveRDS(arriaga_cntfc$ci_df, paths$output$arriaga_cntfc)

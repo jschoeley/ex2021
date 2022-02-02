@@ -109,11 +109,6 @@ GeomCurve2 <-
     }
   )
 
-BounceBack <- function (delta1, delta2) {
-  bb <- (1 - (delta1 + delta2) / delta1)*100
-  ifelse(delta1 > 0 & delta2 > 0, NA, bb)
-}
-
 FormatTable <- function (x) {
   lab <- formatC(x, digits = 1, format = 'f', flag = '+')
   ifelse(lab == 'NA', '\u00b7', lab)
@@ -139,7 +134,8 @@ fig$e0diff$data <- list()
 fig$e0diff$data$e0diff2021 <-
   dat$lifetables %>%
   filter(age == 0, sex == 'T', year %in% 2020:2021,
-         region_iso %in% cnst$regions_for_analysis) %>%
+         region_iso %in% cnst$regions_for_analysis,
+         projected == 'actual') %>%
   select(region_iso, sex, year, age,
          ex_diff_q0.5, ex_diff_q0.025, ex_diff_q0.975,
          bbi_q0.5, bbi_q0.025, bbi_q0.975) %>%
@@ -160,7 +156,7 @@ fig$e0diff$data$e0diff2021 <-
   fig$e0diff$data$e0diff2021 %>%
   left_join(
     dat$e0avgdiff %>%
-      filter(age == 0, sex == 'T') %>%
+      filter(age == 0, sex == 'T', projected == 'actual') %>%
       select(region_iso, e0avgdiff1619_q0.5 = q0.5,
              e0avgdiff1619_q0.025 = q0.025,
              e0avgdiff1619_q0.975 = q0.975)
