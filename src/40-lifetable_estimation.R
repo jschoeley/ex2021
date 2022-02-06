@@ -214,7 +214,7 @@ tmp$nmx_cntf <-
     c(1,3,4), function (x) x*seq(-4,2,1)
   ) %>%
   aperm(c(2,1,3,4)) +
-  tmp$nmx
+  tmp$nmx[,rep(5, 7),,]
 lifetables$simulation[,,,,1,'death_total','projected'] <-
   tmp$nmx_cntf*lifetables$simulation[,,,,1,'population_py','projected']
 lifetables$simulation[,,,,,'death_covid','projected'] <- 0
@@ -511,9 +511,13 @@ arriaga_cntfc$simulation[,,,,,'Tx_actual'] <-
 arriaga_cntfc$simulation[,,,,,'Tx_expected'] <-
   lifetables$simulation[,,,,,'Tx','projected']
 
-arriaga_cntfc$simulation[,,,,,'ex_actual_minus_expected'] <-
-  lifetables$simulation[,,,,,'ex','actual'] -
+arriaga_cntfc$simulation[,,,,,'ex_actual'] <-
+  lifetables$simulation[,,,,,'ex','actual']
+arriaga_cntfc$simulation[,,,,,'ex_expected'] <-
   lifetables$simulation[,,,,,'ex','projected']
+
+arriaga_cntfc$simulation[,,,,,'ex_actual_minus_expected'] <-
+  arriaga_cntfc$simulation[,,,,,'ex_actual'] - arriaga_cntfc$simulation[,,,,,'ex_expected']
 
 arriaga_cntfc$simulation[,,,,,'e0_cntrb_d'] <-
   (
@@ -549,7 +553,7 @@ lifetables$ci <-
   apply(
     lifetables$simulation[
       ,,,,-1,
-      c('nmx', 'npx', 'nqx', 'lx', 'ex', 'ex_diff', 'bbi',
+      c('nmx', 'npx', 'nqx', 'lx', 'ex', 'ex_diff', 'ex_diff_2_year', 'bbi',
         'e0_cntrb_t', 'e0_cntrb_t_covid', 'e0_cntrb_t_noncovid'),
     ],
     -5,
