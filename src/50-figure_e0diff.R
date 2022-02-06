@@ -137,17 +137,17 @@ fig$e0diff$data$e0diff2021 <-
          region_iso %in% cnst$regions_for_analysis,
          projected == 'actual') %>%
   select(region_iso, sex, year, age,
-         ex_diff_q0.5, ex_diff_q0.025, ex_diff_q0.975,
+         ex_diff_mean, ex_diff_q0.025, ex_diff_q0.975,
          bbi_q0.5, bbi_q0.025, bbi_q0.975) %>%
   pivot_wider(
     id_cols = c(region_iso, sex, age),
     names_from = year,
-    values_from = c(ex_diff_q0.5, ex_diff_q0.025, ex_diff_q0.975,
+    values_from = c(ex_diff_mean, ex_diff_q0.025, ex_diff_q0.975,
                     bbi_q0.5, bbi_q0.025, bbi_q0.975)
   ) %>%
   mutate(
     region_position =
-      as.integer(fct_reorder(region_iso, -(ex_diff_q0.5_2020+ex_diff_q0.5_2021)))
+      as.integer(fct_reorder(region_iso, -(ex_diff_mean_2020+ex_diff_mean_2021)))
   ) %>%
   left_join(region_meta, by = c('region_iso' = 'region_code_iso3166_2')) %>%
   left_join(dat$completeness)
@@ -224,23 +224,23 @@ fig$e0diff$plot <-
     aes(
       y = region_position-fig$e0diff$cnst$segment_nudge_y,
       yend = region_position-fig$e0diff$cnst$segment_nudge_y,
-      x = 0, xend = ex_diff_q0.5_2020
+      x = 0, xend = ex_diff_mean_2020
     ),
     size = fig$e0diff$cnst$segment_size,
     color = fig$e0diff$cnst$color_positive,
     data =
-      . %>% filter(ex_diff_q0.5_2020 > 0)
+      . %>% filter(ex_diff_mean_2020 > 0)
   ) +
   geom_segment(
     aes(
       y = region_position-fig$e0diff$cnst$segment_nudge_y,
       yend = region_position-fig$e0diff$cnst$segment_nudge_y,
-      x = 0, xend = ex_diff_q0.5_2020
+      x = 0, xend = ex_diff_mean_2020
     ),
     size = fig$e0diff$cnst$segment_size,
     color = fig$e0diff$cnst$color_negative,
     data =
-      . %>% filter(ex_diff_q0.5_2020 <= 0)
+      . %>% filter(ex_diff_mean_2020 <= 0)
   ) +
   
   # curve connector
@@ -250,52 +250,52 @@ fig$e0diff$plot <-
       y = region_position-fig$e0diff$cnst$segment_nudge_y,
       yend = region_position - fig$e0diff$cnst$segment_nudge_y -
         fig$e0diff$cnst$vertical_gap,
-      x = ex_diff_q0.5_2020, xend = ex_diff_q0.5_2020
+      x = ex_diff_mean_2020, xend = ex_diff_mean_2020
     ),
     inflect = FALSE, curvature = 1*fig$e0diff$cnst$curvature,
     size = fig$e0diff$cnst$segment_size,
     color = fig$e0diff$cnst$color_positive,
     data =
-      . %>% filter(ex_diff_q0.5_2020 <= 0, ex_diff_q0.5_2021 > 0)
+      . %>% filter(ex_diff_mean_2020 <= 0, ex_diff_mean_2021 > 0)
   ) +
   geom_curve2(
     aes(
       y = region_position - fig$e0diff$cnst$segment_nudge_y,
       yend = region_position - fig$e0diff$cnst$vertical_gap -
         fig$e0diff$cnst$segment_nudge_y,
-      x = ex_diff_q0.5_2020, xend = ex_diff_q0.5_2020
+      x = ex_diff_mean_2020, xend = ex_diff_mean_2020
     ),
     inflect = TRUE, curvature = 1*fig$e0diff$cnst$curvature,
     size = fig$e0diff$cnst$segment_size,
     color = fig$e0diff$cnst$color_negative,
     data =
-      . %>% filter(ex_diff_q0.5_2020 <= 0, ex_diff_q0.5_2021 <= 0)
+      . %>% filter(ex_diff_mean_2020 <= 0, ex_diff_mean_2021 <= 0)
   ) +
   geom_curve2(
     aes(
       y = region_position - fig$e0diff$cnst$segment_nudge_y,
       yend = region_position - fig$e0diff$cnst$vertical_gap -
         fig$e0diff$cnst$segment_nudge_y,
-      x = ex_diff_q0.5_2020, xend = ex_diff_q0.5_2020
+      x = ex_diff_mean_2020, xend = ex_diff_mean_2020
     ),
     inflect = FALSE, curvature = -1*fig$e0diff$cnst$curvature,
     size = fig$e0diff$cnst$segment_size,
     color = fig$e0diff$cnst$color_negative,
     data =
-      . %>% filter(ex_diff_q0.5_2020 > 0, ex_diff_q0.5_2021 <= 0)
+      . %>% filter(ex_diff_mean_2020 > 0, ex_diff_mean_2021 <= 0)
   ) +
   geom_curve2(
     aes(
       y = region_position - fig$e0diff$cnst$segment_nudge_y,
       yend = region_position - fig$e0diff$cnst$vertical_gap -
         fig$e0diff$cnst$segment_nudge_y,
-      x = ex_diff_q0.5_2020, xend = ex_diff_q0.5_2020
+      x = ex_diff_mean_2020, xend = ex_diff_mean_2020
     ),
     inflect = TRUE, curvature = -1*fig$e0diff$cnst$curvature,
     size = fig$e0diff$cnst$segment_size,
     color = fig$e0diff$cnst$color_positive,
     data =
-      . %>% filter(ex_diff_q0.5_2020 > 0, ex_diff_q0.5_2021 > 0)
+      . %>% filter(ex_diff_mean_2020 > 0, ex_diff_mean_2021 > 0)
   ) +
   geom_segment(
     x = 0, xend = 0, y = -0.1, yend = fig$e0diff$cnst$n_countries+1,
@@ -316,14 +316,14 @@ fig$e0diff$plot <-
         fig$e0diff$cnst$segment_nudge_y,
       yend = region_position - fig$e0diff$cnst$vertical_gap -
         fig$e0diff$cnst$segment_nudge_y,
-      x = ex_diff_q0.5_2020, xend = ex_diff_q0.5_2020 + ex_diff_q0.5_2021
+      x = ex_diff_mean_2020, xend = ex_diff_mean_2020 + ex_diff_mean_2021
     ),
     lineend = 'round',
     arrow = arrow(length = unit(1.2, 'mm'), angle = 30),
     size = fig$e0diff$cnst$segment_size,
     color = fig$e0diff$cnst$color_positive,
     data =
-      . %>% filter(ex_diff_q0.5_2021 > 0)
+      . %>% filter(ex_diff_mean_2021 > 0)
   ) +
   geom_segment(
     aes(
@@ -331,14 +331,14 @@ fig$e0diff$plot <-
         fig$e0diff$cnst$segment_nudge_y,
       yend = region_position - fig$e0diff$cnst$vertical_gap -
         fig$e0diff$cnst$segment_nudge_y,
-      x = ex_diff_q0.5_2020, xend = ex_diff_q0.5_2020 + ex_diff_q0.5_2021
+      x = ex_diff_mean_2020, xend = ex_diff_mean_2020 + ex_diff_mean_2021
     ),
     lineend = 'round',
     arrow = arrow(length = unit(1.2, 'mm'), angle = 30),
     size = fig$e0diff$cnst$segment_size,
     color = fig$e0diff$cnst$color_negative,
     data =
-      . %>% filter(ex_diff_q0.5_2021 <= 0)
+      . %>% filter(ex_diff_mean_2021 <= 0)
   ) +
   
   # table
@@ -346,8 +346,8 @@ fig$e0diff$plot <-
   geom_text(
     aes(
       y = region_position,
-      label = FormatTable(ex_diff_q0.5_2020*12),
-      color = as.character(sign(ex_diff_q0.5_2020))
+      label = FormatTable(ex_diff_mean_2020*12),
+      color = as.character(sign(ex_diff_mean_2020))
     ),
     x = fig$e0diff$cnst$text_x_position2,
     family = fig$e0diff$cnst$font_table, hjust = 1,
@@ -357,8 +357,8 @@ fig$e0diff$plot <-
   geom_text(
     aes(
       y = region_position,
-      label = FormatTable(ex_diff_q0.5_2021*12),
-      color = as.character(sign(ex_diff_q0.5_2021))
+      label = FormatTable(ex_diff_mean_2021*12),
+      color = as.character(sign(ex_diff_mean_2021))
     ),
     x = fig$e0diff$cnst$text_x_position3,
     family = fig$e0diff$cnst$font_table, hjust = 1,
@@ -367,8 +367,8 @@ fig$e0diff$plot <-
   geom_text(
     aes(
       y = region_position,
-      label = FormatTable((ex_diff_q0.5_2020+ex_diff_q0.5_2021)*12),
-      color = as.character(sign(ex_diff_q0.5_2020+ex_diff_q0.5_2021))
+      label = FormatTable((ex_diff_mean_2020+ex_diff_mean_2021)*12),
+      color = as.character(sign(ex_diff_mean_2020+ex_diff_mean_2021))
     ),
     x = fig$e0diff$cnst$text_x_position1,
     family = fig$e0diff$cnst$font_table,
