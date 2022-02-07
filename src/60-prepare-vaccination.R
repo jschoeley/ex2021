@@ -1,9 +1,7 @@
 ##preparation for jonas paper
 source("https://raw.githubusercontent.com/timriffe/covid_age/master/R/00_Functions.R")
 library(reshape2)
-# inputDB <- read_rds("N:/COVerAGE-DB/Data/InputDB.rds") %>% 
-#   osf_retrieve_file("9dsfk") %>%
-#   osf_download(conflicts = "overwrite")
+
 freesz  <- memuse::Sys.meminfo()$freeram@size
 n.cores <- 10
 
@@ -140,12 +138,8 @@ inputDB4 <- bind_rows(inputDB3,czechia, scotland, netherlands, usa) %>%
 
 logfile <- ("./tmp/buildlog2.md")
 
-### Get data ########################################################
 
-
-
-
-# this script transforms the inputDB as required, and produces standardized measures and metrics
+# this script transforms the data as required, and produces standardized measures and metrics
 
 icolsIN <- colnames(inputDB4)
 icols   <- icolsIN[icolsIN != "AgeInt"]
@@ -178,8 +172,6 @@ AA <- Z[ , try_step(
 
 ### Convert fractions ###############################################
 
-# Log 
-
 # Convert sex-specific fractions to counts
 A <- AA[ , try_step(process_function = convert_fractions_sexes,
                     chunk = .SD,
@@ -198,7 +190,7 @@ A <- A[ , try_step(process_function = convert_fractions_within_sex,
 
 ### Distribute counts with unknown age ##############################
 
-# Log
+
 
 B <- A[ , try_step(process_function = redistribute_unknown_age,
                    chunk = .SD,
@@ -208,8 +200,7 @@ B <- A[ , try_step(process_function = redistribute_unknown_age,
         .SDcols = icols][,..icols]
 
 # ### Scale to totals (within sex) ####################################
-#
-# # Log
+
 #
 C <- B[ , try_step(process_function = rescale_to_total,
                    chunk = .SD,
@@ -268,7 +259,6 @@ H <- H[Age != "TOT"]
 
 ### Both sexes combined calculated from sex-specifc #################
 
-# Log
 
 I <- H[ , try_step(process_function = infer_both_sex,
                    chunk = .SD,
@@ -280,7 +270,7 @@ I <- H[ , try_step(process_function = infer_both_sex,
 
 ### Adjust closeout age #############################################
 
-# Log
+
 
 J <- I[ , Age := as.integer(Age), ][, ..icols]
 
@@ -301,12 +291,8 @@ inputCounts <- J[ , AgeInt := add_AgeInt(Age, omega = 105),
                   by = list(Country, Region, Date, Sex, Measure)][, ..icolsIN] %>% 
   arrange(Country, Region, Sex, Measure, Age) %>% 
   as.data.frame()
-### Saving ##########################################################
 
 ######Age-harmonizing################################################
-
-
-
 
 inputCounts <- inputCounts %>% 
   arrange(Country, Region, Date, Measure, Sex, Age) %>% 
@@ -316,13 +302,9 @@ inputCounts <- inputCounts %>%
   filter(Sex == "b") %>% 
   ungroup() 
 
-# nr rows per core
-# inputCounts$core_id %>% table()
 
 ids_in <- inputCounts$id %>% unique() %>% sort()
 
-# Number of subsets per core
-# tapply(inputCounts$id,inputCounts$core_id,function(x){x %>% unique() %>% length()})
 # Split counts into big chunks
 iL <- split(inputCounts,
             inputCounts$core_id,
@@ -330,10 +312,6 @@ iL <- split(inputCounts,
 
 ### Age harmonization: 5-year age groups ############################
 
-
-#print(object.size(iL),units = "Mb")
-# 5 feb 2021 800 Mb
-# length(iL)
 tic()
 # Apply PCLM to split into 5-year age groups
 vaccination_harmonized <- parallelsugar::mclapply(
@@ -362,8 +340,7 @@ write_rds(out, "./tmp/vaccination_harmonized2.rds")
 write_rds(inputCounts, "./tmp/inputCounts2.rds")
 write_rds(HarmonizationFailures, "./tmp/failiors.rds")
 
-
-
+###################Calculation rates for total population, 60+ and under 60######
 
 harmonized <- out
 failed <- HarmonizationFailures
