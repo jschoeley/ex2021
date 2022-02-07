@@ -50,7 +50,7 @@ FormatTable <- function (x, scaler = 1, digits = 1) {
 FormatCI <- function (lo, hi, scaler = 1, digits = 1) {
   low <- formatC(lo*scaler, digits = digits, format = 'f')
   high <- formatC(hi*scaler, digits = digits, format = 'f')
-  lab <- paste0('(', low, ',', high, ')')
+  lab <- paste0('(', low, ';', high, ')')
   ifelse(lo == 'NA', '.', lab)
 }
 
@@ -96,16 +96,23 @@ dat$table_input <-
       e0_diff = ex_diff_mean,
       e0_diff_lo = ex_diff_q0.025,
       e0_diff_hi = ex_diff_q0.975,
+      e0_diff_2_year = ex_diff_2_year_mean,
+      e0_diff_2_year_lo = ex_diff_2_year_q0.025,
+      e0_diff_2_year_hi = ex_diff_2_year_q0.975,
       bbi = bbi_mean,
       bbi_lo = bbi_q0.025,
       bbi_hi = bbi_q0.975
     ) %>%
       pivot_wider(id = region_iso, names_from = year, values_from = c(
-        e0_diff, e0_diff_lo, e0_diff_hi, bbi, bbi_lo, bbi_hi
+        e0_diff, e0_diff_lo, e0_diff_hi,
+        e0_diff_2_year, e0_diff_2_year_lo, e0_diff_2_year_hi,
+        bbi, bbi_lo, bbi_hi
       ))
   ) %>%
   mutate(
-    e0_diff_since_2019 = e0_diff_2020 + e0_diff_2021
+    e0_diff_since_2019 = e0_diff_2_year_2021,
+    e0_diff_since_2019_lo = e0_diff_2_year_lo_2021,
+    e0_diff_since_2019_hi = e0_diff_2_year_hi_2021
   ) %>%
   left_join(
     region_meta, by = c('region_iso' = 'region_code_iso3166_2')
@@ -128,283 +135,218 @@ tab$arriaga$cnst <-
 
 tab$arriaga$data <- list()
 
-tab$arriaga$data$hypothesis <-
+tab$arriaga$data$hypotheses <-
   dat$table_input %>%
-  mutate(
-    # 1 countries which lost e0 2019 through 2021
-    h1 = e0_diff_since_2019 < 0,
-    # 1.1 countries which lost e0 2019 through 2021
-    # due to overall elevated mortality
-    h1.1 = e0_diff_since_2019 < 0 &
-      `e0_diff_cntrb_since_2019_<60` < 0 &
-      `e0_diff_cntrb_since_2019_60+` < 0,
-    # 1.1a countries for which e0 losses 2019 through 2021 were
-    # primarily due elevated mortality in age groups 60+
-    h1.1a = e0_diff_since_2019 < 0 &
-      `e0_diff_cntrb_since_2019_<60` < 0 &
-      `e0_diff_cntrb_since_2019_60+` < 0 &
-      `e0_diff_cntrb_since_2019_<60` > `e0_diff_cntrb_since_2019_60+`,
-    # 1.1b countries for which e0 losses 2019 through 2021
-    # were primarily due to elevated mortality in age groups <60
-    h1.1b = e0_diff_since_2019 < 0 &
-      `e0_diff_cntrb_since_2019_<60` < 0 &
-      `e0_diff_cntrb_since_2019_60+` < 0 &
-      `e0_diff_cntrb_since_2019_<60` < `e0_diff_cntrb_since_2019_60+`,
-    # 1.2 countries which lost e0 2019 through 2021 solely
-    # due to elevated mortality ages 60+
-    h1.2 = e0_diff_since_2019 < 0 &
-      `e0_diff_cntrb_since_2019_<60` >= 0 &
-      `e0_diff_cntrb_since_2019_60+` < 0,    
-    # 1.3 countries which lost e0 2019 through 2021 solely
-    # due to elevated mortality ages <60
-    h1.3 = e0_diff_since_2019 < 0 &
-      `e0_diff_cntrb_since_2019_<60` < 0 &
-      `e0_diff_cntrb_since_2019_60+` >= 0,
-    
-    # 2 countries which lost e0 2020
-    h2 = e0_diff_2020 < 0,
-    # 2.1 countries which lost e0 2020
-    # due to overall elevated mortality
-    h2.1 = e0_diff_2020 < 0 &
-      `e0_diff_cntrb_2020_60+` < 0 &
-      `e0_diff_cntrb_2020_<60` < 0,
-    # 2.1a countries which lost e0 2020
-    # primarily due to elevated mortality ages 60+
-    h2.1a = e0_diff_2020 < 0 &
-      `e0_diff_cntrb_2020_<60` < 0 &
-      `e0_diff_cntrb_2020_60+` < 0 &
-      `e0_diff_cntrb_2020_<60` > `e0_diff_cntrb_2020_60+`,
-    # 2.1b countries which lost e0 2020
-    # primarily due to elevated mortality ages <60
-    h2.1b = e0_diff_2020 < 0 &
-      `e0_diff_cntrb_2020_<60` < 0 &
-      `e0_diff_cntrb_2020_60+` < 0 &
-      `e0_diff_cntrb_2020_<60` < `e0_diff_cntrb_2020_60+`,
-    # 2.2 countries which lost e0 2020
-    # solely due to elevated mortality ages 60+
-    h2.2 = e0_diff_2020 < 0 &
-      `e0_diff_cntrb_2020_<60` >= 0 &
-      `e0_diff_cntrb_2020_60+` < 0,
-    # 2.3 countries which lost e0 2019 through 2020
-    # solely due to elevated mortality ages <60
-    h2.3 = e0_diff_2020 < 0 &
-      `e0_diff_cntrb_2020_<60` < 0 &
-      `e0_diff_cntrb_2020_60+` >= 0,
-    
-    # 3 countries which lost e0 2021
-    h3 = e0_diff_2021 < 0,
-    # 3.1 countries which lost e0 2021
-    # due to overall elevated mortality
-    h3.1 = e0_diff_2021 < 0 &
-      `e0_diff_cntrb_2021_60+` < 0 &
-      `e0_diff_cntrb_2021_<60` < 0,
-    # 3.1a countries which lost e0 2021
-    # primarily due to elevated mortality ages 60+
-    h3.1a = e0_diff_2021 < 0 &
-      `e0_diff_cntrb_2021_<60` < 0 &
-      `e0_diff_cntrb_2021_60+` < 0 &
-      `e0_diff_cntrb_2021_<60` > `e0_diff_cntrb_2021_60+`,
-    # 3.1b countries which lost e0 2021
-    # primarily due to elevated mortality ages <60
-    h3.1b = e0_diff_2021 < 0 &
-      `e0_diff_cntrb_2021_<60` < 0 &
-      `e0_diff_cntrb_2021_60+` < 0 &
-      `e0_diff_cntrb_2021_<60` < `e0_diff_cntrb_2021_60+`,
-    # 3.2 countries which lost e0 2021
-    # solely due to elevated mortality ages 60+
-    h3.2 = e0_diff_2021 < 0 &
-      `e0_diff_cntrb_2021_<60` >= 0 &
-      `e0_diff_cntrb_2021_60+` < 0,
-    # 3.3 countries which lost e0 2021
-    # solely due to elevated mortality ages <60
-    h3.3 = e0_diff_2021 < 0 &
-      `e0_diff_cntrb_2021_<60` < 0 &
-      `e0_diff_cntrb_2021_60+` >= 0,
-    
-    # 4 countries with compound e0 losses since 2019
-    h4 = e0_diff_2020 < 0 & e0_diff_2021 < 0,
-    # 4.1 countries with compound e0 losses since 2019
-    # due to overall elevated mortality
-    h4.1 = e0_diff_2020 < 0 & e0_diff_2021 < 0 &
-      `e0_diff_cntrb_since_2019_60+` < 0 &
-      `e0_diff_cntrb_since_2019_<60` < 0,
-    # 4.1a countries with compound e0 losses since 2019
-    # primarily due to elevated mortality ages 60+
-    h4.1a = e0_diff_2020 < 0 & e0_diff_2021 < 0 &
-      `e0_diff_cntrb_since_2019_60+` < 0 &
-      `e0_diff_cntrb_since_2019_<60` < 0 &
-      `e0_diff_cntrb_since_2019_<60` > `e0_diff_cntrb_since_2019_60+`,
-    # 4.1b countries with compound e0 losses since 2019
-    # primarily due to elevated mortality ages <60
-    h4.1b = e0_diff_2020 < 0 & e0_diff_2021 < 0 &
-      `e0_diff_cntrb_since_2019_60+` < 0 &
-      `e0_diff_cntrb_since_2019_<60` < 0 &
-      `e0_diff_cntrb_since_2019_<60` < `e0_diff_cntrb_since_2019_60+`,
-    # 4.2 countries with compound e0 losses since 2019
-    # solely due to elevated mortality ages 60+
-    h4.2 = e0_diff_2020 < 0 & e0_diff_2021 < 0 &
-      `e0_diff_cntrb_since_2019_<60` >= 0 &
-      `e0_diff_cntrb_since_2019_60+` < 0,
-    # 4.3 countries with compound e0 losses since 2019
-    # solely due to elevated mortality ages <60
-    h4.3 = e0_diff_2020 < 0 & e0_diff_2021 < 0 &
-      `e0_diff_cntrb_since_2019_<60` < 0 &
-      `e0_diff_cntrb_since_2019_60+` >= 0,
-    
-    # 5 countries which bounced-back in 2021
-    h5 = e0_diff_2020 < 0 & e0_diff_2021 > 0,
-    # 5.1 countries which bounced-back in 2021
-    # due to overall normalizing mortality
-    h5.1 = e0_diff_2020 < 0 & e0_diff_2021 > 0 &
-      `e0_diff_cntrb_2021_60+` > 0 &
-      `e0_diff_cntrb_2021_<60` > 0,
-    # 5.1a countries which bounced-back in 2021
-    # primarily due to normalizing mortality ages 60+
-    h5.1a = e0_diff_2020 < 0 & e0_diff_2021 > 0 &
-      `e0_diff_cntrb_2021_60+` > 0 &
-      `e0_diff_cntrb_2021_<60` > 0 &
-      `e0_diff_cntrb_2021_<60` < `e0_diff_cntrb_2021_60+`,
-    # 5.1b countries which bounced-back in 2021
-    # primarily due to normalizing mortality ages <60
-    h5.1b = e0_diff_2020 < 0 & e0_diff_2021 > 0 &
-      `e0_diff_cntrb_2021_60+` > 0 &
-      `e0_diff_cntrb_2021_<60` > 0 &
-      `e0_diff_cntrb_2021_<60` > `e0_diff_cntrb_2021_60+`,
-    # 5.2 countries which bounced-back in 2021
-    # solely due to normalizing mortality ages 60+
-    h5.2 = e0_diff_2020 < 0 & e0_diff_2021 > 0 &
-      `e0_diff_cntrb_since_2019_<60` <= 0 &
-      `e0_diff_cntrb_2021_60+` > 0,
-    # 5.3 countries which bounced-back in 2021
-    # solely due to normalizing mortality ages <60
-    h5.3 = e0_diff_2020 < 0 & e0_diff_2021 > 0 &
-      `e0_diff_cntrb_2021_<60` > 0 &
-      `e0_diff_cntrb_2021_60+` <= 0,
+  transmute(
+    region_name_short = region_name_short,
+    # h1. LE change 2019 through 2021
+    h1_effect =
+      e0_diff_since_2019,
+    h1_sign =
+      sign(h1_effect),
+    h1_lo =
+      e0_diff_since_2019_lo,
+    h1_hi =
+      e0_diff_since_2019_hi,
+    h1_significance =
+      ifelse(sign(h1_lo) == sign(h1_hi), TRUE, FALSE),
+    h1_attribution_1 =
+      ifelse(
+        sign(`e0_diff_cntrb_since_2019_<60`) == sign(`e0_diff_cntrb_since_2019_60+`),
+        'primarily', 'solely'
+      ),
+    h1_attribution_2 =
+      case_when(
+        h1_sign > 0 &
+          (`e0_diff_cntrb_since_2019_60+` > `e0_diff_cntrb_since_2019_<60`) ~ 'old',
+        h1_sign > 0 &
+          (`e0_diff_cntrb_since_2019_60+` < `e0_diff_cntrb_since_2019_<60`) ~ 'young',
+        h1_sign < 0 &
+          (`e0_diff_cntrb_since_2019_60+` < `e0_diff_cntrb_since_2019_<60`) ~ 'old',
+        h1_sign < 0 &
+          (`e0_diff_cntrb_since_2019_60+` > `e0_diff_cntrb_since_2019_<60`) ~ 'young'
+      ),
+    # h2. LE change 2019 to 2020
+    h2_effect =
+      e0_diff_2020,
+    h2_sign =
+      sign(h2_effect),
+    h2_lo =
+      e0_diff_lo_2020,
+    h2_hi =
+      e0_diff_hi_2020,
+    h2_significance =
+      ifelse(sign(h2_lo) == sign(h2_hi), TRUE, FALSE),
+    h2_attribution_1 =
+      ifelse(
+        sign(`e0_diff_cntrb_2020_<60`) == sign(`e0_diff_cntrb_2020_60+`),
+        'primarily', 'solely'
+      ),
+    h2_attribution_2 =
+      case_when(
+        h2_sign > 0 &
+          (`e0_diff_cntrb_2020_60+` > `e0_diff_cntrb_2020_<60`) ~ 'old',
+        h2_sign > 0 &
+          (`e0_diff_cntrb_2020_60+` < `e0_diff_cntrb_2020_<60`) ~ 'young',
+        h2_sign < 0 &
+          (`e0_diff_cntrb_2020_60+` < `e0_diff_cntrb_2020_<60`) ~ 'old',
+        h2_sign < 0 &
+          (`e0_diff_cntrb_2020_60+` > `e0_diff_cntrb_2020_<60`) ~ 'young'
+      ),
+    # h3. LE change 2020 to 2021
+    h3_effect =
+      e0_diff_2021,
+    h3_sign =
+      sign(h3_effect),
+    h3_lo =
+      e0_diff_lo_2021,
+    h3_hi =
+      e0_diff_hi_2021,
+    h3_significance =
+      ifelse(sign(h3_lo) == sign(h3_hi), TRUE, FALSE),
+    h3_attribution_1 =
+      ifelse(
+        sign(`e0_diff_cntrb_2021_<60`) == sign(`e0_diff_cntrb_2021_60+`),
+        'primarily', 'solely'
+      ),
+    h3_attribution_2 =
+      case_when(
+        h3_sign > 0 &
+          (`e0_diff_cntrb_2021_60+` > `e0_diff_cntrb_2021_<60`) ~ 'old',
+        h3_sign > 0 &
+          (`e0_diff_cntrb_2021_60+` < `e0_diff_cntrb_2021_<60`) ~ 'young',
+        h3_sign < 0 &
+          (`e0_diff_cntrb_2021_60+` < `e0_diff_cntrb_2021_<60`) ~ 'old',
+        h3_sign < 0 &
+          (`e0_diff_cntrb_2021_60+` > `e0_diff_cntrb_2021_<60`) ~ 'young'
+      )
   )
 
 tab$arriaga$data$table <-
-  tab$arriaga$data$hypothesis %>%
-  mutate(
-    h1_contribution = case_when(
-      h1 & h1.1 ~ 'overall',
-      h1 & (h1.2 | h1.3) ~ 'solely',
-      TRUE ~ 'none'
-    ),
-    h1_age = case_when(
-      h1_contribution == 'overall' & h1.1a ~ 'old',
-      h1_contribution == 'overall' & h1.1b ~ 'young',
-      h1_contribution == 'solely' & h1.2 ~ 'old',
-      h1_contribution == 'solely' & h1.3 ~ 'young',
-      TRUE ~ 'none'
-    ),
-    h2_contribution = case_when(
-      h2 & h2.1 ~ 'overall',
-      h2 & (h2.2 | h2.3) ~ 'solely',
-      TRUE ~ 'none'
-    ),
-    h2_age = case_when(
-      h2_contribution == 'overall' & h2.1a ~ 'old',
-      h2_contribution == 'overall' & h2.1b ~ 'young',
-      h2_contribution == 'solely' & h2.2 ~ 'old',
-      h2_contribution == 'solely' & h2.3 ~ 'young',
-      TRUE ~ 'none'
-    ),
-    h3_contribution = case_when(
-      h3 & h3.1 ~ 'overall',
-      h3 & (h3.2 | h3.3) ~ 'solely',
-      TRUE ~ 'none'
-    ),
-    h3_age = case_when(
-      h3_contribution == 'overall' & h3.1a ~ 'old',
-      h3_contribution == 'overall' & h3.1b ~ 'young',
-      h3_contribution == 'solely' & h3.2 ~ 'old',
-      h3_contribution == 'solely' & h3.3 ~ 'young',
-      TRUE ~ 'none'
-    ),
-    h4_contribution = case_when(
-      h4 & h4.1 ~ 'overall',
-      h4 & (h4.2 | h4.3) ~ 'solely',
-      TRUE ~ 'none'
-    ),
-    h4_age = case_when(
-      h4_contribution == 'overall' & h4.1a ~ 'old',
-      h4_contribution == 'overall' & h4.1b ~ 'young',
-      h4_contribution == 'solely' & h4.2 ~ 'old',
-      h4_contribution == 'solely' & h4.3 ~ 'young',
-      TRUE ~ 'none'
-    ),
-    h5_contribution = case_when(
-      h5 & h5.1 ~ 'overall',
-      h5 & (h5.2 | h5.3) ~ 'solely',
-      TRUE ~ 'none'
-    ),
-    h5_age = case_when(
-      h5_contribution == 'overall' & h5.1a ~ 'old',
-      h5_contribution == 'overall' & h5.1b ~ 'young',
-      h5_contribution == 'solely' & h5.2 ~ 'old',
-      h5_contribution == 'solely' & h5.3 ~ 'young',
-      TRUE ~ 'none'
-    )
-  ) %>%
-  mutate(
+  tab$arriaga$data$hypotheses %>%
+  transmute(
+    region_name_short = region_name_short,
+    # h1
     h1_glyph = case_when(
-      h1_contribution == 'none' ~ '',
-      h1_contribution == 'overall' & h1_age == 'old' ~ tab$arriaga$cnst$glyph_overall_old,
-      h1_contribution == 'overall' & h1_age == 'young' ~ tab$arriaga$cnst$glyph_overall_young,
-      h1_contribution == 'solely' & h1_age == 'old' ~ tab$arriaga$cnst$glyph_solely_old,
-      h1_contribution == 'solely' & h1_age == 'young' ~ tab$arriaga$cnst$glyph_overall_young
+      h1_attribution_1 == 'primarily' & h1_attribution_2 == 'old' ~ tab$arriaga$cnst$glyph_overall_old,
+      h1_attribution_1 == 'primarily' & h1_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young,
+      h1_attribution_1 == 'solely' & h1_attribution_2 == 'old' ~ tab$arriaga$cnst$glyph_solely_old,
+      h1_attribution_1 == 'solely' & h1_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young
     ),
-    h1_estimate = FormatTable(ifelse(h1, e0_diff_since_2019, NA), 12),
-    h1_ci = '.',
+    h1_glyph = case_when(
+      h1_sign < 0 & h1_significance ~ paste0('\\color{negativesig}', h1_glyph),
+      h1_sign < 0 & !h1_significance ~ paste0('\\color{negativenonsig}', h1_glyph),
+      h1_sign > 0 & h1_significance ~ paste0('\\color{positivesig}', h1_glyph),
+      h1_sign > 0 & !h1_significance ~ paste0('\\color{positivenonsig}', h1_glyph)
+    ),
+    h1_estimate = FormatTable(h1_effect, 12),
+    h1_estimate = case_when(
+      h1_sign < 0 & h1_significance ~ paste0('\\color{negativesig}', h1_estimate),
+      h1_sign < 0 & !h1_significance ~ paste0('\\color{negativenonsig}', h1_estimate),
+      h1_sign > 0 & h1_significance ~ paste0('\\color{positivesig}', h1_estimate),
+      h1_sign > 0 & !h1_significance ~ paste0('\\color{positivenonsig}', h1_estimate)
+    ),
+    h1_ci_lo = FormatTable(h1_lo, 12),
+    h1_ci_lo = case_when(
+      h1_sign < 0 & h1_significance ~ paste0('\\color{negativesig}', h1_ci_lo, '{to}'),
+      h1_sign < 0 & !h1_significance ~ paste0('\\color{negativenonsig}', h1_ci_lo, '{to}'),
+      h1_sign > 0 & h1_significance ~ paste0('\\color{positivesig}', h1_ci_lo, '{to}'),
+      h1_sign > 0 & !h1_significance ~ paste0('\\color{positivenonsig}', h1_ci_lo, '{to}')
+    ),
+    h1_ci_hi = FormatTable(h1_hi, 12),
+    h1_ci_hi = case_when(
+      h1_sign < 0 & h1_significance ~ paste0('\\color{negativesig}', h1_ci_hi),
+      h1_sign < 0 & !h1_significance ~ paste0('\\color{negativenonsig}', h1_ci_hi),
+      h1_sign > 0 & h1_significance ~ paste0('\\color{positivesig}', h1_ci_hi),
+      h1_sign > 0 & !h1_significance ~ paste0('\\color{positivenonsig}', h1_ci_hi)
+    ),
+    # h2
     h2_glyph = case_when(
-      h2_contribution == 'none' ~ '',
-      h2_contribution == 'overall' & h2_age == 'old' ~ tab$arriaga$cnst$glyph_overall_old,
-      h2_contribution == 'overall' & h2_age == 'young' ~ tab$arriaga$cnst$glyph_overall_young,
-      h2_contribution == 'solely' & h2_age == 'old' ~ tab$arriaga$cnst$glyph_solely_old,
-      h2_contribution == 'solely' & h2_age == 'young' ~ tab$arriaga$cnst$glyph_solely_young
+      h2_attribution_1 == 'primarily' & h2_attribution_2 == 'old' ~ tab$arriaga$cnst$glyph_overall_old,
+      h2_attribution_1 == 'primarily' & h2_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young,
+      h2_attribution_1 == 'solely' & h2_attribution_2 == 'old' ~ tab$arriaga$cnst$glyph_solely_old,
+      h2_attribution_1 == 'solely' & h2_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young
     ),
-    h2_estimate = FormatTable(ifelse(h2, e0_diff_2020, NA), 12),
-    h2_ci = ifelse(h2, FormatCI(e0_diff_lo_2020, e0_diff_hi_2020, 12), '.'),
+    h2_glyph = case_when(
+      h2_sign < 0 & h2_significance ~ paste0('\\color{negativesig}', h2_glyph),
+      h2_sign < 0 & !h2_significance ~ paste0('\\color{negativenonsig}', h2_glyph),
+      h2_sign > 0 & h2_significance ~ paste0('\\color{positivesig}', h2_glyph),
+      h2_sign > 0 & !h2_significance ~ paste0('\\color{positivenonsig}', h2_glyph)
+    ),
+    h2_estimate = FormatTable(h2_effect, 12),
+    h2_estimate = case_when(
+      h2_sign < 0 & h2_significance ~ paste0('\\color{negativesig}', h2_estimate),
+      h2_sign < 0 & !h2_significance ~ paste0('\\color{negativenonsig}', h2_estimate),
+      h2_sign > 0 & h2_significance ~ paste0('\\color{positivesig}', h2_estimate),
+      h2_sign > 0 & !h2_significance ~ paste0('\\color{positivenonsig}', h2_estimate)
+    ),
+    h2_ci_lo = FormatTable(h2_lo, 12),
+    h2_ci_lo = case_when(
+      h2_sign < 0 & h2_significance ~ paste0('\\color{negativesig}', h2_ci_lo, '{to}'),
+      h2_sign < 0 & !h2_significance ~ paste0('\\color{negativenonsig}', h2_ci_lo, '{to}'),
+      h2_sign > 0 & h2_significance ~ paste0('\\color{positivesig}', h2_ci_lo, '{to}'),
+      h2_sign > 0 & !h2_significance ~ paste0('\\color{positivenonsig}', h2_ci_lo,'{to}')
+    ),
+    h2_ci_hi = FormatTable(h1_hi, 12),
+    h2_ci_hi = case_when(
+      h2_sign < 0 & h2_significance ~ paste0('\\color{negativesig}', h2_ci_hi),
+      h2_sign < 0 & !h2_significance ~ paste0('\\color{negativenonsig}', h2_ci_hi),
+      h2_sign > 0 & h2_significance ~ paste0('\\color{positivesig}', h2_ci_hi),
+      h2_sign > 0 & !h2_significance ~ paste0('\\color{positivenonsig}', h2_ci_hi)
+    ),
+    # h3
     h3_glyph = case_when(
-      h3_contribution == 'none' ~ '',
-      h3_contribution == 'overall' & h3_age == 'old' ~ tab$arriaga$cnst$glyph_overall_old,
-      h3_contribution == 'overall' & h3_age == 'young' ~ tab$arriaga$cnst$glyph_overall_young,
-      h3_contribution == 'solely' & h3_age == 'old' ~ tab$arriaga$cnst$glyph_solely_old,
-      h3_contribution == 'solely' & h3_age == 'young' ~ tab$arriaga$cnst$glyph_solely_young
+      h3_attribution_1 == 'primarily' & h3_attribution_2 == 'old' ~ tab$arriaga$cnst$glyph_overall_old,
+      h3_attribution_1 == 'primarily' & h3_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young,
+      h3_attribution_1 == 'solely' & h3_attribution_2 == 'old' ~ tab$arriaga$cnst$glyph_solely_old,
+      h3_attribution_1 == 'solely' & h3_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young
     ),
-    h3_estimate = FormatTable(ifelse(h3, e0_diff_2021, NA), 12),
-    h3_ci = FormatCI(e0_diff_lo_2021, e0_diff_hi_2021, 12),
-    h5_glyph = case_when(
-      h5_contribution == 'none' ~ '',
-      h5_contribution == 'overall' & h5_age == 'old' ~ tab$arriaga$cnst$glyph_overall_old,
-      h5_contribution == 'overall' & h5_age == 'young' ~ tab$arriaga$cnst$glyph_overall_young,
-      h5_contribution == 'solely' & h5_age == 'old' ~ tab$arriaga$cnst$glyph_solely_old,
-      h5_contribution == 'solely' & h5_age == 'young' ~ tab$arriaga$cnst$glyph_solely_young
+    h3_glyph = case_when(
+      h3_sign < 0 & h3_significance ~ paste0('\\color{negativesig}', h3_glyph),
+      h3_sign < 0 & !h3_significance ~ paste0('\\color{negativenonsig}', h3_glyph),
+      h3_sign > 0 & h3_significance ~ paste0('\\color{positivesig}', h3_glyph),
+      h3_sign > 0 & !h3_significance ~ paste0('\\color{positivenonsig}', h3_glyph)
     ),
-    h5_estimate = FormatTable(ifelse(h5, bbi_2021, NA), scaler = 100, digits = 0),
-    h5_ci = ifelse(h5, FormatCI(bbi_lo_2021, bbi_hi_2021, scaler = 100, digits = 0), '.')
+    h3_estimate = FormatTable(h3_effect, 12),
+    h3_estimate = case_when(
+      h3_sign < 0 & h3_significance ~ paste0('\\color{negativesig}', h3_estimate),
+      h3_sign < 0 & !h3_significance ~ paste0('\\color{negativenonsig}', h3_estimate),
+      h3_sign > 0 & h3_significance ~ paste0('\\color{positivesig}', h3_estimate),
+      h3_sign > 0 & !h3_significance ~ paste0('\\color{positivenonsig}', h3_estimate)
+    ),
+    h3_ci_lo = FormatTable(h1_lo, 12),
+    h3_ci_lo = case_when(
+      h3_sign < 0 & h3_significance ~ paste0('\\color{negativesig}', h3_ci_lo, '{to}'),
+      h3_sign < 0 & !h3_significance ~ paste0('\\color{negativenonsig}', h3_ci_lo, '{to}'),
+      h3_sign > 0 & h3_significance ~ paste0('\\color{positivesig}', h3_ci_lo, '{to}'),
+      h3_sign > 0 & !h3_significance ~ paste0('\\color{positivenonsig}', h3_ci_lo, '{to}')
+    ),
+    h3_ci_hi = FormatTable(h1_hi, 12),
+    h3_ci_hi = case_when(
+      h3_sign < 0 & h3_significance ~ paste0('\\color{negativesig}', h3_ci_hi),
+      h3_sign < 0 & !h3_significance ~ paste0('\\color{negativenonsig}', h3_ci_hi),
+      h3_sign > 0 & h3_significance ~ paste0('\\color{positivesig}', h3_ci_hi),
+      h3_sign > 0 & !h3_significance ~ paste0('\\color{positivenonsig}', h3_ci_hi)
+    ),
   ) %>%
   select(
     region_name_short,
-    h1_glyph, h1_estimate, h1_ci,
-    h2_glyph, h2_estimate, h2_ci,
-    h3_glyph, h3_estimate, h3_ci,
-    h5_glyph, h5_estimate, h5_ci
+    h1_glyph, h1_estimate, h1_ci_lo, h1_ci_hi,
+    h2_glyph, h2_estimate, h2_ci_lo, h2_ci_hi,
+    h3_glyph, h3_estimate, h3_ci_lo, h3_ci_hi
   )
 
 tab$arriaga$table <-
   tab$arriaga$data$table %>%
   gt(rowname_col = 'region_name_short') %>%
   cols_label(
-    h1_glyph = 'AT', h1_estimate = 'ES', h1_ci = 'CI',
-    h2_glyph = 'AT', h2_estimate = 'ES', h2_ci = 'CI',
-    h3_glyph = 'AT', h3_estimate = 'ES', h3_ci = 'CI',
-    h5_glyph = 'AT', h5_estimate = 'ES', h5_ci = 'CI'
+    h1_glyph = 'AT', h1_estimate = 'ES', h1_ci_lo = 'CI', h1_ci_hi = '',
+    h2_glyph = 'AT', h2_estimate = 'ES', h2_ci_lo = 'CI', h2_ci_hi = '',
+    h3_glyph = 'AT', h3_estimate = 'ES', h3_ci_lo = 'CI', h3_ci_hi = ''
   ) %>%
-  tab_spanner(columns = 2:4, 'Net LE losses 2019 to 2021', id = 'h1') %>%
-  tab_spanner(columns = 5:7, 'LE losses 2020', id = 'h2') %>%
-  tab_spanner(columns = 8:10, 'LE losses 2021', id = 'h3') %>%
-  tab_spanner(columns = 11:13, 'LE bounce-back 2021', id = 'h5') %>%
+  tab_spanner(columns = 2:5, 'Net LE losses 2019 to 2021', id = 'h1') %>%
+  tab_spanner(columns = 6:9, 'LE losses 2020', id = 'h2') %>%
+  tab_spanner(columns = 10:13, 'LE losses 2021', id = 'h3') %>%
   tab_footnote(
     locations = cells_column_labels('h1_glyph'),
     footnote = paste0(
@@ -420,12 +362,18 @@ tab$arriaga$table <-
     footnote = 'Central estimate in months'
   ) %>%
   tab_footnote(
-    locations = cells_column_labels('h1_ci'),
+    locations = cells_column_labels('h1_ci_lo'),
     footnote = '95% confidence interval'
   )
 
 tab$arriaga$table
-as_latex(tab$arriaga$table) %>% as.character() %>% clipr::write_clip()
+as_latex(tab$arriaga$table) %>% as.character() %>%
+  gsub( x = ., pattern = '\\$', replacement = '$', fixed = TRUE) %>%
+  gsub( x = ., pattern = '\\textbackslash ', replacement = '\\', fixed = TRUE) %>%
+  gsub( x = ., pattern = '\\textbackslash{}', replacement = '\\', fixed = TRUE) %>%
+  gsub( x = ., pattern = '\\{', replacement = '{', fixed = TRUE) %>%
+  gsub( x = ., pattern = '\\}', replacement = '}', fixed = TRUE) %>%
+  clipr::write_clip()
 
 # tab$arriaga <-
 #   tab$arriaga %>%

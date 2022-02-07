@@ -94,7 +94,7 @@ inputDB <-  read_csv("inputDB.zip",
   filter(Country %in% c("Czechia",
                         "Northern Ireland", "Iceland", "Sweden", "Austria", "Slovenia", "Germany", "Finland", "Denmark", "Italy",
                         "Bulgaria", "Hungary", "Poland", "Lithuania", "Estonia", "Spain", "Belgium",
-                        "France", "Scotland", "Portugal", "Chile", "USA", "Norway", "Switzerland", "Croatia", "Slovakia")) %>% 
+                        "France", "Scotland", "Portugal", "Chile", "USA", "Norway", "Switzerland", "Croatia", "Slovakia", "Netherlands")) %>% 
   filter(Measure != "Deaths",
          Measure != "Tests",
          Measure != "Cases",
