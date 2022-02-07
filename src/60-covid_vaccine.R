@@ -22,7 +22,7 @@ paths$input <- list(
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
   vaxe0_rds = './out/vaxe0.rds',
-  vaxe0_fig = './out/vaxe0.pdf'
+  vaxe0_fig = './out'
 )
 
 # global configuration
@@ -38,6 +38,7 @@ cnst <- list(); cnst <- within(cnst, {
 
 tmp <- list()
 dat <- list()
+fig <- list()
 
 # Function --------------------------------------------------------
 
@@ -60,18 +61,36 @@ dat$vaccination_sub <-
       region_meta$region_code_iso3166_2[region_meta$region_name_short != 'RUS']
     ) %>% as.character()
   ) %>%
-  filter(Measure == 'Vaccination2', lubridate::year(date) == 2021) %>%
-  select(region_iso, date = Date, rate) %>%
+  select(region_iso, date, Measure, rate) %>%
+  pivot_wider(names_from = Measure, values_from = rate) %>%
+  filter(lubridate::year(date) == 2021) %>%
   complete(region_iso, date = seq.Date(as.Date('2021-01-01'), as.Date('2021-12-31'), by = 'day')) %>%
   group_by(region_iso) %>%
-  mutate(rate = zoo::na.approx(rate, rule = 2)) %>%
+  mutate(
+    across(
+      .cols = c(Vaccination1, Vaccination2, Vaccination3, VaccinationBooster),
+      .fns = zoo::na.approx, rule = 2, maxgap = 100
+    )
+  ) %>%
   ungroup() %>%
   arrange(region_iso, date)
 
 dat$vaccination_sub %>%
   ggplot() +
-  geom_point(aes(x = date, y = rate), size = 0.1) +
+  geom_point(aes(x = date, y = Vaccination2), size = 0.1) +
   facet_wrap(~region_iso)
+
+
+# Prepare e0 data -------------------------------------------------
+
+dat$e0_diff_summary <-
+  dat$arriaga_cntf %>%
+  filter(age >= 60) %>%
+  group_by(region_iso, sex, year) %>%
+  summarise(
+    e0_cntrb_t_mean = sum(e0_cntrb_t_mean)
+  ) %>%
+  ungroup()
 
 # Add vaccination uptake measures ---------------------------------
 
@@ -80,41 +99,54 @@ dat$vaccination_summary <-
   group_by(region_iso) %>%
   summarise(
     # share fully vaccinated by july 1st
-    vax_jul = rate[date == '2021-07-01'],
+    vax2_jul = Vaccination2[date == '2021-07-01'],
     # share fully vaccinated by oct 1st
-    vax_oct = rate[date == '2021-10-01'],
+    vax2_oct = Vaccination2[date == '2021-10-01'],
     # integral vaccination measure
-    vax_int = mean(rate)
+    vax2_int = mean(Vaccination2)
   )
 
 # Join vaccination and e0 data ------------------------------------
 
-dat$arriaga_cntf_sub <-
-  dat$arriaga_cntf %>%
-  filter(age == 0, year == 2021, sex == 'T',
-         region_iso %in% cnst$regions_for_vax_analysis) %>%
-  select(region_iso, ex_actual_minus_expected_mean)
+dat$vaxe0 <-
+  dat$e0_diff_summary %>%
+  select(region_iso, year, sex, e0_cntrb_t_mean) %>%
+  left_join(dat$vaccination_summary) %>%
+  filter(year == 2021, sex == 'T',
+         region_iso %in% cnst$regions_for_vax_analysis)
 
 # Plot vaccination efficacy ---------------------------------------
 
-vaxe0 <- list()
-vaxe0$data <-
-  left_join(
-    dat$vaccination_summary,
-    dat$arriaga_cntf_sub
-  ) %>%
+fig$vaxe0 <- list()
+fig$vaxe0$data <-
+  dat$vaxe0 %>%
   mutate(
-    #vax_measure = vax_int,
-    vax_measure = vax_oct,
-    ex_measure = ex_actual_minus_expected_mean
+    #vax_measure = vax2_int,
+    vax_measure = vax2_oct,
+    ex_measure = e0_cntrb_t_mean
   ) %>%
-  filter(is.finite(ex_actual_minus_expected_mean))
+  filter(is.finite(e0_cntrb_t_mean)) %>%
+  left_join(region_meta, by = c('region_iso' = 'region_code_iso3166_2'))
 
-
-vaxe0$data %>%
-  ggplot(aes(x = vax_measure, y = ex_measure)) +
+fig$vaxe0$plot <-
+  vaxe0$data %>%
+  ggplot(aes(x = vax_measure, y = -ex_measure)) +
+  geom_smooth(method = 'lm', se = FALSE, color = 'grey') +
+  geom_text_repel(aes(label = region_name_short),
+                  family = 'robotocondensed', size = 3, color = 'grey50') +
   geom_point() +
-  geom_text_repel(aes(label = region_iso)) +
-  geom_smooth(method = 'lm', se = FALSE) +
-  stat_poly_eq() +
-  fig_spec$MyGGplotTheme()
+  #stat_poly_eq() +
+  scale_x_continuous(labels = scales::percent) +
+  coord_cartesian(xlim = c(0.25,1.03), ylim = c(0, 2.7), expand = c(0,0)) +
+  fig_spec$MyGGplotTheme(grid = 'xy', axis = 'xy') +
+  labs(
+    y = 'Years of Life expectancy deficit 2021 contributed by ages 60+',
+    x = '% fully vaccinated ages 60+ by Oct 1st 2021'
+  )
+
+fig_spec$ExportFigure(
+  fig$vaxe0$plot, device = 'pdf',
+  filename = 'vaxe0',
+  path = paths$output$vaxe0_fig,
+  width = fig_spec$width, height = 0.8*fig_spec$width
+)
