@@ -108,3 +108,43 @@ regions_for_covid_cause_analysis: [
     'HU',
     # 'AT' temporarily discarded, appear NAs in lt_input
 ]
+regions_for_vax_analysis: [
+    'AT',
+    #'AU', coarse age groups, missing weeks
+    'BE',
+    'BG',
+    #'CA', coarse age groups, missing weeks
+    'CH',
+    'CL',
+    'CZ',
+    'DE',
+    'DK',
+    'EE',
+    'ES',
+    #'FI',
+    'FR',
+    'GB-EAW',
+    #'GB-NIR',
+    'GB-SCT',
+    'GR',
+    'HR',
+    'HU',
+    #'IL', # coarse age groups
+    'IS',
+    'IT',
+    #'KR', # coarse age group
+    #'LT',
+    #'LU', # adolescent hazard profiles in 2019 very different from 2020
+    #'LV', # adolescent hazard profiles in 2019 very different from 2020
+    'NL',
+    'NO',
+    #'NZ', # coarse age groups
+    'PL',
+    'PT',
+    #'RU', # no data for 2021
+    'SE',
+    'SI',
+    'SK',
+    #'TW', # signs for under-registration of deaths in 2020
+    'US'
+]
