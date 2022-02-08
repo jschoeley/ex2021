@@ -129,7 +129,7 @@ fig$vaxe0$data <-
   left_join(region_meta, by = c('region_iso' = 'region_code_iso3166_2'))
 
 fig$vaxe0$plot <-
-  vaxe0$data %>%
+  fig$vaxe0$data %>%
   ggplot(aes(x = vax_measure, y = -ex_measure)) +
   geom_smooth(method = 'lm', se = FALSE, color = 'grey') +
   geom_text_repel(aes(label = region_name_short),
@@ -137,12 +137,14 @@ fig$vaxe0$plot <-
   geom_point() +
   #stat_poly_eq() +
   scale_x_continuous(labels = scales::percent) +
-  coord_cartesian(xlim = c(0.25,1.03), ylim = c(0, 2.7), expand = c(0,0)) +
+  coord_cartesian(xlim = c(0.25,1.03), ylim = c(0,4), expand = c(0,0)) +
   fig_spec$MyGGplotTheme(grid = 'xy', axis = 'xy') +
   labs(
     y = 'Years of Life expectancy deficit 2021 contributed by ages 60+',
     x = '% fully vaccinated ages 60+ by Oct 1st 2021'
   )
+
+fig$vaxe0$plot
 
 fig_spec$ExportFigure(
   fig$vaxe0$plot, device = 'pdf',
