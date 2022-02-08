@@ -1,4 +1,4 @@
-# Harmonize life expectancy estimates
+# Harmonize life table estimates
 
 # Init ------------------------------------------------------------
 
@@ -23,12 +23,14 @@ cnst <- within(cnst, {
   path_wpp = glue('{wd}/dat/wpp/wpp_ex.rds')
   path_hmd_females = glue('{wd}/dat/hmdhfd/fltper_1x1.rds')
   path_hmd_males = glue('{wd}/dat/hmdhfd/mltper_1x1.rds')
+  path_hmd_total = glue('{wd}/dat/hmdhfd/bltper_1x1.rds')
   # skeleton path
   path_skeleton = glue('{wd}/tmp/harmonized_skeleton.rds')
   # translation of ex sex code to harmonized sex code
   code_sex_wpp =
     c(`Male` = config$skeleton$sex$Male,
-      `Female` = config$skeleton$sex$Female)
+      `Female` = config$skeleton$sex$Female,
+      `Total` = config$skeleton$sex$Total)
   # lookup table for region codes
   # only countries defined in skeleton
   region_lookup_wpp = 
@@ -60,6 +62,7 @@ dat$wpp_ex <- readRDS(cnst$path_wpp)
 # hmd estimates
 dat$hmd_lt_females <- readRDS(cnst$path_hmd_females)
 dat$hmd_lt_males <- readRDS(cnst$path_hmd_males)
+dat$hmd_lt_total <- readRDS(cnst$path_hmd_total)
 
 # Harmonize WPP ---------------------------------------------------
 
@@ -83,22 +86,23 @@ dat$wpp_clean <-
     ) %>% as.character()
   ) %>%
   # add row id
-  mutate(id = GenerateRowID(region_iso, sex, age_start, iso_year)) %>%
+  mutate(id = GenerateRowID(region_iso, sex, iso_year, age_start)) %>%
   select(id, ex_wpp = ex)
 
 # Harmonize HMD ---------------------------------------------------
 
-# merge females and males
+# merge female, male, and total, prepare for LCA forecast
 dat$hmd_clean <-
   bind_rows(
-  '{config$skeleton$sex$Male}' := dat$hmd_lt_males,
-  '{config$skeleton$sex$Female}' := dat$hmd_lt_females,
-  .id = 'sex'
-) %>%
+    '{config$skeleton$sex$Male}' := dat$hmd_lt_males,
+    '{config$skeleton$sex$Female}' := dat$hmd_lt_females,
+    '{config$skeleton$sex$Total}' := dat$hmd_lt_total,
+    .id = 'sex'
+  ) %>%
   as_tibble() %>% 
   select(
-    ex, sex,
-    region_code_hmd, year = Year,
+    nmx_hmd = mx, lx_hmd = lx, Tx_hmd = Tx, ex_hmd = ex,
+    sex, region_code_hmd, year = Year,
     age_start = Age
   ) %>%
   mutate(
@@ -109,13 +113,62 @@ dat$hmd_clean <-
     ) %>% as.character()
   ) %>%
   filter(age_start <= 100) %>%
+  mutate(nmx_hmd = ifelse(age_start == 100, lx_hmd/Tx_hmd, nmx_hmd)) %>%
+  complete(region_iso, sex, age_start, year = 2000:2021) %>%
+  arrange(region_iso, sex, year, age_start)
+
+# Add nmx forecasts -----------------------------------------------
+
+dat$hmd_clean_with_forecast <-
+  dat$hmd_clean %>%
+  group_by(region_iso, sex) %>%
+  group_modify(~{
+
+    cat(.y$region_iso, ' ', .y$sex, '\n')
+        
+    years = 2000:2021
+    n_years = length(years)
+    age = 0:100
+    n_age = length(age)
+    fudge = 1e-6
+
+    dat <- .x
+    
+    M <- matrix(
+      dat$nmx_hmd,
+      nrow = n_age,
+      ncol = n_years,
+      dimnames = list(age, years)
+    )
+    M[M == 0] <- fudge
+    P <- matrix(NA, nrow = n_age, ncol = n_years)
+    DD <-
+      demogdata(
+        M, pop = P, type = 'mortality', ages = age, years = years,
+        label = '', name = 'nmx'
+      )
+    
+    LC <-
+      lca(DD, series = 'nmx', interpolate = TRUE, adjust = 'e0', years = 2000:2019)
+    FC <- forecast(LC, h = 2)
+    
+    dat$nmx_cntfc <- 
+      c(
+        c(exp(FC$fitted$y)),
+        c(FC$rate$nmx)
+      )
+    
+    return(dat)
+        
+  }) %>%
+  ungroup() %>%
   # add row id
-  mutate(id = GenerateRowID(region_iso, sex, age_start, year)) %>%
-  select(id, ex_hmd = ex)
+  mutate(id = GenerateRowID(region_iso, sex, year, age_start)) %>%
+  select(id, nmx_hmd, ex_hmd, nmx_cntfc)
 
 # Join with skeleton ----------------------------------------------
 
-# Please be noted that the WPP life expectancy estimates use 
+# Please note that the WPP life expectancy estimates use 
 # 0, 1-4, & 5-year age groups instead of single-year age groups
 
 # join the different sources of population count data
@@ -127,10 +180,11 @@ dat$joined <-
     by = 'id'
   ) %>%
   left_join(
-    dat$hmd_clean,
+    dat$hmd_clean_with_forecast,
     by = 'id'
   ) %>%
-  select(id, ex_wpp_estimate = ex_wpp, ex_hmd_estimate = ex_hmd)
+  select(id, ex_wpp_estimate = ex_wpp, ex_hmd_estimate = ex_hmd,
+         nmx_hmd_estimate = nmx_hmd, nmx_cntfc = nmx_cntfc)
 
 # Export ----------------------------------------------------------
 
