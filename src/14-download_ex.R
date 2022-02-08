@@ -1,5 +1,8 @@
-# Download data on external life expectancy estimates
-
+# Download data on external life table estimates
+#
+# this is for method validation and for the projection of
+# counterfactual ex estimates
+#
 # (1) Life expectancy estimates from WPP
 # (2) Life expectancy estimates from HMD
 
@@ -26,7 +29,8 @@ paths$output <- list(
   data = './dat/output_data.rds',
   wpp_ex = './dat/wpp/wpp_ex.rds',
   hmdhfd_flt = './dat/hmdhfd/fltper_1x1.rds',
-  hmdhfd_mlt = './dat/hmdhfd/mltper_1x1.rds'
+  hmdhfd_mlt = './dat/hmdhfd/mltper_1x1.rds',
+  hmdhfd_blt = './dat/hmdhfd/bltper_1x1.rds'
 )
 
 # global configuration
@@ -38,8 +42,8 @@ region_meta <- read_csv(paths$input$region_meta, na = '.')
 # constants specific to this analysis
 cnst <- list(); cnst <- within(cnst, {
   # hmd credentials (be careful not to commit)
-  hmd_usr = ''
-  hmd_pwd = ''
+  hmd_usr = 'jona.s@gmx.de'
+  hmd_pwd = '1457615511'
   # lookup table for wpp region codes
   # only countries defined in skeleton
   region_lookup_wpp = 
@@ -54,10 +58,9 @@ cnst <- list(); cnst <- within(cnst, {
     filter(region_code_iso3166_2 %in% config$skeleton$region) %>%
     pull(region_code_hmd) %>% na.omit()
   names(region_lookup_hmd) <- region_lookup_hmd
-  # first year in harmonized data set
-  skeleton_first_year = config$skeleton$year$min
-  # last year in harmonized data set
-  skeleton_final_year = config$skeleton$year$max  
+  # years to keep
+  first_year = 2000
+  final_year = config$skeleton$year$max
 })
 
 # list containers for analysis artifacts
@@ -90,6 +93,16 @@ dat$hmd_lt_male <-
     )
   })
 
+# total
+dat$hmd_lt_total <-
+  map(cnst$region_lookup_hmd, ~{
+    readHMDweb(
+      CNTRY = .x, item = 'bltper_1x1',
+      username = cnst$hmd_usr, password = cnst$hmd_pwd,
+      fixup = TRUE
+    )
+  })
+
 # Subset WPP ------------------------------------------------------
 
 dat$wpp_df <-
@@ -99,8 +112,8 @@ dat$wpp_df <-
     # subset to regions of interest
     LocID %in% cnst$region_lookup_wpp,
     # subset to years of interest
-    MidPeriod %in% seq(cnst$skeleton_first_year, cnst$skeleton_final_year, 1),
-    Sex %in% c('Male','Female')
+    MidPeriod %in% seq(cnst$first_year, cnst$final_year, 1),
+    Sex %in% c('Male','Female','Total')
   )
 
 # Subset HMD ------------------------------------------------------
@@ -108,12 +121,17 @@ dat$wpp_df <-
 dat$hmd_mltper_1x1 <-
   dat$hmd_lt_male %>%
   bind_rows(.id = 'region_code_hmd') %>%
-  filter(Year %in% cnst$skeleton_first_year:cnst$skeleton_final_year)
+  filter(Year %in% cnst$first_year:cnst$final_year)
 
 dat$hmd_fltper_1x1 <-
   dat$hmd_lt_female %>%
   bind_rows(.id = 'region_code_hmd') %>%
-  filter(Year %in% cnst$skeleton_first_year:cnst$skeleton_final_year)
+  filter(Year %in% cnst$first_year:cnst$final_year)
+
+dat$hmd_bltper_1x1 <-
+  dat$hmd_lt_total %>%
+  bind_rows(.id = 'region_code_hmd') %>%
+  filter(Year %in% cnst$first_year:cnst$final_year)
 
 # Export ----------------------------------------------------------
 
@@ -122,3 +140,4 @@ dat$hmd_fltper_1x1 <-
 saveRDS(dat$wpp_df, file = paths$output$wpp_ex)
 saveRDS(dat$hmd_fltper_1x1, file = paths$output$hmdhfd_flt)
 saveRDS(dat$hmd_mltper_1x1, file = paths$output$hmdhfd_mlt)
+saveRDS(dat$hmd_bltper_1x1, file = paths$output$hmdhfd_blt)
