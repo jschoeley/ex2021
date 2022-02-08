@@ -83,22 +83,32 @@ lt_input$openage_85 <-
   # for each life-table input stratum create age group 85+
   group_by(region_iso, sex, year) %>%
   group_modify(~{
+    
     input_sorted <- arrange(.x, age_start)
     lt85 <- filter(input_sorted, age_start <= 85)
-    lt85p <- filter(input_sorted, age_start > 85)
+    lt85p <- filter(input_sorted, age_start >= 85)
+    nage <- nrow(lt85)
     
-    lt85[nrow(lt85), 'age_width'] <- Inf
-    lt85[nrow(lt85), 'death_total'] <- sum(lt85p$death_total)
-    lt85[nrow(lt85), 'population_midyear'] <- sum(lt85p$population_midyear)
-    lt85[nrow(lt85), 'population_py'] <- sum(lt85p$population_py)
-    lt85[nrow(lt85), 'death_covid'] <- sum(lt85p$death_covid)
-    
+    lt85[nage, 'age_width'] <- Inf
+    lt85[nage, 'death_total'] <- sum(lt85p$death_total)
+    lt85[nage, 'population_midyear'] <- sum(lt85p$population_midyear)
+    lt85[nage, 'population_py'] <- sum(lt85p$population_py)
+    lt85[nage, 'death_covid'] <- sum(lt85p$death_covid)
+    # # death rate age 85+
+    # head(cumprod(c(1, exp(-lt85p$nmx_cntfc))), -1)
+    # c(-diff(lx), tail(lx, 1))
+    # lx <- c(1, cumprod())
+    # #lt85[nage, 'nmx_cntfc'] <- 
+    # sum(cumprod(exp(-lt85p$nmx_cntfc))/0.91)
+    # 
     return(lt85)
   }) %>%
   ungroup() %>%
   # harmonize order of variables
   select(all_of(names(lt_input$openage_100))) %>%
   arrange(sex, region_iso, year, age_start)
+
+#lt_input$openage_85 <- lt_input$openage_100
 
 # Create Poisson replicates of counts -----------------------------
 
@@ -108,7 +118,7 @@ lt_input$openage_85 <-
 
 lifetables <- list()
 lifetables$cnst <- list(
-  nage = 86,
+  nage = length(unique(lt_input$openage_85$age_start)),
   nyears = config$skeleton$year$max-config$skeleton$year$min+1,
   nregions = length(config$skeleton$region)
 )
@@ -116,7 +126,7 @@ lifetables$cnst <- list(
 lifetables$input <-
   lt_input$openage_85 %>%
   select(id, age_start, age_width, population_py,
-         death_total, death_covid)
+         death_total, death_covid, nmx_cntfc)
 # vector ordered by sex, region, year, age distributed into
 # 7D array [age, year, region_id, sex, sim_id, var_id, projected]
 # DESCRIPTION OF VAR ID'S
@@ -165,7 +175,7 @@ lifetables$simulation <-
       projected = 2
     ),
     dimnames = list(
-      0:85,
+      0:(lifetables$cnst$nage-1),
       config$skeleton$year$min:config$skeleton$year$max,
       sort(config$skeleton$region),
       c('F', 'M', 'T'),
@@ -194,29 +204,9 @@ lifetables$simulation[,,,,1,'death_covid','actual'] <-
 # expect them under continuing pre-pandemic trends
 lifetables$simulation[,,,,,'population_py','projected'] <-
   lifetables$input$population_py
-tmp$nmx <-
-  lifetables$simulation[,,,,1,'death_total','actual'] /
-  lifetables$simulation[,,,,1,'population_py','actual']
-tmp$nmx_lag <-
-  tmp$nmx[,c(NA,1:(lifetables$cnst$nyears-1)),,]
-tmp$nmx_diff <- tmp$nmx-tmp$nmx_lag
-tmp$nmx_diff_avg_pre2020 <-
-  apply(
-    tmp$nmx_diff[,2:5,,],
-    # apply function to vector of data by year
-    MARGIN = c(1,3,4), function (x) rep(mean(x), lifetables$cnst$nyears)
-  ) %>%
-  aperm(c(2,1,3,4))
-tmp$nmx_cntf <-
-  apply(
-    tmp$nmx_diff_avg_pre2020,
-    # apply function to vector of data by year
-    c(1,3,4), function (x) x*seq(-4,2,1)
-  ) %>%
-  aperm(c(2,1,3,4)) +
-  tmp$nmx[,rep(5, 7),,]
 lifetables$simulation[,,,,1,'death_total','projected'] <-
-  tmp$nmx_cntf*lifetables$simulation[,,,,1,'population_py','projected']
+  lifetables$input$nmx_cntfc*
+  lifetables$simulation[,,,,1,'population_py','projected']
 lifetables$simulation[,,,,,'death_covid','projected'] <- 0
 
 # simulate total death counts
@@ -442,7 +432,6 @@ codecomp$simulation <-
     MARGIN = c(2:7), FUN = sum
   )
 
-
 # Counterfactual Arriaga decomposition ----------------------------
 
 # decompose annual changes in e0 into age specific mortality changes
@@ -463,7 +452,7 @@ arriaga_cntfc$simulation <-
       var_id = 22
     ),
     dimnames = list(
-      0:85,
+      0:(lifetables$cnst$nage-1),
       config$skeleton$year$min:config$skeleton$year$max,
       sort(config$skeleton$region),
       c('F', 'M', 'T'),
