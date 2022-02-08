@@ -94,13 +94,14 @@ lt_input$openage_85 <-
     lt85[nage, 'population_midyear'] <- sum(lt85p$population_midyear)
     lt85[nage, 'population_py'] <- sum(lt85p$population_py)
     lt85[nage, 'death_covid'] <- sum(lt85p$death_covid)
-    # # death rate age 85+
-    # head(cumprod(c(1, exp(-lt85p$nmx_cntfc))), -1)
-    # c(-diff(lx), tail(lx, 1))
-    # lx <- c(1, cumprod())
-    # #lt85[nage, 'nmx_cntfc'] <- 
-    # sum(cumprod(exp(-lt85p$nmx_cntfc))/0.91)
-    # 
+    # counterfactual death rate age 85+
+    lx <- head(cumprod(c(1, exp(-input_sorted$nmx_cntfc))), -1)
+    ndx <- c(-diff(lx), tail(lx, 1))
+    nLx <- lx # fix later
+    nLx[length(nLx)] <- 1/input_sorted$nmx_cntfc[length(input_sorted$nmx_cntfc)]
+    Tx <- rev(cumsum(rev(nLx)))
+    lt85[nage, 'nmx_cntfc'] <- lx[86]/Tx[86]
+
     return(lt85)
   }) %>%
   ungroup() %>%
