@@ -15,7 +15,8 @@ paths$input <- list(
   tmpdir = './tmp',
   config = './cfg/config.yaml',
   region_meta = './cfg/region_metadata.csv',
-  vaccination = './dat/coverage/rates_v2.rds',
+  vaccination_old = './tmp/rates_v2.rds',
+  vaccination_young = './tmp/rates_v2_under60.rds',
   arriaga_cntf = './out/arriaga_cntfc.rds',
   figspecs = './cfg/figure_specification.R'
 )
@@ -47,12 +48,17 @@ source(paths$input$figspecs)
 # Load data -------------------------------------------------------
 
 dat$arriaga_cntf <- readRDS(paths$input$arriaga_cntf)
-dat$vaccination <- readRDS(paths$input$vaccination)
+dat$vaccination_old <- readRDS(paths$input$vaccination_old)
+dat$vaccination_young <- readRDS(paths$input$vaccination_young)
 
 # Prepare vaccination data ----------------------------------------
 
 dat$vaccination_sub <-
-  dat$vaccination %>%
+  bind_rows(
+    `60+` = dat$vaccination_old,
+    `<60` = dat$vaccination_young,
+    .id = 'age'
+  ) %>%
   mutate(
     date = as.Date(Date),
     region_iso = factor(
@@ -61,10 +67,10 @@ dat$vaccination_sub <-
       region_meta$region_code_iso3166_2[region_meta$region_name_short != 'RUS']
     ) %>% as.character()
   ) %>%
-  select(region_iso, date, Measure, rate) %>%
+  select(age, region_iso, date, Measure, rate) %>%
   pivot_wider(names_from = Measure, values_from = rate) %>%
   filter(lubridate::year(date) == 2021) %>%
-  complete(region_iso, date = seq.Date(as.Date('2021-01-01'), as.Date('2021-12-31'), by = 'day')) %>%
+  complete(age, region_iso, date = seq.Date(as.Date('2021-01-01'), as.Date('2021-12-31'), by = 'day')) %>%
   group_by(region_iso) %>%
   mutate(
     across(
@@ -76,17 +82,19 @@ dat$vaccination_sub <-
   arrange(region_iso, date)
 
 dat$vaccination_sub %>%
+  filter(age == 'young') %>%
   ggplot() +
   geom_point(aes(x = date, y = Vaccination2), size = 0.1) +
   facet_wrap(~region_iso)
-
 
 # Prepare e0 data -------------------------------------------------
 
 dat$e0_diff_summary <-
   dat$arriaga_cntf %>%
-  filter(age >= 60) %>%
-  group_by(region_iso, sex, year) %>%
+  mutate(age = cut(as.integer(age), c(0, 60, Inf),
+                   right = FALSE, include.lowest = TRUE,
+                   labels = c('<60', '60+'))) %>%
+  group_by(region_iso, sex, age, year) %>%
   summarise(
     e0_cntrb_t_mean = sum(e0_cntrb_t_mean)
   ) %>%
@@ -96,7 +104,7 @@ dat$e0_diff_summary <-
 
 dat$vaccination_summary <-
   dat$vaccination_sub %>%
-  group_by(region_iso) %>%
+  group_by(region_iso, age) %>%
   summarise(
     # share fully vaccinated by july 1st
     vax2_jul = Vaccination2[date == '2021-07-01'],
@@ -104,13 +112,14 @@ dat$vaccination_summary <-
     vax2_oct = Vaccination2[date == '2021-10-01'],
     # integral vaccination measure
     vax2_int = mean(Vaccination2)
-  )
+  ) %>%
+  ungroup()
 
 # Join vaccination and e0 data ------------------------------------
 
 dat$vaxe0 <-
   dat$e0_diff_summary %>%
-  select(region_iso, year, sex, e0_cntrb_t_mean) %>%
+  select(region_iso, year, sex, age, e0_cntrb_t_mean) %>%
   left_join(dat$vaccination_summary) %>%
   filter(year == 2021, sex == 'T',
          region_iso %in% cnst$regions_for_vax_analysis)
@@ -130,18 +139,21 @@ fig$vaxe0$data <-
 
 fig$vaxe0$plot <-
   fig$vaxe0$data %>%
-  ggplot(aes(x = vax_measure, y = -ex_measure)) +
-  geom_smooth(method = 'lm', se = FALSE, color = 'grey') +
+  ggplot(aes(x = vax_measure, y = -ex_measure, group = age)) +
+  geom_hline(yintercept = 0, size = 0.25) +
+  geom_vline(xintercept = 0) +
+  geom_smooth(method = 'lm', se = FALSE, color = 'grey', size = 0.75) +
   geom_text_repel(aes(label = region_name_short),
                   family = 'robotocondensed', size = 3, color = 'grey50') +
-  geom_point() +
+  geom_point(aes(fill = age), shape = 21, color = 'black') +
   #stat_poly_eq() +
   scale_x_continuous(labels = scales::percent) +
-  coord_cartesian(xlim = c(0.25,1.03), ylim = c(0,4), expand = c(0,0)) +
-  fig_spec$MyGGplotTheme(grid = 'xy', axis = 'xy') +
+  scale_fill_manual(values = c(`<60` = 'white', `60+` = 'black')) +
+  coord_cartesian(xlim = c(0.10, 1), ylim = c(-1.1, 3), expand = c(0,0)) +
+  fig_spec$MyGGplotTheme(grid = 'xy', axis = '') +
   labs(
-    y = 'Years of Life expectancy deficit 2021 contributed by ages 60+',
-    x = '% fully vaccinated ages 60+ by Oct 1st 2021'
+    y = 'Years of Life expectancy deficit\nin 2021 contributed by age group',
+    x = '% fully vaccinated in age group by Oct 1st 2021'
   )
 
 fig$vaxe0$plot
@@ -150,5 +162,6 @@ fig_spec$ExportFigure(
   fig$vaxe0$plot, device = 'pdf',
   filename = 'vaxe0',
   path = paths$output$vaxe0_fig,
-  width = fig_spec$width, height = 0.8*fig_spec$width
+  width = fig_spec$width, height = 0.7*fig_spec$width,
+  scale = 1
 )
