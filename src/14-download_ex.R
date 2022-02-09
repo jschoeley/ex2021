@@ -42,8 +42,8 @@ region_meta <- read_csv(paths$input$region_meta, na = '.')
 # constants specific to this analysis
 cnst <- list(); cnst <- within(cnst, {
   # hmd credentials (be careful not to commit)
-  hmd_usr = 'jona.s@gmx.de'
-  hmd_pwd = '1457615511'
+  hmd_usr = ''
+  hmd_pwd = ''
   # lookup table for wpp region codes
   # only countries defined in skeleton
   region_lookup_wpp = 
@@ -59,7 +59,7 @@ cnst <- list(); cnst <- within(cnst, {
     pull(region_code_hmd) %>% na.omit()
   names(region_lookup_hmd) <- region_lookup_hmd
   # years to keep
-  first_year = 2000
+  first_year = 1990
   final_year = config$skeleton$year$max
 })
 
