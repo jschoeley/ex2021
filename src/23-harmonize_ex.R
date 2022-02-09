@@ -5,6 +5,7 @@
 library(here); library(glue)
 library(yaml)
 library(readr); library(dplyr); library(tidyr)
+library(demography)
 
 # Constants -------------------------------------------------------
 
@@ -114,7 +115,7 @@ dat$hmd_clean <-
   ) %>%
   filter(age_start <= 100) %>%
   mutate(nmx_hmd = ifelse(age_start == 100, lx_hmd/Tx_hmd, nmx_hmd)) %>%
-  complete(region_iso, sex, age_start, year = 2000:2021) %>%
+  complete(region_iso, sex, age_start, year = 1990:2021) %>%
   arrange(region_iso, sex, year, age_start)
 
 # Add nmx forecasts -----------------------------------------------
@@ -126,7 +127,7 @@ dat$hmd_clean_with_forecast <-
 
     cat(.y$region_iso, ' ', .y$sex, '\n')
         
-    years = 2000:2021
+    years = 1990:2021
     n_years = length(years)
     age = 0:100
     n_age = length(age)
@@ -149,7 +150,7 @@ dat$hmd_clean_with_forecast <-
       )
     
     LC <-
-      lca(DD, series = 'nmx', interpolate = TRUE, adjust = 'e0', years = 2000:2019)
+      lca(DD, series = 'nmx', interpolate = TRUE, adjust = 'e0', years = 1990:2019)
     FC <- forecast(LC, h = 2)
     
     dat$nmx_cntfc <- 
