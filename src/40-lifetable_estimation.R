@@ -97,8 +97,8 @@ lt_input$openage_85 <-
     # counterfactual death rate age 85+
     lx <- head(cumprod(c(1, exp(-input_sorted$nmx_cntfc))), -1)
     ndx <- c(-diff(lx), tail(lx, 1))
-    nLx <- lx # fix later
-    nLx[length(nLx)] <- 1/input_sorted$nmx_cntfc[length(input_sorted$nmx_cntfc)]
+    nLx <- lx-0.5*ndx # fix later
+    nLx[length(nLx)] <- 1/input_sorted$nmx_cntfc[length(input_sorted$nmx_cntfc)]*lx[length(lx)]
     Tx <- rev(cumsum(rev(nLx)))
     lt85[nage, 'nmx_cntfc'] <- lx[86]/Tx[86]
 
