@@ -376,6 +376,15 @@ dat$pop_joined <-
     )
   )
 
+# populate sex category "total"
+dat$row_female <- which(dat$pop_joined$sex == 'Female')
+dat$row_male <- which(dat$pop_joined$sex == 'Male')
+dat$row_total <- which(dat$pop_joined$sex == 'Total')
+
+dat$pop_joined$population_midyear[dat$row_total] <-
+  dat$pop_joined$population_midyear[dat$row_female] +
+  dat$pop_joined$population_midyear[dat$row_male]
+
 # select variables of interest for joined data
 dat$joined <-
   dat$pop_joined %>%

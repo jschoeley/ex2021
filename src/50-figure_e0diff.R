@@ -525,7 +525,7 @@ fig$e0diff$plot
 
 fig_spec$ExportFigure(
   fig$e0diff$plot, device = 'pdf',
-  filename = 'e0diff_new',
+  filename = 'e0diff',
   path = paths$output$fig_e0diff,
   width = fig_spec$width, height = 200
 )

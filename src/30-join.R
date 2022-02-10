@@ -18,7 +18,8 @@ paths$input <- list(
   population = './tmp/harmonized_population.rds',
   death = './tmp/harmonized_death.rds',
   covid = './tmp/harmonized_covid.rds',
-  ex = './tmp/harmonized_ex.rds'
+  external_lifetables = './tmp/harmonized_external_lifetables.rds',
+  counterfactual_mortality = './tmp/harmonized_counterfactual_mortality.rds'
 )
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
@@ -40,7 +41,8 @@ dat$skeleton <- readRDS(paths$input$skeleton)
 dat$population <- readRDS(paths$input$population)
 dat$death <- readRDS(paths$input$death)
 dat$covid <- readRDS(paths$input$covid)
-dat$ex <- readRDS(paths$input$ex)
+dat$external_lifetables <- readRDS(paths$input$external_lifetables)
+dat$counterfactual_mortality <- readRDS(paths$input$counterfactual_mortality)
 
 # Join ------------------------------------------------------------
 
@@ -51,26 +53,8 @@ dat$lt_input <-
   left_join(dat$death, by = 'id') %>%
   left_join(dat$population, by = 'id') %>%
   left_join(dat$covid, by = 'id') %>%
-  left_join(dat$ex, by = 'id')
-
-# Create sex category "total" -------------------------------------
-
-dat$row_female <- which(dat$lt_input$sex == 'Female')
-dat$row_male <- which(dat$lt_input$sex == 'Male')
-dat$row_total <- which(dat$lt_input$sex == 'Total')
-
-dat$lt_input$death_total[dat$row_total] <-
-  dat$lt_input$death_total[dat$row_female] +
-  dat$lt_input$death_total[dat$row_male]
-dat$lt_input$population_py[dat$row_total] <-
-  dat$lt_input$population_py[dat$row_female] +
-  dat$lt_input$population_py[dat$row_male]
-dat$lt_input$population_midyear[dat$row_total] <-
-  dat$lt_input$population_midyear[dat$row_female] +
-  dat$lt_input$population_midyear[dat$row_male]
-dat$lt_input$death_covid[dat$row_total] <-
-  dat$lt_input$death_covid[dat$row_female] +
-  dat$lt_input$death_covid[dat$row_male]
+  left_join(dat$external_lifetables, by = 'id') %>%
+  left_join(dat$counterfactual_mortality, by = 'id')
 
 # Export ----------------------------------------------------------
 
