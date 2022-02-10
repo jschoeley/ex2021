@@ -82,7 +82,7 @@ dat$vaccination_sub <-
   arrange(region_iso, date)
 
 dat$vaccination_sub %>%
-  filter(age == 'young') %>%
+  filter(age == '60+') %>%
   ggplot() +
   geom_point(aes(x = date, y = Vaccination2), size = 0.1) +
   facet_wrap(~region_iso)

@@ -499,11 +499,7 @@ dat$ungrouped <-
   mutate(
     id = GenerateRowID(region_iso, sex, year, age_start)
   ) %>%
-  ungroup()
-
-# prepare the data for export
-dat$death <-
-  dat$ungrouped %>%
+  ungroup() %>%
   select(
     id, death_total = deaths,
     population_py,
@@ -514,9 +510,37 @@ dat$death <-
     death_total_maxopenageraw = maxopenageraw,
     death_total_source = source
   )
+
+# join with skeleton
+dat$ungrouped <-
+  dat$skeleton %>%
+  left_join(dat$ungrouped, by = 'id')
+
+# populate sex "total"
+dat$row_female <- which(dat$ungrouped$sex == 'Female')
+dat$row_male <- which(dat$ungrouped$sex == 'Male')
+dat$row_total <- which(dat$ungrouped$sex == 'Total')
+
+dat$ungrouped$death_total[dat$row_total] <-
+  dat$ungrouped$death_total[dat$row_female] +
+  dat$ungrouped$death_total[dat$row_male]
+dat$ungrouped$population_py[dat$row_total] <-
+  dat$ungrouped$population_py[dat$row_female] +
+  dat$ungrouped$population_py[dat$row_male]
+
+# prepare the data for export
 dat$death <-
-  dat$skeleton %>% select(id) %>%
-  left_join(dat$death, by = 'id')
+  dat$ungrouped %>%
+  select(
+    id, death_total,
+    population_py,
+    death_total_nweeksmiss,
+    death_total_minnageraw,
+    death_total_maxnageraw,
+    death_total_minopenageraw,
+    death_total_maxopenageraw,
+    death_total_source
+  )
 
 # Diagnostic plots ------------------------------------------------
 
@@ -565,7 +589,7 @@ fig$death_pclm <-
   ggplot() +
   geom_line(
     aes(
-      x = age_start, y = deaths, color = is2020,
+      x = age_start, y = death_total, color = is2020,
       group = interaction(year), size = is2020
     )
   ) +
@@ -580,13 +604,14 @@ fig$death_pclm <-
     x = '',
     y = ''
   )
+fig$death_pclm
 
 fig$hazard_pclm <-
   dat$deathplot %>%
   ggplot() +
   geom_line(
     aes(
-      x = age_start, y = deaths/population_py, color = is2020,
+      x = age_start, y = death_total/population_py, color = is2020,
       group = interaction(year), size = is2020
     )
   ) +
@@ -602,6 +627,7 @@ fig$hazard_pclm <-
     y = ''
   ) +
   scale_y_log10()
+fig$hazard_pclm
 
 # Export ----------------------------------------------------------
 

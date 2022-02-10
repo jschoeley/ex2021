@@ -177,7 +177,7 @@ dat$coverage_ungrouped <-
 
 # Summarize all ages past 100 in single age group -----------------
 
-dat$coverage_ready_for_join <-
+dat$coverage_on_skeleton <-
   dat$coverage_ungrouped %>%
   mutate(age_start = ifelse(age_start >= 100, 100, age_start)) %>%
   group_by(region_iso, year, sex, age_start) %>%
@@ -191,17 +191,23 @@ dat$coverage_ready_for_join <-
   mutate(
     id = GenerateRowID(region_iso, sex, year, age_start)
   ) %>%
-  select(id, death_covid, death_covid_date, death_covid_nageraw)
+  select(id, death_covid, death_covid_date, death_covid_nageraw) %>%
+  right_join(dat$skeleton, by = 'id')
 
-# Join ------------------------------------------------------------
+# Populate sex category "Total" -----------------------------------
 
-# join covid death counts with data base skeleton
+dat$row_female <- which(dat$coverage_on_skeleton$sex == 'Female')
+dat$row_male <- which(dat$coverage_on_skeleton$sex == 'Male')
+dat$row_total <- which(dat$coverage_on_skeleton$sex == 'Total')
+
+dat$coverage_on_skeleton$death_covid[dat$row_total] <-
+  dat$coverage_on_skeleton$death_covid[dat$row_female] +
+  dat$coverage_on_skeleton$death_covid[dat$row_male]
+
+# Finalize --------------------------------------------------------
+
 dat$covid <-
-  dat$skeleton %>%
-  left_join(
-    dat$coverage_ready_for_join,
-    by = 'id'
-  ) %>%
+  dat$coverage_on_skeleton %>%
   # set COVID deaths pre 2020 to 0
   mutate(
     death_covid = ifelse(year >= 2020, death_covid, 0)
