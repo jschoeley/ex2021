@@ -74,21 +74,33 @@ compare <- left_join(pop_wpp, pop_nso, by='id') %>%
   drop_na() %>%
   group_by(country, year, population_source, source, date, age_start, age_width) %>%
   summarise(
-    pop1 = sum(population_midyear),
-    pop2 = sum(midpop)
+    wpp_pop = sum(population_midyear),
+    nso_pop = sum(midpop)
   ) %>%
   ungroup() %>%
   mutate(
-    dif = abs(pop2 - pop1),
-    rel_dif = dif/pop1
+    abs_dif = nso_pop - wpp_pop,
+    rel_dif = abs_dif/wpp_pop
+  )
+
+# calculate overall divergence
+pop_dif <- compare %>%
+  group_by(country, year) %>%
+  summarise(
+    wpp_pop = sum(wpp_pop),
+    nso_pop = sum(nso_pop)
+  ) %>%
+  mutate(
+    abs_dif = nso_pop - wpp_pop,
+    rel_dif = abs_dif/wpp_pop
   )
 
 # maximum absolute divergence
-max_dif <- compare %>% 
+max_abs_dif <- compare %>% 
   group_by(country, year) %>% 
-  summarise(dif = max(dif)) %>% 
-  inner_join(compare, by=c('country', 'year', 'dif')) %>%
-  select(country, year, dif, age_start)
+  summarise(abs_dif = max(abs_dif)) %>% 
+  inner_join(compare, by=c('country', 'year', 'abs_dif')) %>%
+  select(country, year, abs_dif, age_start)
 
 # maximum relative divergence
 max_rel_dif <- compare %>% 
@@ -101,7 +113,7 @@ max_rel_dif <- compare %>%
 cor <- lapply(compare %>% 
                 group_by(country, year) %>%
                 group_split(), 
-              function(x) cor(x$pop1, x$pop2)) %>%
+              function(x) cor(x$wpp_pop, x$nso_pop)) %>%
   unlist() 
 
 cor_dat <- data.frame(cor=cor) %>%
@@ -130,7 +142,7 @@ compare_list <- compare %>%
 plot_list <- list()
 for (i in seq(compare_list)) {
   plot_list[[i]] <- compare_list[[i]] %>%
-    ggplot(aes(pop1, pop2)) +
+    ggplot(aes(wpp_pop, nso_pop)) +
     facet_wrap(facets = vars(year)) +
     geom_point(color='red') +
     geom_line(color='grey') +
@@ -149,3 +161,4 @@ for (i in 1:length(plot_list)){
 }
 dev.off()
 
+write_csv(pop_dif, glue('{wd}/out/pop_dif.csv'))
