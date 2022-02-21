@@ -13,19 +13,19 @@ paths <- list()
 paths$input <- list(
   tmpdir = './tmp',
   config = './cfg/config.yaml',
-  skeleton = './tmp/harmonized_skeleton.rds',
+  skeleton = './tmp/10-harmonized_skeleton.rds',
   global = './src/00-global.R',
-  population = './tmp/harmonized_population.rds',
-  death = './tmp/harmonized_death.rds',
-  covid = './tmp/harmonized_covid.rds',
-  external_lifetables = './tmp/harmonized_external_lifetables.rds',
-  counterfactual_mortality = './tmp/harmonized_counterfactual_mortality.rds'
+  population = './tmp/20-harmonized_population.rds',
+  death = './tmp/21-harmonized_death.rds',
+  covid = './tmp/22-harmonized_covid.rds',
+  external_lifetables = './tmp/23-harmonized_external_lifetables.rds',
+  counterfactual_mortality = './tmp/24-harmonized_counterfactual_mortality.rds'
 )
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
-  out_rds = './out/lt_input.rds',
-  out_csv = './out/lt_input.csv',
-  out_xlsx = './out/lt_input.xlsx'
+  out_rds = './out/30-lt_input.rds',
+  out_csv = './out/30-lt_input.csv',
+  out_xlsx = './out/30-lt_input.xlsx'
 )
 
 # list containers for analysis artifacts

@@ -14,14 +14,17 @@ paths$input <- list(
   config = './cfg/config.yaml',
   region_metadata = './cfg/region_metadata.csv',
   figspecs = './cfg/figure_specification.R',
-  lifetables = './out/codecomp.rds',
-  e0avgdiff = './out/e0avgdiff.rds'
+  lifetables = './out/40-codecomp.rds',
+  e0avgdiff = './out/40-e0avgdiff.rds',
+  arriaga_cntfc = './out/40-arriaga_cntfc.rds'
 )
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
   data = './dat/output_data.rds',
   fig_e0diff = './out',
-  rds_e0diff = './out/rds_e0diffcod.rds'
+  rds_e0diffT = './out/53-e0diffcodT.rds',
+  rds_e0diffF = './out/53-e0diffcodF.rds',
+  rds_e0diffM = './out/53-e0diffcodM.rds'
 )
 
 # global configuration
@@ -44,325 +47,136 @@ fig <- list()
 # figure specifications
 source(paths$input$figspec)
 
-# copied from ggplot2 `geom_curve`
-geom_curve2 <- function(mapping = NULL, data = NULL,
-                        stat = "identity", position = "identity",
-                        ...,
-                        curvature = 0.5,
-                        angle = 90,
-                        ncp = 5,
-                        arrow = NULL,
-                        lineend = "round",
-                        inflect = FALSE,
-                        na.rm = FALSE,
-                        show.legend = NA,
-                        inherit.aes = TRUE) {
-  layer(
-    data = data,
-    mapping = mapping,
-    stat = stat,
-    geom = GeomCurve2, # call `GeomCurve2` instead of `GeomCurve`
-    position = position,
-    show.legend = show.legend,
-    inherit.aes = inherit.aes,
-    params = list(
-      arrow = arrow,
-      curvature = curvature,
-      angle = angle,
-      ncp = ncp,
-      lineend = lineend,
-      inflect = inflect,
-      na.rm = na.rm,
-      ...
-    )
-  )
-}
+# Load decomposition results --------------------------------------
 
-# copied from ggplot2 `GeomCurve`
-GeomCurve2 <-
-  ggproto(
-    "GeomCurve2", GeomSegment,
-    # the following `default_aes =` statement is missing in ggplot2 `GeomCurve`
-    default_aes = aes(colour = "black", fill = "black", size = 0.5, linetype = 1, alpha = NA),
-    draw_panel = function(data, panel_params, coord, curvature = 0.5, angle = 90,
-                          ncp = 5, arrow = NULL, lineend = "round", inflect = FALSE, na.rm = FALSE) {
-      if (!coord$is_linear()) {
-        warning("geom_curve is not implemented for non-linear coordinates",
-                call. = FALSE)
-      }
-      trans <- coord$transform(data, panel_params)
-      
-      grid::curveGrob(
-        trans$x, trans$y, trans$xend, trans$yend,
-        default.units = "native",
-        curvature = curvature, angle = angle, ncp = ncp,
-        square = FALSE, squareShape = 1, inflect = inflect, open = TRUE,
-        gp = grid::gpar(
-          col = alpha(trans$colour, trans$alpha),
-          # the following `fill = ` statement is missing in ggplot2 `GeomCurve`
-          fill = alpha(trans$fill, trans$alpha),
-          lwd = trans$size * .pt,
-          lty = trans$linetype,
-          lineend = lineend),
-        arrow = arrow
-      )
-    }
-  )
-
-BounceBack <- function (delta1, delta2) {
-  bb <- (1 - (delta1 + delta2) / delta1)*100
-  ifelse(delta1 > 0 & delta2 > 0, NA, bb)
-}
-
-FormatTable <- function (x) {
-  lab <- formatC(x, digits = 1, format = 'f', flag = '+')
-  ifelse(lab == 'NA', '\u00b7', lab)
-}
-
-# Load ex differences ---------------------------------------------
-
-dat$lifetables <- readRDS(paths$input$lifetables)
-dat$e0avgdiff <- readRDS(paths$input$e0avgdiff)
-
-# completeness of data
-dat$lt_input <- readRDS('./out/lt_input.rds')
-dat$completeness <-
-  dat$lt_input %>%
-  filter(year == 2021, age_start == 0, sex == 'Male') %>%
-  select(year, region_iso, death_total_nweeksmiss) %>%
-  mutate(as_of = 52-death_total_nweeksmiss)
-
-# Prepare data ----------------------------------------------------
-
-fig$e0diffcod <- list()
-fig$e0diffcod$data <- list()
-fig$e0diffcod$data$e0diff2021 <-
-  dat$lifetables %>%
-  filter(sex == 'T', year %in% 2020:2021,
-         region_iso %in% cnst$regions_for_analysis) %>%
-  select(region_iso, sex, year,
-         e0_cntrb_t_covid_q0.5, e0_cntrb_t_covid_q0.025, e0_cntrb_t_covid_q0.975,
-         e0_cntrb_t_noncovid_q0.5, e0_cntrb_t_noncovid_q0.025, e0_cntrb_t_noncovid_q0.975) %>%
-  pivot_wider(
-    id_cols = c(region_iso, sex),
-    names_from = year,
-    values_from = c(e0_cntrb_t_covid_q0.5, e0_cntrb_t_covid_q0.025, e0_cntrb_t_covid_q0.975,
-                    e0_cntrb_t_noncovid_q0.5, e0_cntrb_t_noncovid_q0.025, e0_cntrb_t_noncovid_q0.975)
-  ) %>%
-  mutate(
-    region_position =
-      as.integer(fct_reorder(region_iso, -(e0_cntrb_t_covid_q0.5_2020+e0_cntrb_t_noncovid_q0.5_2020)))
-  ) %>%
-  left_join(region_meta, by = c('region_iso' = 'region_code_iso3166_2')) %>%
-  left_join(dat$completeness)
-
-fig$e0diffcod$data$e0diff2021 <-
-  fig$e0diffcod$data$e0diff2021 %>%
-  left_join(
-    dat$e0avgdiff %>%
-      filter(age == 0, sex == 'T') %>%
-      select(region_iso, e0avgdiff1619_q0.5 = q0.5,
-             e0avgdiff1619_q0.025 = q0.025,
-             e0avgdiff1619_q0.975 = q0.975)
-  )
-
-# Parameterize figure ---------------------------------------------
-
-fig$e0diffcod$cnst <- list()
-fig$e0diffcod$cnst <- within(fig$e0diffcod$cnst, {
-  n_countries = length(unique(fig$e0diffcod$data$e0diff2021$region_iso))
-  vertical_gap = 0.3
-  curvature = 0.6
-  size_vline = 0.4
-  ribbons_size = 7*1
-  segment_size = 3
-  segment_nudge_y = -0.12
-  color_vline = '#4A4A4A'
-  color_line = '#FF007C'
-  color_covid = '#005e59'
-  color_covid_light = '#C341BA'
-  color_noncovid = '#1A1A1A'
-  color_noncovid_light = '#5C5C5C'
-  color_ribbon = '#E5E5E5'
-  fill_avge0diff = 'grey40'
-  color_avge0diff = 'grey40'
-  text_x_position_min = 1.0
-  text_x_position_max = 2.3
-  text_x_position1 = text_x_position_min
-  text_x_position2 = text_x_position_min+(text_x_position_max-text_x_position_min)/3
-  text_x_position3 = text_x_position_min+2*(text_x_position_max-text_x_position_min)/3
-  text_x_position4 = 2.9
-  text_x_position5 = text_x_position_max
-  font_table = 'robotocondensed'
-  font_countries = 'robotocondensed'
-  font_xaxis = 'robotocondensed'
-  fontsize_table = 3.3
-})
+dat$arriaga_cntfc <- readRDS(paths$input$arriaga_cntfc)
 
 # Create figure ---------------------------------------------------
 
-fig$e0diffcod$plot <-
-  fig$e0diffcod$data$e0diff2021 %>%
-  ggplot() +
-  
-  # grid lines
+name <- 'e0diffcod'
+strata <- c('T', 'F', 'M')
 
-  geom_vline(
-    xintercept = seq(-3.5, 0.5, 0.5),
-    color = '#FFFFFF', size = 0.5
+fig <- map(strata, ~{
+  
+  const <- list(); const <- within(cnst, {
+    age_breaks = c(0, 20, 40, 60, 80, Inf)
+    age_names = c('0-19', '20-39', '40-59', '60-79', '80+')
+    color_vline = 'grey50'
+    font_plot = 'roboto'
+    n_age = length(age_breaks)
+    vertical_gap = 0.3
+    fill_covid = '#f2c84b'
+    fill_noncovid = 'grey40'
+  })
+  
+  data <-
+    dat$arriaga_cntfc %>%
+    filter(
+      sex == .x,
+      year %in% 2020:2021,
+      region_iso %in% cnst$regions_for_analysis
+    ) %>%
+    mutate(
+      age = as.integer(age),
+      age = as.character(cut(age, const$age_breaks,
+                             const$age_labels,
+                             right = TRUE, include.lowest = TRUE))
+    ) %>%
+    bind_rows(mutate(.,age = 'Total')) %>%
+    group_by(region_iso, sex, age, year) %>%
+    summarise(
+      e0_cntrb_t_mean = sum(e0_cntrb_t_mean),
+      e0_cntrb_t_covid_mean = sum(e0_cntrb_t_covid_mean),
+      e0_cntrb_t_noncovid_mean = sum(e0_cntrb_t_noncovid_mean)
+    ) %>%
+    select(
+      region_iso, sex, age, year, e0_cntrb_t_mean,
+      e0_cntrb_t_covid_mean, e0_cntrb_t_noncovid_mean
+    ) %>%
+    pivot_wider(
+      names_from = year,
+      values_from =
+        c(e0_cntrb_t_mean, e0_cntrb_t_covid_mean, e0_cntrb_t_noncovid_mean)
+    ) %>%
+    transmute(
+      region_iso, sex, total = ifelse(age == 'Total', TRUE, FALSE),
+      e0_measure_covid = e0_cntrb_t_covid_mean_2021,
+      e0_measure_noncovid = e0_cntrb_t_noncovid_mean_2021
+    ) %>%
+    pivot_longer(
+      cols = c(e0_measure_covid, e0_measure_noncovid)
+    ) %>%
+    ungroup() %>%
+    mutate(
+      name =
+        case_when(
+          name == 'e0_measure_covid' ~ 'COVID-19',
+          name == 'e0_measure_noncovid' ~ 'Other'
+        )
+    ) %>%
+    left_join(region_meta, by = c('region_iso' = 'region_code_iso3166_2'))
+  
+  plot <-
+    data %>%
+    ggplot(aes(y = age)) +
+    geom_rect(xmin = -Inf, xmax = Inf, ymin = 5.4, ymax = 6.6, fill = 'grey90') +
+    geom_vline(
+      xintercept = seq(-2.5, 0.5, 0.5)*12,
+      color = '#FFFFFF', size = 0.2
   ) +
-  
-  # e0 diff 19/20 covid
-
-  geom_segment(
-    aes(
-      y = 4, yend = 4,
-      x = 0, xend = e0_cntrb_t_covid_q0.5_2020
-    ),
-    lineend = 'butt', linejoin = 'mitre',
-    size = fig$e0diffcod$cnst$segment_size,
-    color = fig$e0diffcod$cnst$color_covid
+  geom_col(
+    aes(fill = name, x = value*12, group = age),
+    position = position_stack(), data = . %>% filter(!total),
+    width = 0.4
   ) +
-  
-  # central line
-  
-  geom_segment(
-    x = 0, xend = 0, y = -0.1, yend = 4.3,
-    color = fig$e0diffcod$cnst$color_vline,
-    size = fig$e0diffcod$cnst$size_vline
+  geom_col(
+    aes(fill = name, x = value*12, group = age),
+    position = position_stack(), data = . %>% filter(total)
   ) +
-  
-  # e0 diff 19/20 covid-noncovid connector
-
-  geom_segment(
-    aes(
-      y = 4, yend = 3,
-      x = e0_cntrb_t_covid_q0.5_2020,
-      xend = e0_cntrb_t_covid_q0.5_2020
-    ),
-    lineend = 'butt', linejoin = 'mitre',
-    size = 0.1*fig$e0diffcod$cnst$segment_size,
-    color = fig$e0diffcod$cnst$color_covid
-  ) +
-  
-  # e0 diff 19/20 noncovid
-  
-  geom_segment(
-    aes(
-      y = 3, yend = 3,
-      x = e0_cntrb_t_covid_q0.5_2020,
-      xend = e0_cntrb_t_covid_q0.5_2020 + e0_cntrb_t_noncovid_q0.5_2020
-    ),
-    lineend = 'butt', linejoin = 'mitre',
-    size = fig$e0diffcod$cnst$segment_size,
-    color = fig$e0diffcod$cnst$color_noncovid
-  ) +
-
-  
-  # e0 diff 19/20 noncovid 20/21 covid connector
-  
-  geom_segment(
-    aes(
-      y = 3, yend = 2,
-      x = e0_cntrb_t_covid_q0.5_2020 + e0_cntrb_t_noncovid_q0.5_2020,
-      xend = e0_cntrb_t_covid_q0.5_2020 + e0_cntrb_t_noncovid_q0.5_2020
-    ),
-    lineend = 'butt', linejoin = 'mitre',
-    size = 0.1*fig$e0diffcod$cnst$segment_size,
-    color = fig$e0diffcod$cnst$color_noncovid
-  ) +
-    
-  # e0 diff 20/21 covid
-  
-  geom_segment(
-    aes(
-      y = 2, yend = 2,
-      x = e0_cntrb_t_covid_q0.5_2020 + e0_cntrb_t_noncovid_q0.5_2020,
-      xend = e0_cntrb_t_covid_q0.5_2020 + e0_cntrb_t_noncovid_q0.5_2020 +
-        e0_cntrb_t_covid_q0.5_2021
-    ),
-    lineend = 'butt', linejoin = 'mitre',
-    size = fig$e0diffcod$cnst$segment_size,
-    color = fig$e0diffcod$cnst$color_covid
-  ) +
-  
-  # e0 diff 20/21 covid - noncovid connector
-  
-  geom_segment(
-    aes(
-      y = 2, yend = 1,
-      x = e0_cntrb_t_covid_q0.5_2020 + e0_cntrb_t_noncovid_q0.5_2020 + e0_cntrb_t_covid_q0.5_2021,
-      xend = e0_cntrb_t_covid_q0.5_2020 + e0_cntrb_t_noncovid_q0.5_2020 + e0_cntrb_t_covid_q0.5_2021
-    ),
-    lineend = 'butt', linejoin = 'mitre',
-    size = 0.1*fig$e0diffcod$cnst$segment_size,
-    color = fig$e0diffcod$cnst$color_covid
-  ) +
-  
-  # e0 diff 20/21 non-covid
-  
-  geom_segment(
-    aes(
-      y = 1, yend = 1,
-      x = e0_cntrb_t_covid_q0.5_2020 + e0_cntrb_t_noncovid_q0.5_2020 + e0_cntrb_t_covid_q0.5_2021,
-      xend = e0_cntrb_t_covid_q0.5_2020 + e0_cntrb_t_noncovid_q0.5_2020 +
-        e0_cntrb_t_covid_q0.5_2021 + e0_cntrb_t_noncovid_q0.5_2021
-    ),
-    lineend = 'butt', linejoin = 'mitre',
-    arrow = arrow(length = unit(1.2, 'mm'), angle = 30),
-    size = fig$e0diffcod$cnst$segment_size,
-    color = fig$e0diffcod$cnst$color_noncovid
-  ) +
-  
-  # scales and labels
-  
-  scale_x_continuous(
-    breaks = seq(-3, 0.5, 0.5),
-    labels = c(
-      '-36m', '', '-24', '', '-12', '',
-      'Life\nexpectancy\nin 2019',
-      ''
-    )
-  ) +
-  scale_y_continuous(
-    breaks = NULL,
-    labels = NULL,
-    expand = c(0,0.3)
-  ) +
-  scale_color_manual(
-    values = c(`-1` = fig$e0diffcod$cnst$color_negative,
-               `1` = fig$e0diffcod$cnst$color_positive,
-               `2` = fig$e0diffcod$cnst$color_negative_light,
-               `3` = fig$e0diffcod$cnst$color_positive_light)
-  ) +
-  facet_wrap(~region_name, ncol = 4) +
-  fig_spec$MyGGplotTheme(
-    grid = '', family = fig$e0diffcod$cnst$font_xaxis, axis = '',
-    size = 10, show_legend = FALSE
-  ) +
+  geom_vline(xintercept = 0, color = 'grey50') +
+  facet_wrap(~region_name) +
+  scale_fill_manual(values = c(
+    'COVID-19' = const$fill_covid, 'Other' = const$fill_noncovid
+  )) +
+  scale_x_continuous(breaks = seq(-2.5, 0.5, 0.5)*12,
+                     labels = c('', '-24', '', '-12', '', '0', '+6')) +
+  fig_spec$MyGGplotTheme(axis = '', grid = '', panel_border = F) +
   theme(
     panel.background = element_rect(fill = 'grey95', color = 'grey95'),
-    #strip.background = element_rect(fill = 'grey90', color = 'grey95')
-  ) +
-  coord_cartesian(
-    xlim = c(-36/12, 32/12),
-    ylim = c(1, 4)
+    #strip.background = element_rect(fill = 'grey90', color = 'grey90'),
+    legend.position = c(0.08,0.1)
   ) +
   labs(
-    #title = 'Bounce backs amid continued losses',
-    #subtitle = 'Life expectancy changes since COVID-19. Estimates for 2021 preliminary and adjusted for missing data.',
-    #caption = '@jschoeley @jm_aburto @ridhikash07 @MaxiKniffka',
-    y = NULL, x = NULL
+    x = 'Contributions by age and cause of death to months of life expectancy deficit in 2021',
+    y = 'Age group',
+    fill = 'Cause of death'
   )
-fig$e0diffcod$plot
+
+  list(cnst = const, data = data, plot = plot)
+  
+})
+names(fig) <- paste0(name, strata)
 
 # Export ----------------------------------------------------------
 
 fig_spec$ExportFigure(
-  fig$e0diffcod$plot, device = 'pdf',
-  filename = 'e0diffcod',
+  fig$e0diffcodT$plot, device = 'pdf',
+  filename = '53-e0diffcodT',
   path = paths$output$fig_e0diff,
   width = fig_spec$width, height = fig_spec$width
 )
-
-saveRDS(fig$e0diffcod, file = paths$output$rds_e0diff)
+saveRDS(fig$e0diffcodT, file = paths$output$rds_e0diffT)
+fig_spec$ExportFigure(
+  fig$e0diffcodF$plot, device = 'pdf',
+  filename = '53-e0diffcodF',
+  path = paths$output$fig_e0diff,
+  width = fig_spec$width, height = fig_spec$width
+)
+saveRDS(fig$e0diffcodF, file = paths$output$rds_e0diffF)
+fig_spec$ExportFigure(
+  fig$e0diffcodM$plot, device = 'pdf',
+  filename = '53-e0diffcodM',
+  path = paths$output$fig_e0diff,
+  width = fig_spec$width, height = fig_spec$width
+)
+saveRDS(fig$e0diffcodM, file = paths$output$rds_e0diffM)

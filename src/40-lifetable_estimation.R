@@ -10,22 +10,25 @@ library(dplyr); library(tidyr)
 
 # Constants -------------------------------------------------------
 
+# randomness in Poisson sampling
+set.seed(1987)
+
 # input and output paths
 setwd('.')
 paths <- list()
 paths$input <- list(
   tmpdir = './tmp',
   config = './cfg/config.yaml',
-  lt_input = './out/lt_input.rds',
+  lt_input = './out/30-lt_input.rds',
   figspecs = './cfg/figure_specification.R'
 )
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
-  lifetables = './out/lifetables.rds',
-  sexdiff = './out/sexdiff.rds',
-  e0avgdiff = './out/e0avgdiff.rds',
-  codecomp = './out/codecomp.rds',
-  arriaga_cntfc = './out/arriaga_cntfc.rds'
+  lifetables = './out/40-lifetables.rds',
+  sexdiff = './out/40-sexdiff.rds',
+  e0avgdiff = './out/40-e0avgdiff.rds',
+  codecomp = './out/40-codecomp.rds',
+  arriaga_cntfc = './out/40-arriaga_cntfc.rds'
 )
 
 # global configuration
@@ -56,6 +59,7 @@ compareNA <- function(v1, v2) {
 
 # return a vector of mean and quantiles
 QuantileWithMean <- function (x, prob = cnst$quantiles) {
+  x <- x[!(is.na(x)|is.nan(x)|is.infinite(x))]
   q <- quantile(x, prob = prob, names = FALSE, na.rm = TRUE)
   m <- mean(x, na.rm = TRUE)
   result <- c(m, q)
@@ -78,38 +82,38 @@ lt_input$openage_100 <- readRDS(paths$input$lt_input)
 
 # Create open age group 85+ ---------------------------------------
 
-lt_input$openage_85 <-
-  lt_input$openage_100 %>%
-  # for each life-table input stratum create age group 85+
-  group_by(region_iso, sex, year) %>%
-  group_modify(~{
-    
-    input_sorted <- arrange(.x, age_start)
-    lt85 <- filter(input_sorted, age_start <= 85)
-    lt85p <- filter(input_sorted, age_start >= 85)
-    nage <- nrow(lt85)
-    
-    lt85[nage, 'age_width'] <- Inf
-    lt85[nage, 'death_total'] <- sum(lt85p$death_total)
-    lt85[nage, 'population_midyear'] <- sum(lt85p$population_midyear)
-    lt85[nage, 'population_py'] <- sum(lt85p$population_py)
-    lt85[nage, 'death_covid'] <- sum(lt85p$death_covid)
-    # counterfactual death rate age 85+
-    lx <- head(cumprod(c(1, exp(-input_sorted$nmx_cntfc))), -1)
-    ndx <- c(-diff(lx), tail(lx, 1))
-    nLx <- lx-0.5*ndx # fix later
-    nLx[length(nLx)] <- 1/input_sorted$nmx_cntfc[length(input_sorted$nmx_cntfc)]*lx[length(lx)]
-    Tx <- rev(cumsum(rev(nLx)))
-    lt85[nage, 'nmx_cntfc'] <- lx[86]/Tx[86]
+# lt_input$openage_85 <-
+#   lt_input$openage_100 %>%
+#   # for each life-table input stratum create age group 85+
+#   group_by(region_iso, sex, year) %>%
+#   group_modify(~{
+#     
+#     input_sorted <- arrange(.x, age_start)
+#     lt85 <- filter(input_sorted, age_start <= 85)
+#     lt85p <- filter(input_sorted, age_start >= 85)
+#     nage <- nrow(lt85)
+#     
+#     lt85[nage, 'age_width'] <- Inf
+#     lt85[nage, 'death_total'] <- sum(lt85p$death_total)
+#     lt85[nage, 'population_midyear'] <- sum(lt85p$population_midyear)
+#     lt85[nage, 'population_py'] <- sum(lt85p$population_py)
+#     lt85[nage, 'death_covid'] <- sum(lt85p$death_covid)
+#     # counterfactual death rate age 85+
+#     lx <- head(cumprod(c(1, exp(-input_sorted$nmx_cntfc))), -1)
+#     ndx <- c(-diff(lx), tail(lx, 1))
+#     nLx <- lx-0.5*ndx # fix later
+#     nLx[length(nLx)] <- 1/input_sorted$nmx_cntfc[length(input_sorted$nmx_cntfc)]*lx[length(lx)]
+#     Tx <- rev(cumsum(rev(nLx)))
+#     lt85[nage, 'nmx_cntfc'] <- lx[86]/Tx[86]
+# 
+#     return(lt85)
+#   }) %>%
+#   ungroup() %>%
+#   # harmonize order of variables
+#   select(all_of(names(lt_input$openage_100))) %>%
+#   arrange(sex, region_iso, year, age_start)
 
-    return(lt85)
-  }) %>%
-  ungroup() %>%
-  # harmonize order of variables
-  select(all_of(names(lt_input$openage_100))) %>%
-  arrange(sex, region_iso, year, age_start)
-
-#lt_input$openage_85 <- lt_input$openage_100
+lt_input$openage_85 <- lt_input$openage_100
 
 # Create Poisson replicates of counts -----------------------------
 
@@ -164,6 +168,7 @@ lifetables$input <-
 # ADDITIONAL INDICATORS
 # (26) <bbi>                Bounce-back indicator
 # (27) <ex_diff_2_year>     Life-expectancy change from 2 years prior
+# (28) <ex_deficit>         Life-expectancy difference between projected and observed
 lifetables$simulation <-
   array(
     dim = c(
@@ -172,7 +177,7 @@ lifetables$simulation <-
       region_iso = lifetables$cnst$nregions,
       sex = 3,
       sim_id = cnst$n_sim+1,
-      var_id = 27,
+      var_id = 28,
       projected = 2
     ),
     dimnames = list(
@@ -187,7 +192,8 @@ lifetables$simulation <-
         'nLx_lag', 'Tx_lag',
         'e0_cntrb_d', 'e0_cntrb_i', 'e0_cntrb_t',
         'nmx_lag', 'R_covid', 'R_covid_lag',
-        'e0_cntrb_t_covid', 'e0_cntrb_t_noncovid', 'bbi', 'ex_diff_2_year'),
+        'e0_cntrb_t_covid', 'e0_cntrb_t_noncovid', 'bbi', 'ex_diff_2_year',
+        'ex_deficit'),
       c('actual', 'projected')
     )
   )
@@ -229,11 +235,34 @@ lifetables$simulation[,,,,-1,'death_covid','actual'] <-
 lifetables$simulation[,,,,,'nmx',] <-
   lifetables$simulation[,,,,,'death_total',] /
   lifetables$simulation[,,,,,'population_py',]
+
 # npx, using constant hazard assumption,
 # i.e. npx = exp(-nmx)) for single year age groups
 lifetables$simulation[,,,,,'npx',] <-
   exp(-lifetables$simulation[,,,,,'nmx',])
-lifetables$simulation[86,,,,,'npx',] <- 0
+lifetables$simulation[lifetables$cnst$nage,,,,,'npx',] <- 0
+
+# no need for fancy nax adjustment, I checked, virtually
+# same results as with PWE
+# nax <- lifetables$simulation[,,,,,'nmx',]
+# nax[1:101,,,,,] <- 0.5
+# I <- lifetables$simulation[1,,,'F',,'nmx',]<0.107
+# I[is.na(I)] <- FALSE
+# nax[1,,,'F',,][I] <-
+#   0.053+2.8*lifetables$simulation[1,,,'F',,'nmx',][I]
+# nax[1,,,'F',,][!I] <- 0.350
+# I <- lifetables$simulation[1,,,'M',,'nmx',]<0.107
+# I[is.na(I)] <- FALSE
+# nax[1,,,'M',,][I] <-
+#   0.045+2.684*lifetables$simulation[1,,,'M',,'nmx',][I]
+# nax[1,,,'M',,][!I] <- 0.330
+# lifetables$simulation[,,,,,'nqx',] <- 
+#   lifetables$simulation[,,,,,'nmx',] /
+#   (1+(1-nax)*lifetables$simulation[,,,,,'nmx',])
+# lifetables$simulation[lifetables$cnst$nage,,,,,'nqx',] <- 1
+# lifetables$simulation[,,,,,'npx',] <-
+#   1-lifetables$simulation[,,,,,'nqx',]
+
 # nqx
 lifetables$simulation[,,,,,'nqx',] <-
   1-lifetables$simulation[,,,,,'npx',]
@@ -268,6 +297,15 @@ lifetables$simulation[,,,,,'Tx',] <-
 lifetables$simulation[,,,,,'ex',] <-
   lifetables$simulation[,,,,,'Tx',] /
   lifetables$simulation[,,,,,'lx',]
+
+# Calculate ex deficit --------------------------------------------
+
+lifetables$simulation[,,,,,'ex_deficit','actual'] <-
+  lifetables$simulation[,,,,,'ex','projected'] -
+  lifetables$simulation[,,,,,'ex','actual']
+lifetables$simulation[,,,,,'ex_deficit','projected'] <-
+  lifetables$simulation[,,,,,'ex','projected'] -
+  lifetables$simulation[,,,,,'ex','actual']
 
 # Calculate annual ex change --------------------------------------
 
@@ -312,7 +350,7 @@ lifetables$simulation[,,,,,'e0_cntrb_i',] <-
   ) * apply(lifetables$simulation[,,,,,'Tx',],
             # apply function to vector of data by age
             2:6, function (x) c(x[-1], 0))
-lifetables$simulation[86,,,,,'e0_cntrb_i',] <- 0
+lifetables$simulation[lifetables$cnst$nage,,,,,'e0_cntrb_i',] <- 0
 
 lifetables$simulation[,,,,,'e0_cntrb_t',] <-
   lifetables$simulation[,,,,,'e0_cntrb_d',] +
@@ -373,10 +411,10 @@ sexdiff$simulation <-
 
 # add additional variables to array
 # var_id:
-# (27) <ex_diff_sign>                sign of sex difference in ex change
-# (28) <ex_diff_change_from_2019>    change in sex difference from 2019
-# (29) <ex_diff_drop_from_2019_flag> drop in sex difference from 2019
-# (30) <ex_diff_rise_from_2019_flag> rise in sex difference from 2019
+# (28) <ex_diff_sign>                sign of sex difference in ex change
+# (29) <ex_diff_change_from_2019>    change in sex difference from 2019
+# (30) <ex_diff_drop_from_2019_flag> drop in sex difference from 2019
+# (31) <ex_diff_rise_from_2019_flag> rise in sex difference from 2019
 D <- dim(sexdiff$simulation)
 D[5] <- D[5]+4
 Dn <- dimnames(sexdiff$simulation)
@@ -386,7 +424,7 @@ Dn[[5]] <- c(
   'ex_diff_rise_from_2019_flag'
 )
 sexdiff$temp <- array(NA, D, Dn)
-sexdiff$temp[,,,,-(27:30),] <- sexdiff$simulation
+sexdiff$temp[,,,,-(28:31),] <- sexdiff$simulation
 sexdiff$simulation <- sexdiff$temp
 
 # +2: ex increase for both sexes
@@ -530,11 +568,32 @@ arriaga_cntfc$simulation[,,,,,'e0_cntrb_i'] <-
   ) * apply(arriaga_cntfc$simulation[,,,,,'Tx_actual'],
             # apply function to vector of data by age
             2:5, function (x) c(x[-1], 0))
-arriaga_cntfc$simulation[86,,,,,'e0_cntrb_i'] <- 0
+arriaga_cntfc$simulation[lifetables$cnst$nage,,,,,'e0_cntrb_i'] <- 0
 
 arriaga_cntfc$simulation[,,,,,'e0_cntrb_t'] <-
   arriaga_cntfc$simulation[,,,,,'e0_cntrb_d'] +
   arriaga_cntfc$simulation[,,,,,'e0_cntrb_i']
+
+arriaga_cntfc$simulation[,,,,,'R_covid_actual'] <-
+  lifetables$simulation[,,,,,'R_covid','actual']
+arriaga_cntfc$simulation[,,,,,'R_covid_expected'] <-
+  lifetables$simulation[,,,,,'R_covid','projected']
+
+arriaga_cntfc$simulation[,,,,,'e0_cntrb_t_covid'] <-
+  arriaga_cntfc$simulation[,,,,,'e0_cntrb_t'] * (
+    (
+      arriaga_cntfc$simulation[,,,,,'R_covid_actual'] *
+        arriaga_cntfc$simulation[,,,,,'nmx_actual'] -
+        arriaga_cntfc$simulation[,,,,,'R_covid_expected'] *
+        arriaga_cntfc$simulation[,,,,,'nmx_expected']
+    ) /
+      (arriaga_cntfc$simulation[,,,,,'nmx_actual'] -
+         arriaga_cntfc$simulation[,,,,,'nmx_expected'])
+  )
+
+arriaga_cntfc$simulation[,,,,,'e0_cntrb_t_noncovid'] <-
+  arriaga_cntfc$simulation[,,,,,'e0_cntrb_t'] -
+  arriaga_cntfc$simulation[,,,,,'e0_cntrb_t_covid']
 
 # Calculates CI over simulations ----------------------------------
 
@@ -544,7 +603,7 @@ lifetables$ci <-
     lifetables$simulation[
       ,,,,-1,
       c('nmx', 'npx', 'nqx', 'lx', 'ex', 'ex_diff', 'ex_diff_2_year', 'bbi',
-        'e0_cntrb_t', 'e0_cntrb_t_covid', 'e0_cntrb_t_noncovid'),
+        'e0_cntrb_t', 'e0_cntrb_t_covid', 'e0_cntrb_t_noncovid', 'ex_deficit'),
     ],
     -5,
     QuantileWithMean,

@@ -25,7 +25,7 @@ cnst <- within(cnst, {
   path_hmd_males = glue('{wd}/dat/hmdhfd/mltper_1x1.rds')
   path_hmd_total = glue('{wd}/dat/hmdhfd/bltper_1x1.rds')
   # skeleton path
-  path_skeleton = glue('{wd}/tmp/harmonized_skeleton.rds')
+  path_skeleton = glue('{wd}/tmp/10-harmonized_skeleton.rds')
   # translation of ex sex code to harmonized sex code
   code_sex_wpp =
     c(`Male` = config$skeleton$sex$Male,
@@ -142,11 +142,10 @@ dat$joined <-
 
 saveRDS(
   dat$hmd_clean,
-  file = glue('{cnst$path_harmonized}/harmonized_hmd_lifetables.rds')
+  file = glue('{cnst$path_harmonized}/23-harmonized_hmd_lifetables.rds')
 )
 
 saveRDS(
   dat$joined,
-  file = glue('{cnst$path_harmonized}/harmonized_external_lifetables.rds')
+  file = glue('{cnst$path_harmonized}/23-harmonized_external_lifetables.rds')
 )
-

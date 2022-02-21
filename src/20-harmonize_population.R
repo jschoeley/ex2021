@@ -27,13 +27,13 @@ paths$input <- list(
   global = './src/00-global.R',
   region_meta = './cfg/region_metadata.csv',
   figspecs = './cfg/figure_specification.R',
-  skeleton = './tmp/harmonized_skeleton.rds',
+  skeleton = './tmp/10-harmonized_skeleton.rds',
   wpp_population = './dat/wpp/wpp_population.rds',
   hmdhfd_gb_projection = './dat/hmdhfd/hmdhfd_gb_projection.rds'
 )
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
-  harmonized_population = './tmp/harmonized_population.rds',
+  harmonized_population = './tmp/20-harmonized_population.rds',
   out = './out'
 )
 
@@ -394,5 +394,11 @@ dat$joined <-
 
 saveRDS(dat$joined, file = paths$output$harmonized_population)
 
-fig_spec$ExportFigure(fig$wpp_population, path = paths$output$out, scale = 2)
-fig_spec$ExportFigure(fig$gb_population, path = paths$output$out)
+fig_spec$ExportFigure(
+  fig$wpp_population, path = paths$output$out, device = 'pdf',
+  filename = '20-wpp_population', scale = 2
+)
+fig_spec$ExportFigure(
+  fig$gb_population, path = paths$output$out, device = 'pdf',
+  filename = '20-gb_population'
+)

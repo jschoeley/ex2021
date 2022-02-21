@@ -21,7 +21,7 @@ paths$input <- list(
 )
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
-  harmonized_skeleton = glue('{paths$input$tmp}/harmonized_skeleton.rds')
+  harmonized_skeleton = glue('{paths$input$tmp}/10-harmonized_skeleton.rds')
 )
 
 # global configuration
