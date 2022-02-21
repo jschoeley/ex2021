@@ -17,12 +17,12 @@ paths$input <- list(
   region_meta = './cfg/region_metadata.csv',
   vaccination_old = './tmp/rates_v2.rds',
   vaccination_young = './tmp/rates_v2_under60.rds',
-  arriaga_cntf = './out/arriaga_cntfc.rds',
+  arriaga_cntf = './out/40-arriaga_cntfc.rds',
   figspecs = './cfg/figure_specification.R'
 )
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
-  vaxe0_rds = './out/vaxe0.rds',
+  vaxe0_rds = './out/55-vaxe0.rds',
   vaxe0_fig = './out'
 )
 
@@ -75,7 +75,7 @@ dat$vaccination_sub <-
   mutate(
     across(
       .cols = c(Vaccination1, Vaccination2, Vaccination3, VaccinationBooster),
-      .fns = zoo::na.approx, rule = 2, maxgap = 100
+      .fns = zoo::na.approx, rule = 2, yleft = 0, maxgap = 100
     )
   ) %>%
   ungroup() %>%
@@ -144,24 +144,26 @@ fig$vaxe0$plot <-
   geom_vline(xintercept = 0) +
   geom_smooth(method = 'lm', se = FALSE, color = 'grey', size = 0.75) +
   geom_text_repel(aes(label = region_name_short),
-                  family = 'robotocondensed', size = 3, color = 'grey50') +
-  geom_point(aes(fill = age), shape = 21, color = 'black') +
+                  family = 'robotocondensed', size = 2, color = 'grey50') +
+  geom_point(color = 'black', size = 1) +
   #stat_poly_eq() +
-  scale_x_continuous(labels = scales::percent) +
-  scale_fill_manual(values = c(`<60` = 'white', `60+` = 'black')) +
-  coord_cartesian(xlim = c(0.10, 1), ylim = c(-1.1, 3), expand = c(0,0)) +
+  scale_x_continuous(labels = scales::percent, breaks = seq(0, 1, 0.2)) +
+  #scale_fill_manual(values = c(`<60` = 'white', `60+` = 'black')) +
+  facet_wrap(~age) +
+  coord_cartesian(xlim = c(0.10, 1.02), ylim = c(-0.3, 3), expand = c(0,0)) +
   fig_spec$MyGGplotTheme(grid = 'xy', axis = '') +
   labs(
     y = 'Years of Life expectancy deficit\nin 2021 contributed by age group',
     x = '% fully vaccinated in age group by Oct 1st 2021'
   )
-
 fig$vaxe0$plot
+
+# Export ----------------------------------------------------------
 
 fig_spec$ExportFigure(
   fig$vaxe0$plot, device = 'pdf',
-  filename = 'vaxe0',
+  filename = '55-vaxe0',
   path = paths$output$vaxe0_fig,
-  width = fig_spec$width, height = 0.7*fig_spec$width,
+  width = fig_spec$width, height = 0.5*fig_spec$width,
   scale = 1
 )

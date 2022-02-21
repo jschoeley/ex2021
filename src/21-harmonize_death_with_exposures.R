@@ -54,9 +54,9 @@ paths$input <- list(
   # path to pclm output
   pclm = './tmp',
   # path to logfile for pclm
-  pclm_log = './tmp/pclm_log.txt',
+  pclm_log = './tmp/21-pclm_log.txt',
   # skeleton path
-  skeleton = './tmp/harmonized_skeleton.rds',
+  skeleton = './tmp/10-harmonized_skeleton.rds',
   # path to stmf data
   stmf = './dat/stmf/stmf.rds',
   # path to ons data
@@ -64,12 +64,12 @@ paths$input <- list(
   # path to cdc data
   cdc = './dat/cdc/us_annual_deaths.txt',
   # path to harmonized midyear population
-  midyearpop = './tmp/harmonized_population.rds'
+  midyearpop = './tmp/20-harmonized_population.rds'
 )
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
   # harmonized deaths
-  harmonized = './tmp/harmonized_death.rds',
+  harmonized = './tmp/21-harmonized_death.rds',
   fig = './out'
 )
 
@@ -633,12 +633,18 @@ fig$hazard_pclm
 
 saveRDS(dat$death, file = paths$output$harmonized)
 
-fig_spec$ExportFigure(fig$death_pclm, path = paths$output$fig, scale = 1.5)
-fig_spec$ExportFigure(fig$hazard_pclm, path = paths$output$fig, scale = 1.5)
+fig_spec$ExportFigure(
+  fig$death_pclm, path = paths$output$fig, scale = 1.5,
+  filename = '21-death_pclm', device = 'pdf'
+)
+fig_spec$ExportFigure(
+  fig$hazard_pclm, path = paths$output$fig, scale = 1.5,
+  filename = '21-hazard_pclm', device = 'pdf'
+)
 
 library(gridExtra)
 ggsave(
-  filename = paste0(paths$output$fig, '/pclm_death_ungroup_diagnostics.pdf'),
+  filename = paste0(paths$output$fig, '/21-pclm_death_ungroup_diagnostics.pdf'),
   plot = marrangeGrob(fig$pclm, nrow=1, ncol=1), 
   width = 10, height = 8
 )

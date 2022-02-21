@@ -27,7 +27,7 @@ cnst <- within(cnst, {
   # where to find the coverage covid data
   path_coverage = glue('{wd}/dat/coverage')
   # skeleton path
-  path_skeleton = glue('{wd}/tmp/harmonized_skeleton.rds')
+  path_skeleton = glue('{wd}/tmp/10-harmonized_skeleton.rds')
   # translation of COVerAGE-DB sex code to harmonized sex code
   code_sex_coverage =
     c(`m` = config$skeleton$sex$Male,
@@ -191,8 +191,10 @@ dat$coverage_on_skeleton <-
   mutate(
     id = GenerateRowID(region_iso, sex, year, age_start)
   ) %>%
-  select(id, death_covid, death_covid_date, death_covid_nageraw) %>%
-  right_join(dat$skeleton, by = 'id')
+  select(id, death_covid, death_covid_date, death_covid_nageraw)
+dat$coverage_on_skeleton <-
+  dat$skeleton %>%
+  left_join(dat$coverage_on_skeleton, by = 'id')
 
 # Populate sex category "Total" -----------------------------------
 
@@ -264,11 +266,14 @@ fig$covid_pclm <-
 
 saveRDS(
   dat$covid,
-  file = glue('{cnst$path_harmonized}/harmonized_covid.rds')
+  file = glue('{cnst$path_harmonized}/22-harmonized_covid.rds')
 )
 
-fig_spec$ExportFiguresFromList(
-  lst = fig,
-  path = glue('{cnst$path_fig}'),
-  scale = 2
+fig_spec$ExportFigure(
+  fig$covid_pclm, path = cnst$path_fig, device = 'pdf',
+  filename = '22-covid_pclm', scale = 2
+)
+fig_spec$ExportFigure(
+  fig$covid_raw_data, path = cnst$path_fig, device = 'pdf',
+  filename = '22-covid_raw_data', scale = 2
 )

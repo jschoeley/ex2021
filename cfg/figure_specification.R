@@ -14,7 +14,7 @@ showtext_auto()
 fig_spec$MyGGplotTheme <-
   function (
     size = 8,
-    family = 'sans',
+    family = 'roboto',
     scaler = 1,
     axis = 'x',
     panel_border = FALSE,
@@ -32,18 +32,18 @@ fig_spec$MyGGplotTheme <-
       theme_minimal(base_size = size_med, base_family = family),
       theme(
         # basic
-        text = element_text(color = 'black'),
+        text = element_text(color = '#666666'),
         line = element_line(size = base_linesize, lineend = 'square'),
         # axis
         #axis.line.y = element_blank(),
-        axis.title = element_text(size = size_med, face = 'bold'),
+        axis.title = element_text(size = size_med, face = 'bold', color = '#666666'),
         #axis.ticks = element_line(size = rel(0.5), color = 'black'),
-        axis.text = element_text(size = size_med, color = 'black'),
+        axis.text = element_text(size = size_med, color = '#666666'),
         # strips
-        strip.text = element_text(color = 'black', size = size_med),
+        strip.text = element_text(color = '#666666', size = size_med),
         strip.background = element_blank(),
         # plot
-        title = element_text(face = 'bold'),
+        title = element_text(face = 'bold', color = 'black'),
         plot.subtitle = element_text(color = 'black', size = size_med, face = 'bold'),
         plot.caption = element_text(color = 'black', size = size_sml, face = 'plain'),
         plot.background = element_blank(),
@@ -91,17 +91,17 @@ fig_spec$MyGGplotTheme <-
       },
       if (axis == 'x') {
         theme(
-          axis.line.x = element_line(linetype = 1, color = 'black')
+          axis.line.x = element_line(linetype = 1, color = '#666666')
         )
       },
       if (axis == 'y') {
         theme(
-          axis.line.y = element_line(linetype = 1, color = 'black')
+          axis.line.y = element_line(linetype = 1, color = '#666666')
         )
       },
       if (axis == 'xy') {
         theme(
-          axis.line = element_line(linetype = 1, color = 'black')
+          axis.line = element_line(linetype = 1, color = '#666666')
         )
       },
       if (!is.na(ar)) {

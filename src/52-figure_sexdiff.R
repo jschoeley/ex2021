@@ -14,8 +14,8 @@ paths$input <- list(
   config = './cfg/config.yaml',
   region_metadata = './cfg/region_metadata.csv',
   figspecs = './cfg/figure_specification.R',
-  sexdiff = './out/sexdiff.rds',
-  lifetables = './out/lifetables.rds'
+  sexdiff = './out/40-sexdiff.rds',
+  lifetables = './out/40-lifetables.rds'
 )
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
@@ -56,7 +56,7 @@ fig$sexdiff$cnst <- list(); fig$sexdiff$cnst <- within(fig$sexdiff$cnst, {
   lighten_uncertainty = 0.4
   width_uncertainty = 1
   font_family_label = 'robotocondensed'
-  font_family_theme = 'robotocondensed'
+  font_family_theme = 'roboto'
   font_size_theme = 6
   font_color_country = 'grey50'
   color_positive = '#005784'
@@ -232,7 +232,8 @@ fig$sexdiff$plot
 
 fig_spec$ExportFigure(
   fig$sexdiff$plot, device = 'pdf',
-  filename = 'sexdiff',
+  filename = '52-sexdiff',
   path = paths$output$out,
-  width = fig_spec$width, height = 100
+  width = fig_spec$width, height = 100, scale = 0.9
 )
+saveRDS(fig$sexdiff, paste0(paths$output$out, '/52-sexdiff.rds'))

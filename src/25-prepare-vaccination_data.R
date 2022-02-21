@@ -6,7 +6,7 @@ freesz  <- memuse::Sys.meminfo()$freeram@size
 n.cores <- 10
 
 setwd('.')
-Offsets     <- readRDS("./tmp/harmonized_population.rds") %>%  
+Offsets     <- readRDS("./tmp/20-harmonized_population.rds") %>%  
   mutate(Age = as.numeric(substr(id, 12,14)),
          Year = substr(id, 8,11),
          Region = substr(id, 1,6),
@@ -112,7 +112,7 @@ czechia <- inputDB %>%
 
 ###taking the other rds file for countries that did not make it into coverage
  
-  scotland <- read_rds("N:/COVerAGE-DB/Automation/Hydra/Scotland_Vaccine.rds") %>% 
+scotland <- read_rds("N:/COVerAGE-DB/Automation/Hydra/Scotland_Vaccine.rds") %>% 
     mutate(Date = dmy(Date),
            Value = as.numeric(Value)) 
 
