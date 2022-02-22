@@ -2,7 +2,7 @@
 
 # Init ------------------------------------------------------------
 
-library(yaml); library(tidyverse)
+library(yaml); library(tidyverse); library(readr)
 
 # Constants -------------------------------------------------------
 
@@ -23,8 +23,11 @@ paths$output <- list(
   data = './dat/output_data.rds',
   fig_e0diff = './out',
   rds_e0diffT = './out/53-e0diffcodT.rds',
+  csv_e0diffT = './tmp/53-e0diffcodT.csv',
   rds_e0diffF = './out/53-e0diffcodF.rds',
-  rds_e0diffM = './out/53-e0diffcodM.rds'
+  csv_e0diffF = './tmp/53-e0diffcodF.csv',
+  rds_e0diffM = './out/53-e0diffcodM.rds',
+  csv_e0diffM = './tmp/53-e0diffcodM.csv'
 )
 
 # global configuration
@@ -58,7 +61,7 @@ strata <- c('T', 'F', 'M')
 
 fig <- map(strata, ~{
   
-  const <- list(); const <- within(cnst, {
+  const <- list(); const <- within(const, {
     age_breaks = c(0, 20, 40, 60, 80, Inf)
     age_names = c('0-19', '20-39', '40-59', '60-79', '80+')
     color_vline = 'grey50'
@@ -78,8 +81,8 @@ fig <- map(strata, ~{
     ) %>%
     mutate(
       age = as.integer(age),
-      age = as.character(cut(age, const$age_breaks,
-                             const$age_labels,
+      age = as.character(cut(age, breaks = const$age_breaks,
+                             labels = const$age_names,
                              right = TRUE, include.lowest = TRUE))
     ) %>%
     bind_rows(mutate(.,age = 'Total')) %>%
@@ -123,35 +126,35 @@ fig <- map(strata, ~{
     geom_vline(
       xintercept = seq(-2.5, 0.5, 0.5)*12,
       color = '#FFFFFF', size = 0.2
-  ) +
-  geom_col(
-    aes(fill = name, x = value*12, group = age),
-    position = position_stack(), data = . %>% filter(!total),
-    width = 0.4
-  ) +
-  geom_col(
-    aes(fill = name, x = value*12, group = age),
-    position = position_stack(), data = . %>% filter(total)
-  ) +
-  geom_vline(xintercept = 0, color = 'grey50') +
-  facet_wrap(~region_name) +
-  scale_fill_manual(values = c(
-    'COVID-19' = const$fill_covid, 'Other' = const$fill_noncovid
-  )) +
-  scale_x_continuous(breaks = seq(-2.5, 0.5, 0.5)*12,
-                     labels = c('', '-24', '', '-12', '', '0', '+6')) +
-  fig_spec$MyGGplotTheme(axis = '', grid = '', panel_border = F) +
-  theme(
-    panel.background = element_rect(fill = 'grey95', color = 'grey95'),
-    #strip.background = element_rect(fill = 'grey90', color = 'grey90'),
-    legend.position = c(0.08,0.1)
-  ) +
-  labs(
-    x = 'Contributions by age and cause of death to months of life expectancy deficit in 2021',
-    y = 'Age group',
-    fill = 'Cause of death'
-  )
-
+    ) +
+    geom_col(
+      aes(fill = name, x = value*12, group = age),
+      position = position_stack(), data = . %>% filter(!total),
+      width = 0.4
+    ) +
+    geom_col(
+      aes(fill = name, x = value*12, group = age),
+      position = position_stack(), data = . %>% filter(total)
+    ) +
+    geom_vline(xintercept = 0, color = 'grey50') +
+    facet_wrap(~region_name) +
+    scale_fill_manual(values = c(
+      'COVID-19' = const$fill_covid, 'Other' = const$fill_noncovid
+    )) +
+    scale_x_continuous(breaks = seq(-2.5, 0.5, 0.5)*12,
+                       labels = c('', '-24', '', '-12', '', '0', '+6')) +
+    fig_spec$MyGGplotTheme(axis = '', grid = '', panel_border = F) +
+    theme(
+      panel.background = element_rect(fill = 'grey95', color = 'grey95'),
+      #strip.background = element_rect(fill = 'grey90', color = 'grey90'),
+      legend.position = c(0.08,0.1)
+    ) +
+    labs(
+      x = 'Contributions by age and cause of death to months of life expectancy deficit in 2021',
+      y = 'Age group',
+      fill = 'Cause of death'
+    )
+  
   list(cnst = const, data = data, plot = plot)
   
 })
@@ -166,6 +169,10 @@ fig_spec$ExportFigure(
   width = fig_spec$width, height = fig_spec$width
 )
 saveRDS(fig$e0diffcodT, file = paths$output$rds_e0diffT)
+fig$e0diffcodT$data %>%
+  mutate(across(where(is.numeric), ~round(.x, 6))) %>%
+  write_csv(paths$output$csv_e0diffT)
+
 fig_spec$ExportFigure(
   fig$e0diffcodF$plot, device = 'pdf',
   filename = '53-e0diffcodF',
@@ -173,6 +180,10 @@ fig_spec$ExportFigure(
   width = fig_spec$width, height = fig_spec$width
 )
 saveRDS(fig$e0diffcodF, file = paths$output$rds_e0diffF)
+fig$e0diffcodF$data %>%
+  mutate(across(where(is.numeric), ~round(.x, 6))) %>%
+  write_csv(paths$output$csv_e0diffF)
+
 fig_spec$ExportFigure(
   fig$e0diffcodM$plot, device = 'pdf',
   filename = '53-e0diffcodM',
@@ -180,3 +191,6 @@ fig_spec$ExportFigure(
   width = fig_spec$width, height = fig_spec$width
 )
 saveRDS(fig$e0diffcodM, file = paths$output$rds_e0diffM)
+fig$e0diffcodM$data %>%
+  mutate(across(where(is.numeric), ~round(.x, 6))) %>%
+  write_csv(paths$output$csv_e0diffM)

@@ -1,4 +1,4 @@
-# Generate Figure of annual e0 changes
+# Generate Figure of annual e0 forecasts
 
 # Init ------------------------------------------------------------
 
@@ -22,8 +22,11 @@ paths$output <- list(
   tmpdir = paths$input$tmpdir,
   fig_e0forecast = './out',
   rds_e0forecastT = './out/90-e0forecastT.rds',
+  csv_e0forecastT = './tmp/90-e0forecastT.csv',
   rds_e0forecastF = './out/90-e0forecastF.rds',
-  rds_e0forecastM = './out/90-e0forecastM.rds'
+  csv_e0forecastF = './tmp/90-e0forecastF.csv',
+  rds_e0forecastM = './out/90-e0forecastM.rds',
+  csv_e0forecastM = './tmp/90-e0forecastM.csv'
 )
 
 # global configuration
@@ -100,6 +103,9 @@ fig_spec$ExportFigure(
   width = fig_spec$width, height = 0.9*fig_spec$width
 )
 saveRDS(fig$e0forecast$e0forecastT, file = paths$output$rds_e0forecastT)
+fig$e0forecast$e0forecastT$data %>%
+  mutate(across(where(is.numeric), ~round(.x, 6))) %>%
+  write_csv(paths$output$csv_e0forecastT)
 
 fig_spec$ExportFigure(
   fig$e0forecast$e0forecastF$plot, device = 'pdf',
@@ -108,6 +114,9 @@ fig_spec$ExportFigure(
   width = fig_spec$width, height = 0.9*fig_spec$width
 )
 saveRDS(fig$e0forecast$e0forecastF, file = paths$output$rds_e0forecastF)
+fig$e0forecast$e0forecastF$data %>%
+  mutate(across(where(is.numeric), ~round(.x, 6))) %>%
+  write_csv(paths$output$csv_e0forecastF)
 
 fig_spec$ExportFigure(
   fig$e0forecast$e0forecastM$plot, device = 'pdf',
@@ -116,3 +125,6 @@ fig_spec$ExportFigure(
   width = fig_spec$width, height = 0.9*fig_spec$width
 )
 saveRDS(fig$e0forecast$e0forecastM, file = paths$output$rds_e0forecastM)
+fig$e0forecast$e0forecastM$data %>%
+  mutate(across(where(is.numeric), ~round(.x, 6))) %>%
+  write_csv(paths$output$csv_e0forecastM)

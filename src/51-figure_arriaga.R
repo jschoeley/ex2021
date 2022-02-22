@@ -20,8 +20,11 @@ paths$output <- list(
   tmpdir = paths$input$tmpdir,
   fig_arriaga = './out',
   rds_arriagaT = './out/51-arriagaT.rds',
+  csv_arriagaT = './tmp/51-arriagaT.csv',
   rds_arriagaF = './out/51-arriagaF.rds',
-  rds_arriagaM = './out/51-arriagaM.rds'
+  csv_arriagaF = './tmp/51-arriagaF.csv',
+  rds_arriagaM = './out/51-arriagaM.rds',
+  csv_arriagaM = './tmp/51-arriagaM.csv'
 )
 
 # global configuration
@@ -335,6 +338,10 @@ fig_spec$ExportFigure(
   width = fig_spec$width, height = 200, scale = 1.2
 )
 saveRDS(fig$arriaga_T, file = paths$output$rds_arriagaT)
+fig$arriaga_T$data %>%
+  mutate(across(where(is.numeric), ~round(.x, 6))) %>%
+  write_csv(paths$output$csv_arriagaT)
+
 fig_spec$ExportFigure(
   fig$arriaga_F$plot, device = 'pdf',
   filename = '51-arriagaF',
@@ -342,6 +349,10 @@ fig_spec$ExportFigure(
   width = fig_spec$width, height = 200, scale = 1.2
 )
 saveRDS(fig$arriaga_F, file = paths$output$rds_arriagaF)
+fig$arriaga_F$data %>%
+  mutate(across(where(is.numeric), ~round(.x, 6))) %>%
+  write_csv(paths$output$csv_arriagaF)
+
 fig_spec$ExportFigure(
   fig$arriaga_M$plot, device = 'pdf',
   filename = '51-arriagaM',
@@ -349,3 +360,6 @@ fig_spec$ExportFigure(
   width = fig_spec$width, height = 200, scale = 1.2
 )
 saveRDS(fig$arriaga_M, file = paths$output$rds_arriagaM)
+fig$arriaga_M$data %>%
+  mutate(across(where(is.numeric), ~round(.x, 6))) %>%
+  write_csv(paths$output$csv_arriagaM)
