@@ -2,7 +2,7 @@
 
 # Init ------------------------------------------------------------
 
-library(yaml); library(tidyverse)
+library(yaml); library(tidyverse); library(readr)
 
 # Constants -------------------------------------------------------
 
@@ -20,7 +20,10 @@ paths$input <- list(
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
   fig_e0diff = './out',
-  rds_e0diff = './out'
+  rds_e0diff = './out',
+  csv_e0diffT = './tmp/50-e0diffT.csv',
+  csv_e0diffF = './tmp/50-e0diffF.csv',
+  csv_e0diffM = './tmp/50-e0diffM.csv'
 )
 
 # global configuration
@@ -535,6 +538,9 @@ fig_spec$ExportFigure(
   width = fig_spec$width, height = 200
 )
 saveRDS(fig$e0diff_T, file = paste0(paths$output$rds_e0diff, '/50-e0diffT.rds'))
+fig$e0diff_T$data$e0diff2021 %>%
+  mutate(across(where(is.numeric), ~round(.x, 6))) %>%
+  write_csv(paths$output$csv_e0diffT)
 
 fig_spec$ExportFigure(
   fig$e0diff_F$plot, device = 'pdf',
@@ -543,6 +549,9 @@ fig_spec$ExportFigure(
   width = fig_spec$width, height = 200
 )
 saveRDS(fig$e0diff_F, file = paste0(paths$output$rds_e0diff, '/50-e0diffF.rds'))
+fig$e0diff_F$data$e0diff2021 %>%
+  mutate(across(where(is.numeric), ~round(.x, 6))) %>%
+  write_csv(paths$output$csv_e0diffF)
 
 fig_spec$ExportFigure(
   fig$e0diff_M$plot, device = 'pdf',
@@ -551,3 +560,6 @@ fig_spec$ExportFigure(
   width = fig_spec$width, height = 200
 )
 saveRDS(fig$e0diff_M, file = paste0(paths$output$rds_e0diff, '/50-e0diffM.rds'))
+fig$e0diff_M$data$e0diff2021 %>%
+  mutate(across(where(is.numeric), ~round(.x, 6))) %>%
+  write_csv(paths$output$csv_e0diffM)

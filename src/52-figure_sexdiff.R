@@ -237,3 +237,6 @@ fig_spec$ExportFigure(
   width = fig_spec$width, height = 100, scale = 0.9
 )
 saveRDS(fig$sexdiff, paste0(paths$output$out, '/52-sexdiff.rds'))
+fig$sexdiff$dat %>%
+  mutate(across(where(is.numeric), ~round(.x, 6))) %>%
+  write_csv(paste0(paths$output$tmpdir, '/52-sexdiff.csv'))

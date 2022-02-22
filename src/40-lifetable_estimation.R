@@ -6,7 +6,7 @@
 # Init ------------------------------------------------------------
 
 library(glue); library(yaml)
-library(dplyr); library(tidyr)
+library(dplyr); library(tidyr); library(readr)
 
 # Constants -------------------------------------------------------
 
@@ -25,10 +25,15 @@ paths$input <- list(
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
   lifetables = './out/40-lifetables.rds',
+  lifetables_csv = './tmp/40-lifetables.csv',
   sexdiff = './out/40-sexdiff.rds',
+  sexdiff_csv = './tmp/40-sexdiff.csv',
   e0avgdiff = './out/40-e0avgdiff.rds',
+  e0avgdiff_csv = './tmp/40-e0avgdiff.csv',
   codecomp = './out/40-codecomp.rds',
-  arriaga_cntfc = './out/40-arriaga_cntfc.rds'
+  codecomp_csv = './tmp/40-codecomp.csv',
+  arriaga_cntfc = './out/40-arriaga_cntfc.rds',
+  arriaga_cntfc_csv = './tmp/40-arriaga_cntfc.csv'
 )
 
 # global configuration
@@ -768,7 +773,22 @@ lifetables$ci_df %>%
 # Export ----------------------------------------------------------
 
 saveRDS(lifetables$ci_df, paths$output$lifetables)
+lifetables$ci_df %>%
+  mutate(across(.cols = where(is.numeric), .fns = ~round(.x,6))) %>%
+  write_csv(paths$output$lifetables_csv)
 saveRDS(sexdiff$ci_df, paths$output$sexdiff)
+sexdiff$ci_df %>%
+  mutate(across(.cols = where(is.numeric), .fns = ~round(.x,6))) %>%
+  write_csv(paths$output$sexdiff_csv)
 saveRDS(e0avgdiff$ci_df, paths$output$e0avgdiff)
+e0avgdiff$ci_df %>%
+  mutate(across(.cols = where(is.numeric), .fns = ~round(.x,6))) %>%
+  write_csv(paths$output$e0avgdiff_csv)
 saveRDS(codecomp$ci_df, paths$output$codecomp)
+codecomp$ci_df %>%
+  mutate(across(.cols = where(is.numeric), .fns = ~round(.x,6))) %>%
+  write_csv(paths$output$codecomp_csv)
 saveRDS(arriaga_cntfc$ci_df, paths$output$arriaga_cntfc)
+arriaga_cntfc$ci_df %>%
+  mutate(across(.cols = where(is.numeric), .fns = ~round(.x,6))) %>%
+  write_csv(paths$output$arriaga_cntfc_csv)

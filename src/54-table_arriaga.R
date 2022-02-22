@@ -19,7 +19,8 @@ paths$input <- list(
 )
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
-  tab_arriaga = './out/54-tab_arriaga.rds'
+  tab_arriaga = './out/54-tab_arriaga.rds',
+  csv_arriaga = './tmp/54-tab_arriaga.csv'
 )
 
 # global configuration
@@ -528,3 +529,6 @@ as_latex(tab$arriaga$table$tableT) %>% as.character() %>%
 # Export ----------------------------------------------------------
 
 saveRDS(tab$arriaga, file = paths$output$tab_arriaga)
+tab$arriaga$data$hypotheses %>%
+  mutate(across(where(is.numeric), ~round(.x, 6))) %>%
+  write_csv(paths$output$csv_arriaga)

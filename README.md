@@ -34,5 +34,3 @@ and then execute each of the scripts (0 through 10) which will undertake sequent
 ### License
 
 This work is free. You can redistribute it and/or modify it under the terms of the GNU Public license and subject to all prior terms and licenses imposed by the free, public data sources provided by the HMD-STMF, CoverAge-DB, UK-ONS, and US-CDC (i.e. the 'data originators'). The code comes without any warranty, to the extent permitted by applicable law.
-
-### Acknowledgements
