@@ -1,8 +1,8 @@
 # Bounce backs amid continued losses: Life expectancy changes since COVID-19
 
-<!-- [![DOI](https://zenodo.org/badge/334238621.svg)](https://zenodo.org/badge/latestdoi/334238621)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6224376.svg)](https://doi.org/10.5281/zenodo.6224376)
 [![Generic badge](https://img.shields.io/badge/R-4.1.2-orange.svg)](https://shields.io/)
-[![Generic badge](https://img.shields.io/badge/License-GNU-<green>.svg)](https://shields.io/) -->
+[![Generic badge](https://img.shields.io/badge/License-GNU-<green>.svg)](https://shields.io/)
 
 ## Introduction
 
