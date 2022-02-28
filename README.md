@@ -1,12 +1,12 @@
 # Bounce backs amid continued losses: Life expectancy changes since COVID-19
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6224376.svg)](https://doi.org/10.5281/zenodo.6224376)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6224984.svg)](https://zenodo.org/record/6224984)
 [![Generic badge](https://img.shields.io/badge/R-4.1.2-orange.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/License-GNU-<green>.svg)](https://shields.io/)
 
 ## Introduction
 
-This is a repository to accompany 'Bounce backs amid continued losses: Life expectancy changes since COVID-19'. A link to the open-access version of the paper can be found by clicking [here](). The replication files for this paper include customised functionality written in the [**R**](https://www.r-project.org/) statistical programming language.
+This is a repository to accompany 'Bounce backs amid continued losses: [Life expectancy changes since COVID-19'](https://www.medrxiv.org/content/10.1101/2022.02.23.22271380v1.full.pdf). The replication files for this paper include customised functionality written in the [**R**](https://www.r-project.org/) statistical programming language.
 
 ## Prerequisites
 
@@ -20,7 +20,7 @@ To run this code, do something like:
 git clone https://github.com/jschoeley/ex2021.git
 ```
 
-and then execute each of the scripts (0 through 10) which will undertake sequential tasks like defining skeletons, to undertaking the PCLM, cleaning outputs for analysis, and data visualisation
+and then execute each of the scripts in ascending numeric order which will undertake sequential tasks like downloading and harmonizing data, running life table simulations, and outputting tables and visualizations. Output files are tagged with the same numeric code as the source file generating the file.
 
 ## Structure
 
