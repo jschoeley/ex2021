@@ -1,141 +1,49 @@
-##preparation for jonas paper
+##preparation of vaccination data
 source("https://raw.githubusercontent.com/timriffe/covid_age/master/R/00_Functions.R")
 library(reshape2)
+library(tidyverse)
+library(readr)
+library(lubridate)
+library(ggplot2)
+library(osfr)
+library(covidAgeData)
+
 
 freesz  <- memuse::Sys.meminfo()$freeram@size
 n.cores <- 10
 
 setwd('.')
-Offsets     <- readRDS("./tmp/20-harmonized_population.rds") %>%  
-  mutate(Age = as.numeric(substr(id, 12,14)),
-         Year = substr(id, 8,11),
-         Region = substr(id, 1,6),
-         Sex = substr(id, 7,7)) %>%   
-  group_by(Region, Year, population_source, Age) %>% 
-  summarise(population_midyear = sum(population_midyear)) %>% 
-  filter(Year == "2020",
-         !is.na(population_midyear))
-Offsets$Sex <- "b"
-Offsets$Region <- gsub("----", "", Offsets$Region)
-names(Offsets)[1] <- "Country"
-names(Offsets)[5] <- "Population"
-Offsets$Region <- "All"
 
-Offsets <- Offsets %>% 
-  mutate(Country = case_when(
-      Country == "AT" ~ "Austria",
-      Country == "BE" ~ "Belgium",
-      Country == "BG" ~ "Bulgaria",
-      Country == "CL" ~ "Chile",
-      Country == "HR" ~ "Croatia",
-      Country == "CZ" ~ "Czech Republic",
-      Country == "DK" ~ "Denmark",
-      Country == "EE" ~ "Estonia",
-      Country == "FI" ~ "Finland",
-      Country == "FR" ~ "France",
-      Country == "DE" ~ "Germany",
-      Country == "HU" ~ "Hungary",
-      Country == "IS" ~ "Iceland",
-      Country == "IT" ~ "Italy",
-      Country == "LT" ~ "Lithuania",
-      Country == "NL" ~ "Netherlands",
-      Country == "NO" ~ "Norway" ,
-      Country == "PL" ~ "Poland",
-      Country == "PT" ~ "Portugal",
-      Country == "SK" ~ "Slovakia",
-      Country == "SI" ~ "Slovenia",
-      Country == "ES" ~ "Spain",
-      Country == "SE" ~ "Sweden",
-      Country == "CH" ~ "Switzerland",
-      Country == "GB-EAW" ~ "England and Wales",
-      Country == "GB-NIR" ~ "Northern Ireland",
-      Country == "GB-SCT" ~ "Scotland",
-      Country == "US" ~ "USA"
-      ))
-Offsets <- Offsets[,-c(2,3)]
-Offsets$AgeInt <- 1L
-
-#####adding age groups up to 105
-
-Offsets <-
-  Offsets %>% 
-  mutate(AgeInt = ifelse(AgeInt == 0, 1, AgeInt))
-
-
-# Split offsets by country/region/sex
-oL <-split(Offsets, 
-           list(Offsets$Country,Offsets$Region,Offsets$Sex), 
-           drop = TRUE)
-
-# Parallelized harmonization
-oL1 <- mclapply(
-  oL,
-  try_step,
-  process_function = harmonize_offset_age_p,
-  byvars = c("Country","Region","Sex"),
-  mc.cores=n.cores )
-
-# Combine offsets in data frame
-Offsets <-
-  oL1 %>% 
-  rbindlist() %>% 
-  as.data.frame()
-
+##getting offsets used by COVerAGE DB#################
+Offsets <- read.csv("https://files.de-1.osf.io/v1/resources/mpwjq/providers/osfstorage/5ef371ed65982802b2cf2220?action=download&direct&version=5", skip=1, header=TRUE)
 
 #############Vaccination data from COVerAGE-DB#######################
-osf_retrieve_file("9dsfk") %>%
-  osf_download(conflicts = "overwrite")
+osf_retrieve_file("9dsfk")
+# osf_download(conflicts = "overwrite")
+
+#https://files.de-1.osf.io/v1/resources/mpwjq/providers/osfstorage/5f3ed659746a8100ad1a2420?action=download&direct&version=387
 
 inputDB <-  read_csv("inputDB.zip",
                      skip = 1,
                      col_types = "cccccciccdc") %>% 
   #inputDB <- read.csv("N:/COVerAGE-DB/Data/InputDB.csv", skip = 1) %>% 
   mutate(Date = dmy(Date)) %>% 
-  filter(Country %in% c("Czechia",
-                        "Northern Ireland", "Iceland", "Sweden", "Austria", "Slovenia", "Germany", "Finland", "Denmark", "Italy",
-                        "Bulgaria", "Hungary", "Poland", "Lithuania", "Estonia", "Spain", "Belgium",
-                        "France", "Scotland", "Portugal", "Chile", "USA", "Norway", "Switzerland", "Croatia", "Slovakia", "Netherlands")) %>% 
+  filter(Country %in% c("Czechia", "Northern Ireland", "Iceland", "Sweden", "Austria", "Slovenia", "Germany", "Finland", "Denmark", "Italy",
+                        "Bulgaria", "Hungary", "Poland", "Lithuania", "Estonia", "Spain", "Belgium","France", "Scotland", "Portugal", "Chile", 
+                        "USA", "Norway", "Switzerland", "Croatia", "Slovakia", "Netherlands")) %>% 
   filter(Measure != "Deaths",
          Measure != "Tests",
-         Measure != "Cases",
-         Short != "US_All") 
-
-#estonia <- subset(inputDB2, Country == "Estonia")
-
-###sumup to total country
-czechia <- inputDB %>% 
-  filter(Country == "Czechia") %>% 
-  group_by(Date, Country, Age, Measure, AgeInt, Metric, Sex) %>% 
-  summarise(Value = sum(Value)) %>% 
-  mutate(Region = "All",
-         Country = "Czech Republic")
-
-###taking the other rds file for countries that did not make it into coverage
- 
-scotland <- read_rds("N:/COVerAGE-DB/Automation/Hydra/Scotland_Vaccine.rds") %>% 
-    mutate(Date = dmy(Date),
-           Value = as.numeric(Value)) 
-
-
- usa <- read_rds("N:/COVerAGE-DB/Automation/Hydra/USA_Vaccine.rds") %>% 
-   mutate(Date = dmy(Date),
-          Value = as.numeric(Value))
-
-netherlands <- read_rds("N:/COVerAGE-DB/Automation/Hydra/Netherlands_Vaccine.rds") %>% 
-  mutate(Date = dmy(Date),
-         Value = as.numeric(Value))
-
-inputDB3 <- inputDB %>% 
-  filter(Country != "Czechia")
-inputDB4 <- bind_rows(
-  inputDB3,
-  czechia, scotland, netherlands, usa
-  ) %>% 
-  # filter(Age != "UNK",
-  #        Age != "TOT")%>% 
+         Measure != "Cases")%>% 
+  mutate(Country = case_when(
+    Country == "Czechia" ~ "Czech Republic",
+    TRUE ~ Country
+  )) %>% 
   filter(Measure != "Vaccinations") %>% 
   filter(Region == "All")
 
+##Lithuania needs special handling, so the harmonization can work
+#Lit <- inputDB %>% 
+#  filter(Country == "Lithuania")
 
 ####harmonize metrics
 
@@ -144,13 +52,13 @@ logfile <- ("./tmp/buildlog2.md")
 
 # this script transforms the data as required, and produces standardized measures and metrics
 
-icolsIN <- colnames(inputDB4)
+icolsIN <- colnames(inputDB)
 icols   <- icolsIN[icolsIN != "AgeInt"]
 
 ### Remove unnecessary rows #########################################
 
 Z <-
-  inputDB4 %>% 
+  inputDB %>% 
   # TR: This removes sex-totals that are fractions.
   filter(!(Age == "TOT" & Metric == "Fraction"),
          !(Age == "UNK" & Value == 0),
