@@ -18,12 +18,17 @@ setwd('.')
 Offsets <- read.csv("https://files.de-1.osf.io/v1/resources/mpwjq/providers/osfstorage/5ef371ed65982802b2cf2220?action=download&direct&version=5", skip=1, header=TRUE)
 
 #############Vaccination data from COVerAGE-DB#######################
-osf_retrieve_file("9dsfk")
+#osf_retrieve_file("9dsfk")
 # osf_download(conflicts = "overwrite")
 
 #https://files.de-1.osf.io/v1/resources/mpwjq/providers/osfstorage/5f3ed659746a8100ad1a2420?action=download&direct&version=387
+cdb_repo <- osf_retrieve_node("mpwjq")
+osf_ls_files(cdb_repo, path = "Data") %>%
+  dplyr::filter(name == "inputDB.zip") %>%
+  osf_download(path= "./dat/coverage/",conflicts = "overwrite")
 
-inputDB <-  read_csv("inputDB.zip",
+
+inputDB <-  read_csv("./dat/coverage/inputDB.zip",
                      skip = 1,
                      col_types = "cccccciccdc") %>% 
   #inputDB <- read.csv("N:/COVerAGE-DB/Data/InputDB.csv", skip = 1) %>% 
