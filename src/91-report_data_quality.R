@@ -21,7 +21,7 @@ cnst <- within(cnst, {
   regions_for_covid_cause_analysis =
     config$regions_for_covid_cause_analysis
   # harmonized data set
-  path_harmonized = glue('{wd}/out/lt_input.rds')
+  path_harmonized = glue('{wd}/out/30-lt_input.rds')
   path_out = glue('{wd}/out')
 })
 

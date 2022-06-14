@@ -63,7 +63,8 @@ strata <- c('T', 'F', 'M')
 fig$e0forecast <- map(strata, ~{
   data <- 
     dat$lifetables %>%
-    filter(age == 0, sex == .x, region_iso %in% cnst$regions_for_analysis) %>%
+    filter(age == 0, sex == .x, region_iso %in% cnst$regions_for_analysis,
+           quarter == 'annual') %>%
     left_join(region_meta, by = c('region_iso' = 'region_code_iso3166_2')) %>%
     select(year, region_name, sex, age, projected, ex_mean) %>%
     group_by(region_name) %>%

@@ -65,11 +65,13 @@ dat$arriaga_cntfc <- readRDS(paths$input$arriaga_cntfc)
 
 dat$subset_lt <-
   dat$lifetables %>%
-  filter(region_iso %in% cnst$regions_for_analysis, year >= 2020)
+  filter(region_iso %in% cnst$regions_for_analysis, year >= 2020,
+         quarter == 'annual')
 
 dat$subset_arriaga_cntfc <-
   dat$arriaga_cntfc %>%
-  filter(region_iso %in% cnst$regions_for_analysis, year >= 2020)
+  filter(region_iso %in% cnst$regions_for_analysis, year >= 2020,
+         quarter == 'annual')
 
 dat$table_contributions <-
   dat$subset_lt %>%
@@ -166,14 +168,16 @@ tab$arriaga$cnst <-
     glyph_overall_young = '$\\vartriangleleft$',
     glyph_solely_old = '$\\blacktriangleright\\blacktriangleright$',
     glyph_solely_young = '$\\vartriangleleft\\vartriangleleft$',
-    color_negative_significant = '\\color{negativesig}',
-    color_negative_nonsignificant = '\\color{negativenonsig}',
-    color_positive_significant = '\\color{positivesig}',
-    color_positive_nonsignificant = '\\color{positivenonsig}'
-    #glyph_overall_old = '\u25B7',
-    #glyph_overall_young = '\u25C1',
-    #glyph_solely_old = '\u25B6',
-    #glyph_solely_young = '\u25C0'
+    color_negative_significant_glyph = '\\color{negativesig}',
+    color_negative_nonsignificant_glyph = '\\color{negativenonsig}',
+    color_positive_significant_glyph = '\\color{positivesig}',
+    color_positive_nonsignificant_glyph = '\\color{positivenonsig}',
+    color_negative_significant_ci = '',
+    color_negative_nonsignificant_ci = '',
+    color_positive_significant_ci = '',
+    color_positive_nonsignificant_ci = '',
+    ci_start = '{[}',
+    ci_end = '{]}'
   )
 
 tab$arriaga$data <- list()
@@ -315,31 +319,31 @@ tab$arriaga$data$table <-
       h1_attribution_1 == 'solely' & h1_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young
     ),
     h1_glyph = case_when(
-      h1_sign < 0 & h1_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h1_glyph),
-      h1_sign < 0 & !h1_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h1_glyph),
-      h1_sign > 0 & h1_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h1_glyph),
-      h1_sign > 0 & !h1_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h1_glyph)
+      h1_sign < 0 & h1_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_glyph, h1_glyph),
+      h1_sign < 0 & !h1_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant_glyph, h1_glyph),
+      h1_sign > 0 & h1_significance ~ paste0(tab$arriaga$cnst$color_positive_significant_glyph, h1_glyph),
+      h1_sign > 0 & !h1_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant_glyph, h1_glyph)
     ),
     h1_estimate = FormatTable(h1_effect, 12),
     h1_estimate = case_when(
-      h1_sign < 0 & h1_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h1_estimate),
-      h1_sign < 0 & !h1_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h1_estimate),
-      h1_sign > 0 & h1_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h1_estimate),
-      h1_sign > 0 & !h1_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h1_estimate)
+      h1_sign < 0 & h1_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_ci, h1_estimate),
+      h1_sign < 0 & !h1_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant_ci, h1_estimate),
+      h1_sign > 0 & h1_significance ~ paste0(tab$arriaga$cnst$color_positive_significant_ci, h1_estimate),
+      h1_sign > 0 & !h1_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant_ci, h1_estimate)
     ),
     h1_ci_lo = FormatTable(h1_lo, 12),
     h1_ci_lo = case_when(
-      h1_sign < 0 & h1_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h1_ci_lo, '{ to}'),
-      h1_sign < 0 & !h1_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h1_ci_lo, '{ to}'),
-      h1_sign > 0 & h1_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h1_ci_lo, '{ to}'),
-      h1_sign > 0 & !h1_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h1_ci_lo, '{ to}')
+      h1_sign < 0 & h1_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_negative_significant_ci, h1_ci_lo, '{;}'),
+      h1_sign < 0 & !h1_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_negative_nonsignificant_ci, h1_ci_lo, '{;}'),
+      h1_sign > 0 & h1_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_positive_significant_ci, h1_ci_lo, '{;}'),
+      h1_sign > 0 & !h1_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_positive_nonsignificant_ci, h1_ci_lo, '{;}')
     ),
     h1_ci_hi = FormatTable(h1_hi, 12),
     h1_ci_hi = case_when(
-      h1_sign < 0 & h1_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h1_ci_hi),
-      h1_sign < 0 & !h1_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h1_ci_hi),
-      h1_sign > 0 & h1_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h1_ci_hi),
-      h1_sign > 0 & !h1_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h1_ci_hi)
+      h1_sign < 0 & h1_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_ci, h1_ci_hi, tab$arriaga$cnst$ci_end),
+      h1_sign < 0 & !h1_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant_ci, h1_ci_hi, tab$arriaga$cnst$ci_end),
+      h1_sign > 0 & h1_significance ~ paste0(tab$arriaga$cnst$color_positive_significant_ci, h1_ci_hi, tab$arriaga$cnst$ci_end),
+      h1_sign > 0 & !h1_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant_ci, h1_ci_hi, tab$arriaga$cnst$ci_end)
     ),
     # h2
     h2_glyph = case_when(
@@ -349,31 +353,31 @@ tab$arriaga$data$table <-
       h2_attribution_1 == 'solely' & h2_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young
     ),
     h2_glyph = case_when(
-      h2_sign < 0 & h2_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h2_glyph),
-      h2_sign < 0 & !h2_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h2_glyph),
-      h2_sign > 0 & h2_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h2_glyph),
-      h2_sign > 0 & !h2_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h2_glyph)
+      h2_sign < 0 & h2_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_glyph, h2_glyph),
+      h2_sign < 0 & !h2_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant_glyph, h2_glyph),
+      h2_sign > 0 & h2_significance ~ paste0(tab$arriaga$cnst$color_positive_significant_glyph, h2_glyph),
+      h2_sign > 0 & !h2_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant_glyph, h2_glyph)
     ),
     h2_estimate = FormatTable(h2_effect, 12),
     h2_estimate = case_when(
-      h2_sign < 0 & h2_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h2_estimate),
-      h2_sign < 0 & !h2_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h2_estimate),
-      h2_sign > 0 & h2_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h2_estimate),
-      h2_sign > 0 & !h2_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h2_estimate)
+      h2_sign < 0 & h2_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_ci, h2_estimate),
+      h2_sign < 0 & !h2_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant_ci, h2_estimate),
+      h2_sign > 0 & h2_significance ~ paste0(tab$arriaga$cnst$color_positive_significant_ci, h2_estimate),
+      h2_sign > 0 & !h2_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant_ci, h2_estimate)
     ),
     h2_ci_lo = FormatTable(h2_lo, 12),
     h2_ci_lo = case_when(
-      h2_sign < 0 & h2_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h2_ci_lo, '{ to}'),
-      h2_sign < 0 & !h2_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h2_ci_lo, '{ to}'),
-      h2_sign > 0 & h2_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h2_ci_lo, '{ to}'),
-      h2_sign > 0 & !h2_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h2_ci_lo,'{ to}')
+      h2_sign < 0 & h2_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_negative_significant_ci, h2_ci_lo, '{;}'),
+      h2_sign < 0 & !h2_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_negative_nonsignificant_ci, h2_ci_lo, '{;}'),
+      h2_sign > 0 & h2_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_positive_significant_ci, h2_ci_lo, '{;}'),
+      h2_sign > 0 & !h2_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_positive_nonsignificant_ci, h2_ci_lo,'{;}')
     ),
     h2_ci_hi = FormatTable(h2_hi, 12),
     h2_ci_hi = case_when(
-      h2_sign < 0 & h2_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h2_ci_hi),
-      h2_sign < 0 & !h2_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h2_ci_hi),
-      h2_sign > 0 & h2_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h2_ci_hi),
-      h2_sign > 0 & !h2_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h2_ci_hi)
+      h2_sign < 0 & h2_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_ci, h2_ci_hi, tab$arriaga$cnst$ci_end),
+      h2_sign < 0 & !h2_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant_ci, h2_ci_hi, tab$arriaga$cnst$ci_end),
+      h2_sign > 0 & h2_significance ~ paste0(tab$arriaga$cnst$color_positive_significant_ci, h2_ci_hi, tab$arriaga$cnst$ci_end),
+      h2_sign > 0 & !h2_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant_ci, h2_ci_hi, tab$arriaga$cnst$ci_end)
     ),
     # h3
     h3_glyph = case_when(
@@ -383,31 +387,31 @@ tab$arriaga$data$table <-
       h3_attribution_1 == 'solely' & h3_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young
     ),
     h3_glyph = case_when(
-      h3_sign < 0 & h3_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h3_glyph),
-      h3_sign < 0 & !h3_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h3_glyph),
-      h3_sign > 0 & h3_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h3_glyph),
-      h3_sign > 0 & !h3_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h3_glyph)
+      h3_sign < 0 & h3_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_glyph, h3_glyph),
+      h3_sign < 0 & !h3_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant_glyph, h3_glyph),
+      h3_sign > 0 & h3_significance ~ paste0(tab$arriaga$cnst$color_positive_significant_glyph, h3_glyph),
+      h3_sign > 0 & !h3_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant_glyph, h3_glyph)
     ),
     h3_estimate = FormatTable(h3_effect, 12),
     h3_estimate = case_when(
-      h3_sign < 0 & h3_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h3_estimate),
-      h3_sign < 0 & !h3_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h3_estimate),
-      h3_sign > 0 & h3_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h3_estimate),
-      h3_sign > 0 & !h3_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h3_estimate)
+      h3_sign < 0 & h3_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_ci, h3_estimate),
+      h3_sign < 0 & !h3_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant_ci, h3_estimate),
+      h3_sign > 0 & h3_significance ~ paste0(tab$arriaga$cnst$color_positive_significant_ci, h3_estimate),
+      h3_sign > 0 & !h3_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant_ci, h3_estimate)
     ),
     h3_ci_lo = FormatTable(h3_lo, 12),
     h3_ci_lo = case_when(
-      h3_sign < 0 & h3_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h3_ci_lo, '{ to}'),
-      h3_sign < 0 & !h3_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h3_ci_lo, '{ to}'),
-      h3_sign > 0 & h3_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h3_ci_lo, '{ to}'),
-      h3_sign > 0 & !h3_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h3_ci_lo, '{ to}')
+      h3_sign < 0 & h3_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_negative_significant_ci, h3_ci_lo, '{;}'),
+      h3_sign < 0 & !h3_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_negative_nonsignificant_ci, h3_ci_lo, '{;}'),
+      h3_sign > 0 & h3_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_positive_significant_ci, h3_ci_lo, '{;}'),
+      h3_sign > 0 & !h3_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_positive_nonsignificant_ci, h3_ci_lo, '{;}')
     ),
     h3_ci_hi = FormatTable(h3_hi, 12),
     h3_ci_hi = case_when(
-      h3_sign < 0 & h3_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h3_ci_hi),
-      h3_sign < 0 & !h3_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h3_ci_hi),
-      h3_sign > 0 & h3_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h3_ci_hi),
-      h3_sign > 0 & !h3_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h3_ci_hi)
+      h3_sign < 0 & h3_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_ci, h3_ci_hi, tab$arriaga$cnst$ci_end),
+      h3_sign < 0 & !h3_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant_ci, h3_ci_hi, tab$arriaga$cnst$ci_end),
+      h3_sign > 0 & h3_significance ~ paste0(tab$arriaga$cnst$color_positive_significant_ci, h3_ci_hi, tab$arriaga$cnst$ci_end),
+      h3_sign > 0 & !h3_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant_ci, h3_ci_hi, tab$arriaga$cnst$ci_end)
     ),
     # h4
     h4_estimate = FormatTable(h4_effect, 100),
@@ -419,17 +423,17 @@ tab$arriaga$data$table <-
     ),
     h4_ci_lo = FormatTable(h4_lo, 100),
     h4_ci_lo = case_when(
-      h4_sign < 0 & h4_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h4_ci_lo, '{ to}'),
-      h4_sign < 0 & !h4_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h4_ci_lo, '{ to}'),
-      h4_sign > 0 & h4_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h4_ci_lo, '{ to}'),
-      h4_sign > 0 & !h4_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h4_ci_lo, '{ to}')
+      h4_sign < 0 & h4_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_negative_significant_ci, h4_ci_lo, '{;}'),
+      h4_sign < 0 & !h4_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_negative_nonsignificant_ci, h4_ci_lo, '{;}'),
+      h4_sign > 0 & h4_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_positive_significant_ci, h4_ci_lo, '{;}'),
+      h4_sign > 0 & !h4_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_positive_nonsignificant_ci, h4_ci_lo, '{;}')
     ),
     h4_ci_hi = FormatTable(h4_hi, 100),
     h4_ci_hi = case_when(
-      h4_sign < 0 & h4_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h4_ci_hi),
-      h4_sign < 0 & !h4_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h4_ci_hi),
-      h4_sign > 0 & h4_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h4_ci_hi),
-      h4_sign > 0 & !h4_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h4_ci_hi)
+      h4_sign < 0 & h4_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_ci, h4_ci_hi, tab$arriaga$cnst$ci_end),
+      h4_sign < 0 & !h4_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant_ci, h4_ci_hi, tab$arriaga$cnst$ci_end),
+      h4_sign > 0 & h4_significance ~ paste0(tab$arriaga$cnst$color_positive_significant_ci, h4_ci_hi, tab$arriaga$cnst$ci_end),
+      h4_sign > 0 & !h4_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant_ci, h4_ci_hi, tab$arriaga$cnst$ci_end)
     ),
     # h5
     h5_glyph = case_when(
@@ -439,31 +443,31 @@ tab$arriaga$data$table <-
       h5_attribution_1 == 'solely' & h5_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young
     ),
     h5_glyph = case_when(
-      h5_sign < 0 & h5_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h5_glyph),
-      h5_sign < 0 & !h5_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h5_glyph),
-      h5_sign > 0 & h5_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h5_glyph),
-      h5_sign > 0 & !h5_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h5_glyph)
+      h5_sign < 0 & h5_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_glyph, h5_glyph),
+      h5_sign < 0 & !h5_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant_glyph, h5_glyph),
+      h5_sign > 0 & h5_significance ~ paste0(tab$arriaga$cnst$color_positive_significant_glyph, h5_glyph),
+      h5_sign > 0 & !h5_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant_glyph, h5_glyph)
     ),
     h5_estimate = FormatTable(h5_effect, 12),
     h5_estimate = case_when(
-      h5_sign < 0 & h5_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h5_estimate),
-      h5_sign < 0 & !h5_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h5_estimate),
-      h5_sign > 0 & h5_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h5_estimate),
-      h5_sign > 0 & !h5_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h5_estimate)
+      h5_sign < 0 & h5_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_ci, h5_estimate),
+      h5_sign < 0 & !h5_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant_ci, h5_estimate),
+      h5_sign > 0 & h5_significance ~ paste0(tab$arriaga$cnst$color_positive_significant_ci, h5_estimate),
+      h5_sign > 0 & !h5_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant_ci, h5_estimate)
     ),
     h5_ci_lo = FormatTable(h5_lo, 12),
     h5_ci_lo = case_when(
-      h5_sign < 0 & h5_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h5_ci_lo, '{ to}'),
-      h5_sign < 0 & !h5_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h5_ci_lo, '{ to}'),
-      h5_sign > 0 & h5_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h5_ci_lo, '{ to}'),
-      h5_sign > 0 & !h5_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h5_ci_lo, '{ to}')
+      h5_sign < 0 & h5_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_negative_significant_ci, h5_ci_lo, '{;}'),
+      h5_sign < 0 & !h5_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_negative_nonsignificant_ci, h5_ci_lo, '{;}'),
+      h5_sign > 0 & h5_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_positive_significant_ci, h5_ci_lo, '{;}'),
+      h5_sign > 0 & !h5_significance ~ paste0(tab$arriaga$cnst$ci_start, tab$arriaga$cnst$color_positive_nonsignificant_ci, h5_ci_lo, '{;}')
     ),
     h5_ci_hi = FormatTable(h5_hi, 12),
     h5_ci_hi = case_when(
-      h5_sign < 0 & h5_significance ~ paste0(tab$arriaga$cnst$color_negative_significant, h5_ci_hi),
-      h5_sign < 0 & !h5_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant, h5_ci_hi),
-      h5_sign > 0 & h5_significance ~ paste0(tab$arriaga$cnst$color_positive_significant, h5_ci_hi),
-      h5_sign > 0 & !h5_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant, h5_ci_hi)
+      h5_sign < 0 & h5_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_ci, h5_ci_hi, tab$arriaga$cnst$ci_end),
+      h5_sign < 0 & !h5_significance ~ paste0(tab$arriaga$cnst$color_negative_nonsignificant_ci, h5_ci_hi, tab$arriaga$cnst$ci_end),
+      h5_sign > 0 & h5_significance ~ paste0(tab$arriaga$cnst$color_positive_significant_ci, h5_ci_hi, tab$arriaga$cnst$ci_end),
+      h5_sign > 0 & !h5_significance ~ paste0(tab$arriaga$cnst$color_positive_nonsignificant_ci, h5_ci_hi, tab$arriaga$cnst$ci_end)
     )
   ) %>%
   select(
@@ -516,6 +520,7 @@ tab$arriaga$table <-
     table
   })
 names(tab$arriaga$table) <- paste0(name, strata)
+
 tab$arriaga$table$tableT
 
 as_latex(tab$arriaga$table$tableT) %>% as.character() %>%

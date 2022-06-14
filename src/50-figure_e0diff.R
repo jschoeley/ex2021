@@ -140,7 +140,7 @@ fig <- map(strata, ~{
     dat$lifetables %>%
     filter(age == 0, sex == .x, year %in% 2020:2021,
            region_iso %in% cnst$regions_for_analysis,
-           projected == 'actual') %>%
+           projected == 'actual', quarter == 'annual') %>%
     select(region_iso, sex, year, age,
            ex_diff_mean, ex_diff_q0.025, ex_diff_q0.975,
            bbi_q0.5, bbi_q0.025, bbi_q0.975) %>%
@@ -161,7 +161,8 @@ fig <- map(strata, ~{
     data$e0diff2021 %>%
     left_join(
       dat$e0avgdiff %>%
-        filter(age == 0, sex == .x, projected == 'actual') %>%
+        filter(age == 0, sex == .x, projected == 'actual',
+               quarter == 'annual') %>%
         select(region_iso, e0avgdiff1619_q0.5 = q0.5,
                e0avgdiff1619_q0.025 = q0.025,
                e0avgdiff1619_q0.975 = q0.975)
@@ -380,17 +381,17 @@ fig <- map(strata, ~{
       hjust = 1, fontface = 'bold',
       size = cnst$fontsize_table
     ) +
-    geom_text(
-      aes(
-        y = region_position,
-        label = as_of
-      ),
-      color = '#666666',
-      x = cnst$text_x_position4,
-      family = cnst$font_table, hjust = 1,
-      #fontface = 'bold',
-      size = cnst$fontsize_table
-    ) +
+    # geom_text(
+    #   aes(
+    #     y = region_position,
+    #     label = as_of
+    #   ),
+    #   color = '#666666',
+    #   x = cnst$text_x_position4,
+    #   family = cnst$font_table, hjust = 1,
+    #   #fontface = 'bold',
+    #   size = cnst$fontsize_table
+    # ) +
     
     # avg e0 diff 2016-19
     
@@ -477,16 +478,16 @@ fig <- map(strata, ~{
       #fontface = 'bold',
       size = cnst$fontsize_table
     ) +
-    annotate(
-      'text',
-      x = cnst$text_x_position4,
-      y = cnst$n_countries+1,
-      label = 'As of\nweek', vjust = 0,
-      color = '#666666', parse = FALSE, lineheight = 0.7,
-      family = cnst$font_table, hjust = 1,
-      #fontface = 'bold',
-      size = cnst$fontsize_table
-    ) +
+    # annotate(
+    #   'text',
+    #   x = cnst$text_x_position4,
+    #   y = cnst$n_countries+1,
+    #   label = 'As of\nweek', vjust = 0,
+    #   color = '#666666', parse = FALSE, lineheight = 0.7,
+    #   family = cnst$font_table, hjust = 1,
+    #   #fontface = 'bold',
+    #   size = cnst$fontsize_table
+    # ) +
     
     # scales and labels
     
@@ -515,7 +516,7 @@ fig <- map(strata, ~{
     ) +
     theme(plot.background = element_rect(colour = NA, fill = '#FFFFFF')) +
     coord_cartesian(
-      xlim = c(-40/12, 32/12),
+      xlim = c(-40/12, 26/12),
       ylim = c(0, cnst$n_countries+1.8)
     ) +
     labs(

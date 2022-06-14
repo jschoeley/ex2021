@@ -94,7 +94,7 @@ dat$e0_diff_summary <-
   mutate(age = cut(as.integer(age), c(0, 60, Inf),
                    right = FALSE, include.lowest = TRUE,
                    labels = c('<60', '60+'))) %>%
-  group_by(region_iso, sex, age, year) %>%
+  group_by(region_iso, sex, age, year, quarter) %>%
   summarise(
     e0_cntrb_t_mean = sum(e0_cntrb_t_mean)
   ) %>%
@@ -106,20 +106,29 @@ dat$vaccination_summary <-
   dat$vaccination_sub %>%
   group_by(region_iso, age) %>%
   summarise(
-    # share fully vaccinated by july 1st
-    vax2_jul = Vaccination2[date == '2021-07-01'],
+    # share fully vaccinated by jan 1st
+    Q1 = Vaccination2[date == '2021-01-01'],
+    # share fully vaccinated by apr 1st
+    Q2 = Vaccination2[date == '2021-04-01'],
+    # share fully vaccinated by jul 1st
+    Q3 = Vaccination2[date == '2021-07-01'],
     # share fully vaccinated by oct 1st
-    vax2_oct = Vaccination2[date == '2021-10-01'],
+    Q4 = Vaccination2[date == '2021-10-01'],
     # integral vaccination measure
-    vax2_int = mean(Vaccination2)
+    annual = mean(Vaccination2)
   ) %>%
-  ungroup()
+  ungroup() %>%
+  pivot_longer(
+    c(Q1, Q2, Q3, Q4, annual),
+    names_to = 'quarter',
+    values_to = 'p_vax'
+  )
 
 # Join vaccination and e0 data ------------------------------------
 
 dat$vaxe0 <-
   dat$e0_diff_summary %>%
-  select(region_iso, year, sex, age, e0_cntrb_t_mean) %>%
+  select(region_iso, year, sex, age, quarter, e0_cntrb_t_mean) %>%
   left_join(dat$vaccination_summary) %>%
   filter(year == 2021, sex == 'T',
          region_iso %in% cnst$regions_for_vax_analysis)
@@ -130,11 +139,10 @@ fig$vaxe0 <- list()
 fig$vaxe0$data <-
   dat$vaxe0 %>%
   mutate(
-    #vax_measure = vax2_int,
-    vax_measure = vax2_oct,
+    vax_measure = p_vax,
     ex_measure = e0_cntrb_t_mean
   ) %>%
-  filter(is.finite(e0_cntrb_t_mean)) %>%
+  filter(is.finite(e0_cntrb_t_mean), quarter == 'Q4') %>%
   left_join(region_meta, by = c('region_iso' = 'region_code_iso3166_2'))
 
 fig$vaxe0$plot <-
@@ -146,14 +154,12 @@ fig$vaxe0$plot <-
   geom_text_repel(aes(label = region_name_short),
                   family = 'robotocondensed', size = 2, color = 'grey50') +
   geom_point(color = 'black', size = 1) +
-  #stat_poly_eq() +
+  stat_poly_eq() +
   scale_x_continuous(labels = scales::percent, breaks = seq(0, 1, 0.2)) +
-  #scale_fill_manual(values = c(`<60` = 'white', `60+` = 'black')) +
   facet_wrap(~age) +
-  coord_cartesian(xlim = c(0.10, 1.02), ylim = c(-0.3, 3), expand = c(0,0)) +
   fig_spec$MyGGplotTheme(grid = 'xy', axis = '') +
   labs(
-    y = 'Years of Life expectancy deficit\nin 2021 contributed by age group',
+    y = 'Years of life expectancy deficit\nin Q4 2021 contributed by age group',
     x = '% fully vaccinated in age group by Oct 1st 2021'
   )
 fig$vaxe0$plot

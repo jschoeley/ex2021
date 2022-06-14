@@ -80,7 +80,8 @@ fig$sexdiff$dat <- list()
 fig$sexdiff$dat <-
   dat$sexdiff %>%
   filter(age == 0, year %in% c(2019, 2021),
-         region_iso %in% cnst$regions_for_analysis, projected == 'actual') %>%
+         region_iso %in% cnst$regions_for_analysis,
+         projected == 'actual', quarter == 'annual') %>%
   mutate(
     # if the sex difference change from 2019 is
     # positive|negative, is it so with a probability of 90% or higher

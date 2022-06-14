@@ -1,4 +1,4 @@
-# Generate Figure of annual e0 changes
+# Check specific statements made in paper
 
 # Init ------------------------------------------------------------
 
@@ -51,7 +51,7 @@ source(paths$input$figspec)
 dat$lifetables <-
   readRDS(paths$input$lifetables) %>%
   left_join(region_meta, by = c(region_iso = 'region_code_iso3166_2')) %>%
-  filter(region_iso %in% cnst$regions_for_analysis)
+  filter(region_iso %in% cnst$regions_for_analysis, quarter == 'annual')
 dat$cntfc_lt_debug <- readRDS(paths$input$cntfc_lt_debug)
 dat$skeleton <- readRDS(paths$input$skeleton)
 
@@ -61,7 +61,7 @@ dat$lifetables %>%
   select(region_name, year, ex_mean, ex_diff_mean) %>%
   pivot_wider(names_from = year, values_from = c(ex_mean, ex_diff_mean)) %>%
   filter(ex_diff_mean_2020 < 0, ex_diff_mean_2021 < 0) %>%
-  pull(region_name) %>% clipr::write_clip()
+  pull(region_name)
 
 # incomplete bounce-back
 dat$lifetables %>%
@@ -106,6 +106,8 @@ dat$lifetables %>%
   filter(ex_diff_mean_2020 < 0, ex_diff_mean_2021 > 0) %>%
   pull(region_name)
 
+# younger age group contributed more than older age group to
+# e0 losses in 2021 given losses in 2021
 dat$lifetables %>%
   filter(sex == 'T', projected == 'actual') %>%
   mutate(

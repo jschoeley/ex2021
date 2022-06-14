@@ -77,7 +77,8 @@ fig <- map(strata, ~{
     filter(
       sex == .x,
       year %in% 2020:2021,
-      region_iso %in% cnst$regions_for_analysis
+      region_iso %in% cnst$regions_for_analysis,
+      quarter == 'annual'
     ) %>%
     mutate(
       age = as.integer(age),
@@ -152,7 +153,7 @@ fig <- map(strata, ~{
     labs(
       x = 'Contributions by age and cause of death to months of life expectancy deficit in 2021',
       y = 'Age group',
-      fill = 'Cause of death'
+      fill = 'Registered\ncause of death'
     )
   
   list(cnst = const, data = data, plot = plot)
@@ -162,7 +163,6 @@ names(fig) <- paste0(name, strata)
 
 
 # Just the US -----------------------------------------------------
-
 
 const <- list(); const <- within(const, {
   age_breaks = c(0, 20, 40, 60, 80, Inf)
@@ -181,7 +181,8 @@ lt_plot <-
     sex == 'T',
     year %in% 2020:2021,
     region_iso %in% 'US',
-    projected == 'actual'
+    projected == 'actual',
+    quarter == 'annual'
   ) %>%
   mutate(
     age = as.integer(age),
@@ -256,7 +257,7 @@ fig_us <-
   labs(
     x = 'Months of LE change since 2019',
     y = 'Age group',
-    fill = 'Cause of death',
+    fill = 'Registered cause of death',
     title = 'U.S. life expectancy change since 2019 contributed by age and cause of death',
     #subtitle = 'Life expectancy changes are explained by mortality increases or decreases in certain age groups and causes of death',
     caption = 'Data: HMD-STMF, WHO-WPP, COVerAGE-DB, own calculations'

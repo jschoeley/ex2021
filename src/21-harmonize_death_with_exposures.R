@@ -29,6 +29,11 @@
 # region x sex x year x age pattern combination in the input data.
 # The ungrouped STMF deaths and exposures are then aggregated into
 # annual death counts by age.
+#
+# For the STMF countries we calculate the proportion of deaths occurring
+# in each quarter of a year by region, sex, and age. This allows us to
+# analyze life tables by quarter. We also calculate expected proportions
+# of death by quarter by averaging over the pre-pandemic proportions.
 
 # Init ------------------------------------------------------------
 
@@ -276,6 +281,106 @@ dat$stmf_ready_for_ungroup <-
     deaths, nweeksobserved, nweeksyear, source = 'stmf'
   )
 
+# Derive proportion of deaths by quarter --------------------------
+
+# proportion of deaths by quarter stratified by country, sex,
+# and age. we need this later for calculating life expectancy
+# by quarter.
+dat$proportion <-
+  dat$stmf_harmonized_labels %>%
+  pivot_wider(names_from = sex, values_from = deaths) %>%
+  mutate(Total = Male + Female) %>%
+  pivot_longer(
+    cols = c(Male, Female, Total),
+    names_to = 'sex', values_to = 'deaths'
+  ) %>%
+  group_by(region_iso, sex, year, age_start) %>%
+  mutate(
+    annual_deaths = sum(deaths)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    quarter = case_when(
+      iso_week %in% config$weeks_in_quarter$q1 ~ 'Q1',
+      iso_week %in% config$weeks_in_quarter$q2 ~ 'Q2',
+      iso_week %in% config$weeks_in_quarter$q3 ~ 'Q3',
+      iso_week %in% config$weeks_in_quarter$q4 ~ 'Q4'
+    )
+  ) %>%
+  filter(!is.na(quarter)) %>%
+  # for the calculation of the proportions,
+  # deleting the deaths where the quarter is unknown is 
+  # equivalent to assuming that the deaths have the same distribution
+  # across quarters as the deaths where the timing is known
+  group_by(region_iso, sex, year, quarter, age_start) %>%
+  summarise(
+    p = sum(deaths)/annual_deaths[1]
+  ) %>%
+  arrange(region_iso, sex, year, age_start, quarter) %>%
+  ungroup()
+
+# calculate expected proportions in the absence of COVID-19
+# based on average proportions pre2020
+dat$proportion_expected <-
+  dat$proportion %>%
+  filter(year < 2020) %>%
+  group_by(region_iso, sex, quarter, age_start) %>%
+  # we remove na's in the mean calculation which
+  # are all missing data for the year 2015 in some
+  # countries
+  summarise(p_expected = mean(p, na.rm = TRUE)) %>%
+  ungroup()
+
+dat$proportion <-
+  dat$proportion %>%
+  left_join(dat$proportion_expected) %>%
+  mutate(
+    p_expected = ifelse(year >= 2020, p_expected, p)
+  )
+
+# check seasonality for 2020 Total
+fig$proportion <-
+  dat$proportion %>%
+  filter(year == '2020', sex == 'Total', age_start >= 60) %>%
+  ggplot() +
+  geom_line(aes(
+    x = quarter, y = p_expected,
+    color = age_start, group = age_start,
+  )) +
+  geom_point(aes(
+    x = quarter, y = p,
+    color = age_start, group = age_start,
+  )) +
+  scale_color_viridis_c() +
+  facet_wrap(~region_iso) +
+  labs(title = 'Proportion of deaths in 2021 by quarter: Expected (lines) vs. Observed (points)',
+       y = 'P', x = NULL, color = 'Age') +
+  fig_spec$MyGGplotTheme()
+
+# merge proportions wide-format into skeleton
+dat$proportion_harmonized <-
+  dat$skeleton %>%
+  left_join(
+    dat$proportion %>%
+      pivot_wider(names_from = quarter, values_from = c(p, p_expected))
+  ) %>%
+  fill(
+    p_Q1, p_Q2, p_Q3, p_Q4,
+    p_expected_Q1, p_expected_Q2,
+    p_expected_Q3, p_expected_Q4,
+    .direction = 'down') %>%
+  rename(
+    death_total_prop_q1 = p_Q1,
+    death_total_prop_q2 = p_Q2,
+    death_total_prop_q3 = p_Q3,
+    death_total_prop_q4 = p_Q4,
+    death_expected_prop_q1 = p_expected_Q1,
+    death_expected_prop_q2 = p_expected_Q2,
+    death_expected_prop_q3 = p_expected_Q3,
+    death_expected_prop_q4 = p_expected_Q4,
+  ) %>%
+  select(-region_iso, -sex, -year, -age_start, -age_width)
+
 # ONS prepare for ungroup -----------------------------------------
 
 dat$ons_ready_for_ungroup <-
@@ -514,7 +619,8 @@ dat$ungrouped <-
 # join with skeleton
 dat$ungrouped <-
   dat$skeleton %>%
-  left_join(dat$ungrouped, by = 'id')
+  left_join(dat$ungrouped, by = 'id') %>%
+  left_join(dat$proportion_harmonized)
 
 # populate sex "total"
 dat$row_female <- which(dat$ungrouped$sex == 'Female')
@@ -539,7 +645,15 @@ dat$death <-
     death_total_maxnageraw,
     death_total_minopenageraw,
     death_total_maxopenageraw,
-    death_total_source
+    death_total_source,
+    death_total_prop_q1,
+    death_total_prop_q2,
+    death_total_prop_q3,
+    death_total_prop_q4,
+    death_expected_prop_q1,
+    death_expected_prop_q2,
+    death_expected_prop_q3,
+    death_expected_prop_q4
   )
 
 # Diagnostic plots ------------------------------------------------
@@ -647,4 +761,9 @@ ggsave(
   filename = paste0(paths$output$fig, '/21-pclm_death_ungroup_diagnostics.pdf'),
   plot = marrangeGrob(fig$pclm, nrow=1, ncol=1), 
   width = 10, height = 8
+)
+
+fig_spec$ExportFigure(
+  fig$proportion, path = paths$output$fig, scale = 1.5,
+  filename = '21-proportion', device = 'pdf'
 )

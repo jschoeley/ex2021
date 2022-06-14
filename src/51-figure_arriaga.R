@@ -143,7 +143,7 @@ fig <- map(strata, ~{
   data <-
     dat$lifetables %>%
     filter(sex == .x, region_iso %in% cnst$regions_for_analysis,
-           year >= 2020, projected == 'actual') %>%
+           year >= 2020, projected == 'actual', quarter == 'annual') %>%
     mutate(
       age_group = cut(as.integer(age),
                       const$age_breaks,
