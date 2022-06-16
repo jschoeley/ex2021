@@ -23,6 +23,7 @@ paths$input <- list(
 paths$output <- list(
   tmpdir = paths$input$tmpdir,
   vaxe0_rds = './out/55-vaxe0.rds',
+  vaxe0_csv = './tmp/55-vaxe0.csv',
   vaxe0_fig = './out'
 )
 
@@ -173,3 +174,8 @@ fig_spec$ExportFigure(
   width = fig_spec$width, height = 0.5*fig_spec$width,
   scale = 1
 )
+saveRDS(fig$vaxe0, file = paths$output$vaxe0_rds)
+fig$vaxe0$data %>%
+  select(region_code_iso3166_2_alpha3, age, vax_measure, ex_measure) %>%
+  mutate(across(where(is.numeric), ~round(.x, 6))) %>%
+  write_csv(paths$output$vaxe0_csv)
