@@ -1,12 +1,13 @@
 # Bounce backs amid continued losses: Life expectancy changes since COVID-19
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6224984.svg)](https://zenodo.org/record/6224984)
-[![Generic badge](https://img.shields.io/badge/R-4.1.2-orange.svg)](https://shields.io/)
-[![Generic badge](https://img.shields.io/badge/License-GNU-<green>.svg)](https://shields.io/)
+v0.92
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6653291.svg)](https://zenodo.org/record/6653291)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6653179.svg)](https://zenodo.org/record/6653179)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6653120.svg)](https://zenodo.org/record/6653120)
 
 ## Introduction
 
-This is a repository to accompany 'Bounce backs amid continued losses: [Life expectancy changes since COVID-19'](https://www.medrxiv.org/content/10.1101/2022.02.23.22271380v1.full.pdf). The replication files for this paper include customised functionality written in the [**R**](https://www.r-project.org/) statistical programming language.
+This is a repository to accompany 'Bounce backs amid continued losses: Life expectancy changes since COVID-19', forthcoming in Nature Human Behavior. The replication files for this paper include customised functionality written in the [**R**](https://www.r-project.org/) statistical programming language.
 
 ## Prerequisites
 
