@@ -27,6 +27,7 @@ and then execute each of the scripts in ascending numeric order which will under
 
 - _cfg_ relates to: configuration files
 - _dat_ relates to: input source data
+- _doc_ relates to: the paper draft
 - _out_ relates to: output data, figures, and sensitivity analysis
 - _src_ relates to: code to replicate the wrangling, analysis and visualisation
 - _tmp_ relates to: a subdir to store temporary files
