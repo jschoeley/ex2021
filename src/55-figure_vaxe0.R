@@ -148,15 +148,26 @@ fig$vaxe0$data <-
 
 fig$vaxe0$plot <-
   fig$vaxe0$data %>%
-  ggplot(aes(x = vax_measure, y = -ex_measure, group = age)) +
+  ggplot() +
+  aes(x = vax_measure*100, y = -ex_measure, group = age) +
   geom_hline(yintercept = 0, size = 0.25) +
   geom_vline(xintercept = 0) +
   geom_smooth(method = 'lm', se = FALSE, color = 'grey', size = 0.75) +
   geom_text_repel(aes(label = region_name_short),
                   family = 'robotocondensed', size = 2, color = 'grey50') +
   geom_point(color = 'black', size = 1) +
-  stat_poly_eq() +
-  scale_x_continuous(labels = scales::percent, breaks = seq(0, 1, 0.2)) +
+  stat_poly_eq(
+    formula = y ~ x, method = 'lm',
+    aes(
+      label = paste(
+        after_stat(eq.label),
+        after_stat(p.value.label),
+        after_stat(rr.label),
+        sep = "*\", \"*"
+      )
+    ), p.digits = 3, label.x = 0.1, label.y = 0.97
+  ) +
+  scale_x_continuous(breaks = seq(0, 100, 20)) +
   facet_wrap(~age) +
   fig_spec$MyGGplotTheme(grid = 'xy', axis = '') +
   labs(
@@ -164,6 +175,15 @@ fig$vaxe0$plot <-
     x = '% fully vaccinated in age group by Oct 1st 2021'
   )
 fig$vaxe0$plot
+
+fig$vaxe0$data %>%
+  split(fig$vaxe0$data$age) %>%
+  lapply(function (df) {
+    confint(lm(
+      I(-ex_measure) ~ I(vax_measure*100),
+      data = df
+    ))
+  })
 
 # Export ----------------------------------------------------------
 

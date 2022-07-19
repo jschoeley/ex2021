@@ -164,14 +164,14 @@ tab$arriaga <- list()
 tab$arriaga$cnst <-
   list(
     primary_cutoff = 0.6,
-    glyph_overall_old = '$\\blacktriangleright$',
-    glyph_overall_young = '$\\vartriangleleft$',
-    glyph_solely_old = '$\\blacktriangleright\\blacktriangleright$',
-    glyph_solely_young = '$\\vartriangleleft\\vartriangleleft$',
-    color_negative_significant_glyph = '\\color{negativesig}',
-    color_negative_nonsignificant_glyph = '\\color{negativenonsig}',
-    color_positive_significant_glyph = '\\color{positivesig}',
-    color_positive_nonsignificant_glyph = '\\color{positivenonsig}',
+    glyph_overall_old = '^{\\text{60+}}$',
+    glyph_overall_young = '^{\\text{<60}}$',
+    glyph_solely_old = '^{\\textbf{60+}}$',
+    glyph_solely_young = '^{\\textbf{<60}}$',
+    color_negative_significant_glyph = '$\\downarrow',
+    color_negative_nonsignificant_glyph = '$\\downarrow',
+    color_positive_significant_glyph = '$\\uparrow',
+    color_positive_nonsignificant_glyph = '$\\uparrow',
     color_negative_significant_ci = '',
     color_negative_nonsignificant_ci = '',
     color_positive_significant_ci = '',
@@ -316,7 +316,7 @@ tab$arriaga$data$table <-
       h1_attribution_1 == 'primarily' & h1_attribution_2 == 'old' ~ tab$arriaga$cnst$glyph_overall_old,
       h1_attribution_1 == 'primarily' & h1_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young,
       h1_attribution_1 == 'solely' & h1_attribution_2 == 'old' ~ tab$arriaga$cnst$glyph_solely_old,
-      h1_attribution_1 == 'solely' & h1_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young
+      h1_attribution_1 == 'solely' & h1_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_solely_young
     ),
     h1_glyph = case_when(
       h1_sign < 0 & h1_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_glyph, h1_glyph),
@@ -350,7 +350,7 @@ tab$arriaga$data$table <-
       h2_attribution_1 == 'primarily' & h2_attribution_2 == 'old' ~ tab$arriaga$cnst$glyph_overall_old,
       h2_attribution_1 == 'primarily' & h2_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young,
       h2_attribution_1 == 'solely' & h2_attribution_2 == 'old' ~ tab$arriaga$cnst$glyph_solely_old,
-      h2_attribution_1 == 'solely' & h2_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young
+      h2_attribution_1 == 'solely' & h2_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_solely_young
     ),
     h2_glyph = case_when(
       h2_sign < 0 & h2_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_glyph, h2_glyph),
@@ -384,7 +384,7 @@ tab$arriaga$data$table <-
       h3_attribution_1 == 'primarily' & h3_attribution_2 == 'old' ~ tab$arriaga$cnst$glyph_overall_old,
       h3_attribution_1 == 'primarily' & h3_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young,
       h3_attribution_1 == 'solely' & h3_attribution_2 == 'old' ~ tab$arriaga$cnst$glyph_solely_old,
-      h3_attribution_1 == 'solely' & h3_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young
+      h3_attribution_1 == 'solely' & h3_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_solely_young
     ),
     h3_glyph = case_when(
       h3_sign < 0 & h3_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_glyph, h3_glyph),
@@ -440,7 +440,7 @@ tab$arriaga$data$table <-
       h5_attribution_1 == 'primarily' & h5_attribution_2 == 'old' ~ tab$arriaga$cnst$glyph_overall_old,
       h5_attribution_1 == 'primarily' & h5_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young,
       h5_attribution_1 == 'solely' & h5_attribution_2 == 'old' ~ tab$arriaga$cnst$glyph_solely_old,
-      h5_attribution_1 == 'solely' & h5_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_overall_young
+      h5_attribution_1 == 'solely' & h5_attribution_2 == 'young' ~ tab$arriaga$cnst$glyph_solely_young
     ),
     h5_glyph = case_when(
       h5_sign < 0 & h5_significance ~ paste0(tab$arriaga$cnst$color_negative_significant_glyph, h5_glyph),
@@ -527,6 +527,7 @@ as_latex(tab$arriaga$table$tableT) %>% as.character() %>%
   gsub( x = ., pattern = '\\$', replacement = '$', fixed = TRUE) %>%
   gsub( x = ., pattern = '\\textbackslash ', replacement = '\\', fixed = TRUE) %>%
   gsub( x = ., pattern = '\\textbackslash{}', replacement = '\\', fixed = TRUE) %>%
+  gsub( x = ., pattern = '\\textasciicircum{}', replacement = '^', fixed = TRUE) %>%
   gsub( x = ., pattern = '\\{', replacement = '{', fixed = TRUE) %>%
   gsub( x = ., pattern = '\\}', replacement = '}', fixed = TRUE) %>%
   clipr::write_clip()

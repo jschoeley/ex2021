@@ -1,25 +1,41 @@
 %--- Header ------------------------------------------------------------
 
 \documentclass[12pt]{article}
-\usepackage{draft}
-\usepackage{float}
-%\usepackage[onehalfspacing]{setspace}
 
-\graphicspath{ {fig/} }
-\hyphenation{}
+\usepackage[utf8]{inputenc}       % .tex-file text encoding
+\usepackage[T1]{fontenc}          % vector fonts and special chars in
+\usepackage{graphicx} % include external images
 
-%--- Custom commands ---------------------------------------------------
+\usepackage{natbib}
+\setcitestyle{super, comma, sort&compress}
+\def\bibcommenthead{}
+\bibliographystyle{sn-standardnature}
 
-\usepackage{orcidlink} % orcid icon
+\usepackage{booktabs}
+% for alignment of table entries
 \usepackage{siunitx}
 \sisetup{
 input-symbols = {-}
 }
 
-\definecolor{negativesig}{RGB}{183, 13, 13}
-\definecolor{negativenonsig}{RGB}{183, 13, 13}
-\definecolor{positivesig}{RGB}{0, 0, 0}
-\definecolor{positivenonsig}{RGB}{0, 0, 0}
+\usepackage[a4paper]{geometry}
+\geometry{
+  top         = 2.54cm,
+  bottom      = 2.54cm,
+  inner       = 2cm,
+  outer       = 2.54cm,
+  footskip    = 11mm,
+  headheight  = 1cm,
+  headsep     = 0.75cm,
+  showframe   = false
+}
+
+% change spacing
+\setlength{\parskip}{0.5ex}
+\setlength{\parindent}{0cm}
+
+\graphicspath{ {fig/} }
+\hyphenation{}
 
 %--- Meta data ---------------------------------------------------------
 
@@ -46,15 +62,15 @@ input-symbols = {-}
 Bounce backs amid continued losses: Life expectancy changes since COVID-19
 \par\medskip}
 
-{\textbf{Authors:}\par
-Jonas Schöley$^{*1}$\orcidlink{0000-0002-3340-8518},
-José Manuel Aburto$^{*2,3,4}$\orcidlink{0000-0002-2926-6879},
-Ilya Kashnitsky$^{4}$\orcidlink{0000-0003-1835-8687},
-Maxi S. Kniffka$^1$\orcidlink{0000-0001-6603-2724},
-Luyin Zhang$^2$\orcidlink{0000-0002-8337-8791},
-Hannaliis Jaadla$^{5,6}$\orcidlink{0000-0002-8569-347X},
-Jennifer B. Dowd$^{2,3}$\orcidlink{0000-0003-2006-5656},
-Ridhi Kashyap$^{*2,3}$\orcidlink{0000-0003-0615-2868}
+{\textbf{Author list:}\par
+Jonas Schöley$^{*1}$,
+José Manuel Aburto$^{*2,3,4}$,
+Ilya Kashnitsky$^{4}$,
+Maxi S. Kniffka$^1$,
+Luyin Zhang$^2$,
+Hannaliis Jaadla$^{5,6}$,
+Jennifer B. Dowd$^{2,3}$,
+Ridhi Kashyap$^{*2,3}$
 \par\medskip}
 
 {\textbf{Affiliations:}\par
@@ -100,223 +116,143 @@ Oxford OX1 1NF
 
 \par\medskip}
 
-\noindent\begin{tabular}{@{}ll}
-\textbf{Word count:} & 4440 \\
-\textbf{Figures:} &  6 \\
-\textbf{Tables:} & 1 \\
-\textbf{References:} & 47
-\end{tabular}
+% \noindent\begin{tabular}{@{}ll}
+% \textbf{Word count:} & 4440 \\
+% \textbf{Figures:} &  6 \\
+% \textbf{Tables:} & 1 \\
+% \textbf{References:} & 47
+% \end{tabular}
 
 \clearpage
 
 {\textbf{Abstract:}\par
-%\textit{Background} \\
-%The COVID-19 pandemic triggered an unprecedented rise in mortality that translated into life expectancy losses around the world, with only a few exceptions. In 2021, life expectancy trends globally diverged more due to the unequal impact of the pandemic across countries, variation in the age-patterns of mortality, and differences in vaccination. We estimate life expectancy changes in 29 countries since 2020, attribute them to mortality changes by age group, and compare them to historic life expectancy shocks.
-%\par
-%\textit{Data}\\
-%Total death counts by age and sex came from the Short-term Mortality Fluctuations and Human Mortality databases. Registered COVID-19 deaths and vaccination counts by age and sex were sourced from the COVerAGE-DB database. Midyear population counts were extracted from the UN World Population Prospects database.
-%\par
-%\textit{Methods}\\
-%Life expectancy for females, males, and the total population were calculated for 29 countries for 2020 and 2021. Additionally, we calculated life expectancy deficits for 2020 and 2021 based on pre-pandemic Lee-Carter forecasts of short-term life expectancy trends. Using demographic decomposition techniques, age- and COVID-19 specific contributions to changes and deficits in life expectancy were calculated. Deficits in life expectancy in 2021 across countries were compared to country vaccination rates. 95\% uncertainty intervals were derived from Poisson replications of death counts.
-%\par
-%\textit{Findings} \\
-%Out of 29 countries, 14 countries lost life expectancy in both 2020 and 2021, 12 recovered losses in 2020 but not all of them back to 2019 levels, 2 exceeded pre-pandemic life expectancy, and 1 dropped below 2019 levels only in 2021. All 29 countries had lower life expectancy in 2021 than expected had pre-pandemic trends continued. The female life expectancy advantage increased for most countries, consistent with hypotheses that females are more resilient to mortality crises than men. Life expectancy losses were moderately correlated with measures of vaccination uptake. One notable change from 2020 was that mortality at younger ages  contributed more to life expectancy losses in 2021. Registered COVID-19 deaths accounted for most losses of life expectancy.
-%\par
-%\textit{Interpretation} \\
-%In 2021 we saw divergence in the impact of the pandemic on population health. While some countries saw bounce-backs from stark life expectancy losses, others experienced sustained and substantial life expectancy deficits. While COVID-19 has been the most severe global mortality shock since the Second World War, this observed heterogeneity in 2021 indicates that pathways to long-term recovery of life expectancy trends remain unclear.
-%\par
-%\textit{Role of funding sources}\\ The funding agencies had no influence over the paper and and have not been consulted regarding this study.
 
 The COVID-19 pandemic triggered an unprecedented rise in mortality that translated into life expectancy losses around the world, with only a few exceptions. We estimate life expectancy changes in 29 countries since 2020, including most of Europe, the US and Chile, attribute them to mortality changes by age group, and compare them to historic life expectancy shocks. Our results show divergence in mortality impacts of the pandemic in 2021. While countries in Western Europe experienced bounce-backs from life expectancy losses of 2020, Eastern Europe and the US witnessed sustained and substantial life expectancy deficits. Life expectancy deficits among ages 60+ were strongly correlated with measures of vaccination uptake. In contrast to 2020, the age profile of excess mortality in 2021 was younger with those in under-80 age groups contributing more to life expectancy losses. However, even in 2021, registered COVID-19 deaths continued to account for most life expectancy losses.
 
-\textbf{Keywords:}
-life expectancy; COVID-19; mortality; life tables; demography; excess deaths
 \par\medskip}
 
 \clearpage
-
-{\textbf{Research in context:}\par
-\textit{Evidence before this study}\\
-The COVID-19 pandemic disrupted mortality trends around the world. Most high-income countries experienced life expectancy declines in 2020, and emerging evidence from low-to-middle income shows substantial losses in life expectancy with large regional variation. These analyses emphasise the impact of COVID-19 deaths and also highlight the effect of excess mortality at older ages as the main contributor to life expectancy losses, although in some countries working-age mortality also contributed substantially to life expectancy reductions. Among those countries with publicly available data on deaths, only a few, including Denmark, Norway, Finland, Australia, South Korea, Iceland and New Zealand did not experience life expectancy losses.
-\par
-\textit{Added value of this study}\\
-We estimate life expectancy for 29 countries in 2020-21 and assess bounce-backs versus mounting losses. We determine which age groups contributed most to life expectancy changes in 2021, and analyze how age patterns of excess mortality changed between 2020 and 2021. By projecting pre-pandemic mortality trends into 2020-21 we calculate the life expectancy deficit induced by the pandemic. We compare age-specific life expectancy deficits during fall/winter 2021 against age-specific vaccination uptake by October 1st and further decompose the deficit into contributions from COVID-19 versus non-COVID mortality. To contextualize the magnitude of life expectancy loss, we compare the 2020-21 COVID-19 pandemic with historic mortality shocks over the 20th century. We report results for females, males and the total population.
-\par
-\textit{Implications of all the available evidence}\\
-Life expectancy is an important summary measure of population health. Over the past decade, improvements in life expectancy have slowed in several countries. The COVID-19 pandemic has compounded these trends and disrupted life expectancy improvements across the globe. The pandemic increased life expectancy inequalities between the 29 low-mortality countries  that we analyze, as life expectancy losses were higher among countries with lower pre-pandemic life expectancy. COVID-19 may be a short-term mortality shock, but it is unclear whether countries will bounce back to increasing life expectancy trends in the short- or medium-term. New variants continue the spread of SARS-CoV-2 globally. Variation in preventive measures and vaccine uptake has led to disparate mortality burdens across countries. The long-term mortality impacts of social and economic stressors due to the pandemic are not known, neither are the mortality implications of regular re-infection or Long-COVID. Going forward, it is crucial to understand how and why death rates vary across and within countries.
-\par
-\par\medskip}
 
 \end{titlepage}
 
 \pagenumbering{arabic}
 
-\section*{Introduction}
+\section*{Main}
+
+\subsection*{Introduction}
 
 Period life expectancy (LE) is a summary measure of current population health. If mortality increases in a population, life expectancy declines. Conversely, if mortality declines, life expectancy increases. The measure is age-standardized and thus commonly employed for international comparisons of population health.  In this paper we investigate life expectancy changes since the start of the pandemic, distinguishing countries which saw worsening losses from countries which managed to ``bounce back'' from their life expectancy drop in 2020.
 
-Most countries experienced sizable gains in life expectancy during the second half of the 20th century.\citealp{Riley2005} However, at the turn of the 21st century, the rate of improvement in life expectancy slowed down in many high-income countries prior to the COVID-19 pandemic,\citealp{Raleigh2019} such as the USA,\citealp{Ho2018} England and Wales,\citealp{Hiam2018} Scotland,\citealp{Fenton2019} among others.\citealp{Ho2018} The COVID-19 crisis triggered a mortality shock resulting in life expectancy declines in 2020 of a magnitude not observed in the recent history of high-income countries.\citealp{Aburto2021b, Islam2021a, Andrasfay2021, Mazzuco2022} While data limitations have precluded in-depth analyses in low-to-middle income countries, emerging evidence suggests even larger losses than those observed in high-income countries, such as in India\citealp{Yadav2021} and Latin America.\citealp{Castro2021, GarciaGuerrero2021, Lima2021} Only very few countries did not witness declines in life expectancy in 2020, including Norway, Denmark, females in Finland, New Zealand, and Australia.\citealp{Aburto2021b, Islam2021a, CanudasRomo2022, Rizzi2021a}
+Most countries experienced sizable gains in life expectancy during the second half of the 20th century.\cite{Riley2005} However, at the turn of the 21st century, the rate of improvement in life expectancy slowed down in many high-income countries prior to the COVID-19 pandemic,\cite{Raleigh2019} such as the USA,\cite{Ho2018} England and Wales,\cite{Hiam2018} Scotland,\cite{Fenton2019} among others.\cite{Ho2018} The COVID-19 crisis triggered a mortality shock resulting in life expectancy declines in 2020 of a magnitude not observed in the recent history of high-income countries.\cite{Aburto2021b, Islam2021a, Andrasfay2021, Mazzuco2022} While data limitations have precluded in-depth analyses in low-to-middle income countries, emerging evidence suggests even larger losses than those observed in high-income countries, such as in India\cite{Yadav2021} and Latin America.\cite{Castro2021, GarciaGuerrero2021, Lima2021} Only very few countries did not witness declines in life expectancy in 2020, including Norway, Denmark, females in Finland, New Zealand, and Australia.\cite{Aburto2021b, Islam2021a, CanudasRomo2022, Rizzi2021a}
 
-Fluctuations in life expectancy are not uncommon. Typically, life expectancy declines are quickly followed by bounce backs.\citealp{Saha2013, Kissler2021} In contrast with these short-term fluctuations, however, the COVID-19 pandemic induced global and severe mortality shocks in 2020 and, as of spring 2022, is still ongoing. Throughout 2021, the impact of the pandemic became more heterogeneous across populations with differences in prior infection, non-pharmaceutical interventions, and vaccination uptake, all influencing the pandemic's course. Emerging estimates of life expectancy losses based on excess deaths suggest that most Western European countries are expected to partly recover from losses observed in 2020, while other countries including the USA and Russia will suffer further life expectancy declines.\citealp{Heuveline2022}
+Fluctuations in life expectancy are not uncommon. Typically, life expectancy declines are quickly followed by bounce backs.\cite{Saha2013, Kissler2021} In contrast with these short-term fluctuations, however, the COVID-19 pandemic induced global and severe mortality shocks in 2020 and, as of spring 2022, is still ongoing. Throughout 2021, the impact of the pandemic became more heterogeneous across populations with differences in prior infection, non-pharmaceutical interventions, and vaccination uptake, all influencing the pandemic's course. Emerging estimates of life expectancy losses based on excess deaths suggest that most Western European countries are expected to partly recover from losses observed in 2020, while other countries including the USA and Russia will suffer further life expectancy declines.\cite{Heuveline2022}
 
-We examine life expectancy changes since 2019 in 29 countries, including most of Europe, the USA and Chile using data on all-cause mortality from the Short-Term Fluctuations Database (STMF)\citealp{Nemeth2021} following a previously validated methodology.\citealp{Aburto2021b} We distinguish between annual life expectancy changes and life expectancy deficits, the former showing the raw year to year difference, the later indicating the difference between observed and expected life expectancy had pre-pandemic trends continued. Using decomposition techniques, we describe which age groups, and to what extent registered COVID-19 deaths, contributed to recent trends and deficits in life expectancy. We compare the magnitude and length of the current global life expectancy decline with prominent mortality shocks during the 20th century. All our results are reported for females, males, and the total population. We further investigate associations between life expectancy changes and vaccination uptake. Our results quantify the mortality burden of COVID-19 in 2021 and contribute to the debate about recent trends in life expectancy from a cross-national perspective.
+We examine life expectancy changes since 2019 in 29 countries, including most of Europe, the USA and Chile using data on all-cause mortality from the Short-Term Fluctuations Database (STMF)\cite{Nemeth2021} following a previously validated methodology.\cite{Aburto2021b} We distinguish between annual life expectancy changes and life expectancy deficits, the former showing the raw year to year difference, the later indicating the difference between observed and expected life expectancy had pre-pandemic trends continued. Using decomposition techniques, we describe which age groups, and to what extent registered COVID-19 deaths, contributed to recent trends and deficits in life expectancy. We compare the magnitude and length of the current global life expectancy decline with prominent mortality shocks during the 20th century. All our results are reported for females, males, and the total population. We further investigate associations between life expectancy changes and vaccination uptake. Our results quantify the mortality burden of COVID-19 in 2021 and contribute to the debate about recent trends in life expectancy from a cross-national perspective.
 
-\section*{Results}
+\subsection*{Results}
 
-\subsection*{Changes in life expectancy since 2019}
+\subsubsection*{Changes in life expectancy since 2019}
 
-Among the 29 countries analyzed, 13 countries saw LE bounce-backs from 2020 losses (Austria, Belgium, Switzerland, Spain, Finland, France, England and Wales, Iceland, Italy, Netherlands, Portugal, Sweden, and Slovenia), and 11 witnessed continued (compound) losses (Bulgaria, Chile, Czech Republic, Germany, Estonia, Greece, Croatia, Hungary, Lithuania, Poland, Slovakia). Life expectancy in the USA, Scotland, and Northern Ireland remained at approximately the same depressed levels as 2020, indicating a constant excess mortality. The extremes are marked by Bulgaria, with record compound LE losses across 2020 and 2021, and France, Belgium, Switzerland, and Sweden, all with complete LE bounce-backs from substantial prior losses. Of the three countries that experienced no LE loss in 2020, Denmark, Norway, and Finland, only Norway had a significantly higher LE in 2021 compared to 2019 (Figure \ref{fig:figure-1}, Table \ref{tab:arriaga}).
+Among the 29 countries analyzed, 8 countries saw significant LE bounce-backs from 2020 losses:
+Belgium (+10.8 months, CI 9.7 to 11.9, $H_0: \mu \leq 0$, $p< 0.001$),
+Switzerland (+7.7, CI 6.4 to 8.8, $p< 0.001$),
+Spain (+7.6, CI 7.1 to 8.1, $p< 0.001$),
+France (+5.0, CI 4.4 to 5.6, $p< 0.001$),
+England and Wales (+2.1, CI 1.6 to 2.7, $p< 0.001$),
+Italy (+5.1, CI 4.6 to 5.5, $p< 0.001$),
+Sweden (+7.5, CI 6.0 to 8.6, $p< 0.001$), and
+Slovenia (+3.1, CI 0.4 to 5.7, $p=0.010$).
+Compounding the 2020 losses, life expectancy dropped significantly further throughout 2021 in 12 countries:
+Bulgaria (-25.1 months, CI -23.4 to -26.6, $H_0: \mu \geq 0$, $p< 0.001$),
+Chile (-8.0, CI -7.0 to -9.0, $p< 0.001$),
+Czech Republic (-10.4, CI -9.4 to -11.5, $p< 0.001$),
+Germany (-3.1, CI -2.7 to -3.5, $p< 0.001$),
+Estonia (-21.5, CI -17.6 to -25.1, $p< 0.001$),
+Greece (-12.4, CI -11.0 to -13.8, $p< 0.001$),
+Croatia (-11.6, CI -9.7 to -13.3, $p< 0.001$),
+Hungary (-16.4, CI -15.3 to -17.6, $p< 0.001$),
+Lithuania (-7.9, CI -5.4 to -10.5, $p< 0.001$),
+Poland (-12.1, CI -11.3 to -12.7, $p< 0.001$),
+Slovakia (-23.9, CI -22.3 to -25.7, $p < 0.001$), and
+USA (-2.7, CI -2.2 to -3.1, $p< 0.001$).
+Life expectancy in Scotland, and Northern Ireland remained at approximately the same depressed levels as 2020, indicating a constant excess mortality.
+In terms of life expectancy changes since 2019, the extremes are marked by Bulgaria, with record compound LE losses across 2020 and 2021, and France, Belgium, Switzerland, and Sweden, all with complete LE bounce-backs from substantial prior losses. Of the three countries that experienced no LE loss in 2020, Denmark, Norway, and Finland, only Norway had a significantly higher LE in 2021 compared to 2019 (Figure \ref{fig:figure-1}, Table \ref{tab:arriaga}).
 
 In all countries LE in 2021 was lower than expected under the continuation of pre-pandemic trends. Bulgaria, Chile, Croatia, Czech Republic, Estonia, Germany, Greece, Hungary, Lithuania, Poland, and Slovakia suffered substantially higher LE deficits in 2021 compared to 2020, indicating a worsening mortality burden over the course of the pandemic (Extended Data Figures \ref{fig:figure-a1}--\ref{fig:figure-a3}).
 
-Bulgaria experienced 17.9 months of LE decline in 2020 with a 95\% CI from 16.4 to 19.6 months. This substantial decline was compounded by an even larger loss of 25.2 (95\% CI 23.6, 26.7) months below the 2020 level in 2021, leaving the country with a net LE loss of 43.1 (95\% CI 41.4, 44.6) months since 2019. Bulgaria is the most severe example among the 9 countries from the former Eastern Bloc (Bulgaria, Slovakia, Lithuania, Poland, Estonia, Hungary, Czech Republic, Croatia, Slovenia). With the exception of Slovenia, all these countries suffered compound LE losses in 2021. Estonia stands out as the country with the 3rd largest LE losses in 2021 but almost no losses 2020. Substantial compound losses were also observed in Chile and Greece. In contrast, after an 8 month LE loss in 2020, Switzerland experienced a bounce-back of 7.7 months (95\% CI 6.4, 9.2). Belgium, Sweden, France, Italy and Spain joined Switzerland as countries that witnessed bounce-backs from substantial LE losses in 2020 with the first 3 countries having regained the LE levels of 2019 (Figure \ref{fig:figure-1}, Table \ref{tab:arriaga}).
+Bulgaria experienced 17.8 months of LE decline in 2020 (CI -16.5 to -19.8, $H_0: \mu \geq 0$, $p<0.001$). This substantial decline was compounded by an even larger loss of 25.1 months (CI -23.4 to -26.6, $p<0.001$) below the 2020 level in 2021, leaving the country with a net LE loss of 43.0 months (-41.4 to -44.5, $p < 0.001$) since 2019. Bulgaria is the most severe example regarding LE losses among the 9 countries from the former Eastern Bloc (Bulgaria, Slovakia, Lithuania, Poland, Estonia, Hungary, Czech Republic, Croatia, Slovenia). With the exception of Slovenia, all these countries suffered compound LE losses in 2021. Estonia stands out as the country with the 3rd largest LE losses in 2021 but almost no losses 2020. Substantial compound losses were also observed in Chile and Greece. In contrast, after an 8 month LE loss in 2020, Switzerland experienced a bounce-back of 7.7 months (CI 6.4 to  8.8, $H_0: \mu \leq 0$, $p < 0.001$). Belgium, Sweden, France, Italy and Spain joined Switzerland as countries that witnessed bounce-backs from substantial LE losses in 2020 with the first 3 countries having regained the LE levels of 2019 (Figure \ref{fig:figure-1}, Table \ref{tab:arriaga}).
 
-\begin{figure}[ht!]
-    \centering
-    \includegraphics{figure-1.pdf}
-    \caption{Life expectancy changes 2019-20 and 2020-21 across countries. The countries are ordered by increasing cumulative life expectancy losses since 2019. The two line segments indicate the annual changes in life expectancy in 2020 and 2021 respectively. Red segments to the left indicate a life expectancy drop while grey arrows to the right indicate a rise in life expectancy. The position of the arrowhead indicates the total change in life expectancy from 2019 through 2021.
-    Grey dots and lines indicate the average annual LE changes over the years 2015 through 2019 along with 95\% confidence intervals.}
-    \label{fig:figure-1}
-\end{figure}
+\par\medskip
+\emph{Figure 1 around here}
+\par\medskip
 
-\subsection*{Age contributions to life expectancy changes}
+\subsubsection*{Age contributions to life expectancy changes}
 
-In 2021, the pandemic death toll shifted towards younger age groups. For example, while USA mortality for ages 80+ returned to pre-pandemic levels in 2021, overall LE losses grew due to worsening mortality primarily in ages below 60 (Figure \ref{fig:figure-2}). Excess mortality among under-60s explained more than half of the loss in LE in 2021 compared to 2019. LE losses in the under-60s, especially for males, were considerably higher in the USA relative to most other countries in 2020 as well.\citealp{Aburto2021b} This pattern of the shift in excess mortality away from the oldest ages in 2021 compared to 2020 is also evident in Austria, Belgium, Czech Republic, England \& Wales, Germany, Netherlands, Northern Ireland, Poland, Portugal, Scotland, Slovakia, Slovenia, and Spain (Figure \ref{fig:figure-2}). In 11 out of 16 countries with LE losses in 2021, the under-60 age groups contributed more to LE loss in 2021 than in 2020. Among the 13 countries which partially or completely bounced-back from their LE losses in 2020, 7 (Austria, Spain, England \& Wales, Iceland, Italy, Netherlands, Slovenia) achieved the bounce-back solely due to normalizing mortality among the older but not the younger population (Table \ref{tab:arriaga}). Croatia, Greece, Hungary, Northern Ireland, and Slovakia saw almost no losses in the 40-59 age group in 2020, but substantial excess mortality in the same group in 2021.
+In 2021, the pandemic death toll shifted towards younger age groups. For example, while USA mortality for ages 80+ returned to pre-pandemic levels in 2021, overall LE losses grew due to worsening mortality in ages below 60. Mortality increases among ages below 60 contributed LE losses of -7.2 months (CI -7.0 to -7.4, $H_0: \mu \geq 0$, $p < 0.001$) in 2021 compared to 2020. These life expectancy losses among the young cancel the LE bounce-backs among the older population and yield a net LE drop in 2021 of -2.7 months (CI -2.2 to -3.1, $H_0: \mu \geq 0$, $p < 0.001$) for the USA (Figure \ref{fig:figure-2}). Excess mortality among under-60s explained more than half of the loss in US life expectancy since the start of the pandemic (58.9\%, CI 57.9 to 59.8, $H_0: \mu\leq50\%, p < 0.001$). LE losses in the under-60s, especially for males, were considerably higher in the USA relative to most other countries in 2020 as well.\cite{Aburto2021b}
 
-Despite the shift towards a greater contribution of excess mortality from younger age groups in 2021, increased mortality among those aged 60+ remained the most important contributor to LE losses compared with pre-pandemic levels (Table \ref{tab:arriaga}). LE dropped in 28 out of the 29 countries analyzed from 2019 to 2021, with only Norway exceeding the 2019 levels. Excess mortality in ages 60+ was the main contributor to these losses in 25 out of 28 countries, with the USA being the prominent exception. In 2020, the LE losses of every country witnessing significant losses were explained primarily or solely by mortality increases in ages 60+. The LE changes in 2021 were however sometimes driven by mortality dynamics below age 60. France stands out as the only country which suffered substantial life expectancy losses since 2019 without increased mortality among those under-60 (Table \ref{tab:arriaga}, Figure \ref{fig:figure-2}).
+The pattern of the shift in excess mortality away from the oldest ages in 2021 compared to 2020 is also evident in Austria, Belgium, Czech Republic, England \& Wales, Germany, Netherlands, Northern Ireland, Poland, Portugal, Scotland, Slovakia, Slovenia, and Spain (Figure \ref{fig:figure-2}). In 11 out of 16 countries with LE losses in 2021, the under-60 age groups contributed significantly more to LE loss in 2021 than in 2020 (one-tailed, $p<0.05$).
+Among the 13 countries which partially or completely bounced-back from their LE losses in 2020, 10 (Austria, Belgium, Switzerland, Spain, France, England \& Wales, Italy, Netherlands, Sweden, Slovenia) achieved the bounce-back primarily or solely due to normalizing mortality among the older population ($H_0: \mu \leq 50\%$ contribution of ages 60+ to life expectancy change, $p<0.05$, Table \ref{tab:arriaga}).
+Croatia, Greece, Hungary, Northern Ireland, and Slovakia saw almost no losses in the 40-59 age group in 2020, but substantial excess mortality in the same group in 2021 (Figure \ref{fig:figure-2}).
 
-\begin{table}[ht]
-\centering\footnotesize\addtolength{\tabcolsep}{-4pt}
-\begin{tabular}{
-l
-l
-S[table-format=-2.1]
-S[table-format = -2.1,table-space-text-pre={[}]
-S[table-format = -2.1,table-space-text-post={]}]
-l
-S[table-format=-2.1]
-S[table-format = -2.1,table-space-text-pre={[}]
-S[table-format = -2.1,table-space-text-post={]}]
-l
-S[table-format=-2.1]
-S[table-format = -2.1,table-space-text-pre={[}]
-S[table-format = -2.1,table-space-text-post={]}]
-l
-S[table-format=-2.1]
-S[table-format = -2.1,table-space-text-pre={[}]
-S[table-format = -2.1,table-space-text-post={]}]
-}
-\toprule
- & \multicolumn{4}{c}{Net LE diff 2019 to 21} & \multicolumn{4}{c}{LE changes 2020} & \multicolumn{4}{c}{LE changes 2021} & \multicolumn{4}{c}{LE deficit 2021} \\
-\cmidrule(lr){2-5} \cmidrule(lr){6-9} \cmidrule(lr){10-13} \cmidrule(lr){14-17}
- & {AT\textsuperscript{1}} & {ES\textsuperscript{2}} & \multicolumn{2}{c}{CI\textsuperscript{3}} & {AT} & {ES} & \multicolumn{2}{c}{CI} & {AT} & {ES} & \multicolumn{2}{c}{CI} & {AT} & {ES} & \multicolumn{2}{c}{CI} \\
-\midrule
-AUT & \color{negativesig}$\blacktriangleright$ & -7.6 & {[}-9.0{;} & -6.2{]} & \color{negativesig}$\blacktriangleright$ & -7.9 & {[}-9.3{;} & -6.7{]} & \color{positivenonsig}$\blacktriangleright\blacktriangleright$ & +0.4 & {[}-0.9{;} & +1.7{]} & \color{negativesig}$\blacktriangleright$ & -12.0 & {[}-10.5{;} & -13.3{]} \\
-BEL & \color{negativenonsig}$\blacktriangleright\blacktriangleright$ & -1.2 & {[}-2.5{;} & +0.1{]} & \color{negativesig}$\blacktriangleright$ & -12.0 & {[}-13.2{;} & -10.9{]} & \color{positivesig}$\blacktriangleright$ & +10.8 & {[}+9.7{;} & +12.0{]} & \color{negativesig}$\blacktriangleright$ & -6.9 & {[}-5.6{;} & -8.1{]} \\
-BGR & \color{negativesig}$\blacktriangleright$ & -43.1 & {[}-44.6{;} & -41.4{]} & \color{negativesig}$\blacktriangleright$ & -17.9 & {[}-19.6{;} & -16.4{]} & \color{negativesig}$\blacktriangleright$ & -25.2 & {[}-26.7{;} & -23.6{]} & \color{negativesig}$\blacktriangleright$ & -46.1 & {[}-44.5{;} & -47.8{]} \\
-CHE & \color{negativenonsig}$\vartriangleleft$ & -0.3 & {[}-1.7{;} & +1.0{]} & \color{negativesig}$\blacktriangleright$ & -8.0 & {[}-9.3{;} & -6.6{]} & \color{positivesig}$\blacktriangleright$ & +7.7 & {[}+6.4{;} & +9.2{]} & \color{negativesig}$\blacktriangleright$ & -6.2 & {[}-4.9{;} & -7.6{]} \\
-CHL & \color{negativesig}$\blacktriangleright$ & -20.9 & {[}-22.3{;} & -19.6{]} & \color{negativesig}$\blacktriangleright$ & -13.0 & {[}-14.3{;} & -11.8{]} & \color{negativesig}$\vartriangleleft$ & -7.9 & {[}-9.1{;} & -6.6{]} & \color{negativesig}$\blacktriangleright$ & -24.3 & {[}-23.0{;} & -25.5{]} \\
-CZE & \color{negativesig}$\blacktriangleright$ & -21.8 & {[}-23.1{;} & -20.6{]} & \color{negativesig}$\blacktriangleright$ & -11.5 & {[}-12.7{;} & -10.2{]} & \color{negativesig}$\blacktriangleright$ & -10.4 & {[}-11.5{;} & -9.3{]} & \color{negativesig}$\blacktriangleright$ & -25.9 & {[}-24.7{;} & -27.0{]} \\
-DEU & \color{negativesig}$\blacktriangleright$ & -5.7 & {[}-6.2{;} & -5.3{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -2.6 & {[}-3.1{;} & -2.2{]} & \color{negativesig}$\blacktriangleright$ & -3.1 & {[}-3.6{;} & -2.7{]} & \color{negativesig}$\blacktriangleright$ & -10.2 & {[}-9.8{;} & -10.6{]} \\
-DNK & \color{negativenonsig}$\blacktriangleright\blacktriangleright$ & -0.4 & {[}-2.1{;} & +1.3{]} & \color{positivenonsig}$\blacktriangleright$ & +1.2 & {[}-0.4{;} & +2.7{]} & \color{negativenonsig}$\blacktriangleright\blacktriangleright$ & -1.6 & {[}-3.2{;} & +0.1{]} & \color{negativesig}$\blacktriangleright$ & -4.0 & {[}-2.5{;} & -5.6{]} \\
-EST & \color{negativesig}$\blacktriangleright$ & -23.4 & {[}-27.2{;} & -19.6{]} & \color{negativenonsig}$\blacktriangleright$ & -1.6 & {[}-5.4{;} & +2.0{]} & \color{negativesig}$\blacktriangleright$ & -21.8 & {[}-25.2{;} & -18.4{]} & \color{negativesig}$\blacktriangleright$ & -29.3 & {[}-25.9{;} & -33.0{]} \\
-ESP & \color{negativesig}$\blacktriangleright$ & -7.4 & {[}-8.0{;} & -6.6{]} & \color{negativesig}$\blacktriangleright$ & -15.0 & {[}-15.6{;} & -14.4{]} & \color{positivesig}$\blacktriangleright\blacktriangleright$ & +7.6 & {[}+7.0{;} & +8.2{]} & \color{negativesig}$\blacktriangleright$ & -13.3 & {[}-12.6{;} & -13.9{]} \\
-FIN & \color{negativenonsig}$\blacktriangleright\blacktriangleright$ & -0.3 & {[}-2.1{;} & +1.6{]} & \color{negativenonsig}$\blacktriangleright$ & -0.4 & {[}-2.1{;} & +1.4{]} & \color{positivenonsig}$\vartriangleleft$ & +0.1 & {[}-1.6{;} & +1.9{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -3.4 & {[}-1.7{;} & -5.3{]} \\
-FRA & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -1.2 & {[}-1.8{;} & -0.7{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -6.2 & {[}-6.7{;} & -5.6{]} & \color{positivesig}$\blacktriangleright$ & +5.0 & {[}+4.4{;} & +5.6{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -4.5 & {[}-3.9{;} & -5.1{]} \\
-EAW & \color{negativesig}$\blacktriangleright$ & -9.3 & {[}-9.9{;} & -8.7{]} & \color{negativesig}$\blacktriangleright$ & -11.4 & {[}-12.1{;} & -10.9{]} & \color{positivesig}$\blacktriangleright\blacktriangleright$ & +2.1 & {[}+1.6{;} & +2.8{]} & \color{negativesig}$\blacktriangleright$ & -12.7 & {[}-12.1{;} & -13.3{]} \\
-NIR & \color{negativesig}$\blacktriangleright$ & -9.4 & {[}-12.5{;} & -6.0{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -8.6 & {[}-11.8{;} & -5.3{]} & \color{negativenonsig}$\vartriangleleft$ & -0.7 & {[}-3.6{;} & +3.0{]} & \color{negativesig}$\blacktriangleright$ & -13.1 & {[}-9.6{;} & -16.8{]} \\
-SCT & \color{negativesig}$\blacktriangleright$ & -9.7 & {[}-11.7{;} & -7.9{]} & \color{negativesig}$\blacktriangleright$ & -9.0 & {[}-10.9{;} & -7.0{]} & \color{negativenonsig}$\vartriangleleft$ & -0.7 & {[}-2.6{;} & +1.0{]} & \color{negativesig}$\vartriangleleft$ & -10.2 & {[}-8.4{;} & -12.1{]} \\
-GRC & \color{negativesig}$\blacktriangleright$ & -15.6 & {[}-16.9{;} & -14.4{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -3.2 & {[}-4.5{;} & -1.8{]} & \color{negativesig}$\blacktriangleright$ & -12.4 & {[}-13.7{;} & -11.0{]} & \color{negativesig}$\blacktriangleright$ & -18.5 & {[}-17.0{;} & -19.9{]} \\
-HRV & \color{negativesig}$\blacktriangleright$ & -21.1 & {[}-23.2{;} & -19.1{]} & \color{negativesig}$\blacktriangleright$ & -9.6 & {[}-11.5{;} & -7.6{]} & \color{negativesig}$\blacktriangleright$ & -11.5 & {[}-13.6{;} & -9.7{]} & \color{negativesig}$\blacktriangleright$ & -27.1 & {[}-25.1{;} & -29.0{]} \\
-HUN & \color{negativesig}$\blacktriangleright$ & -24.5 & {[}-25.7{;} & -23.2{]} & \color{negativesig}$\blacktriangleright$ & -8.3 & {[}-9.7{;} & -6.9{]} & \color{negativesig}$\blacktriangleright$ & -16.3 & {[}-17.5{;} & -14.9{]} & \color{negativesig}$\blacktriangleright$ & -29.4 & {[}-28.1{;} & -30.7{]} \\
-ISL & \color{negativenonsig}$\vartriangleleft$ & -2.6 & {[}-10.0{;} & +4.6{]} & \color{negativenonsig}$\vartriangleleft$ & -3.6 & {[}-11.6{;} & +3.6{]} & \color{positivenonsig}$\blacktriangleright\blacktriangleright$ & +1.0 & {[}-6.7{;} & +8.7{]} & \color{negativenonsig}$\vartriangleleft$ & -5.1 & {[}+2.6{;} & -12.5{]} \\
-ITA & \color{negativesig}$\blacktriangleright$ & -7.5 & {[}-8.0{;} & -6.9{]} & \color{negativesig}$\blacktriangleright$ & -12.5 & {[}-13.0{;} & -12.0{]} & \color{positivesig}$\blacktriangleright\blacktriangleright$ & +5.1 & {[}+4.6{;} & +5.6{]} & \color{negativesig}$\blacktriangleright$ & -13.5 & {[}-12.9{;} & -14.0{]} \\
-LTU & \color{negativesig}$\blacktriangleright$ & -25.7 & {[}-28.6{;} & -23.1{]} & \color{negativesig}$\blacktriangleright$ & -18.2 & {[}-21.0{;} & -15.5{]} & \color{negativesig}$\blacktriangleright$ & -7.6 & {[}-10.1{;} & -5.2{]} & \color{negativesig}$\blacktriangleright$ & -37.3 & {[}-34.4{;} & -40.1{]} \\
-NLD & \color{negativesig}$\blacktriangleright$ & -7.4 & {[}-8.3{;} & -6.5{]} & \color{negativesig}$\blacktriangleright$ & -7.7 & {[}-8.7{;} & -6.8{]} & \color{positivenonsig}$\blacktriangleright\blacktriangleright$ & +0.3 & {[}-0.6{;} & +1.2{]} & \color{negativesig}$\blacktriangleright$ & -10.9 & {[}-10.1{;} & -11.8{]} \\
-NOR & \color{positivenonsig}$\vartriangleleft$ & +1.7 & {[}-0.0{;} & +3.5{]} & \color{positivesig}$\blacktriangleright$ & +2.1 & {[}+0.4{;} & +3.7{]} & \color{negativenonsig}$\blacktriangleright\blacktriangleright$ & -0.4 & {[}-2.1{;} & +1.6{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -2.3 & {[}-0.7{;} & -4.1{]} \\
-POL & \color{negativesig}$\blacktriangleright$ & -26.6 & {[}-27.3{;} & -25.8{]} & \color{negativesig}$\blacktriangleright$ & -14.5 & {[}-15.3{;} & -13.8{]} & \color{negativesig}$\blacktriangleright$ & -12.1 & {[}-12.8{;} & -11.3{]} & \color{negativesig}$\blacktriangleright$ & -30.4 & {[}-29.7{;} & -31.2{]} \\
-PRT & \color{negativesig}$\blacktriangleright$ & -7.6 & {[}-8.9{;} & -6.4{]} & \color{negativesig}$\blacktriangleright$ & -8.2 & {[}-9.6{;} & -6.8{]} & \color{positivenonsig}$\vartriangleleft$ & +0.6 & {[}-0.6{;} & +2.2{]} & \color{negativesig}$\blacktriangleright$ & -10.7 & {[}-9.4{;} & -12.0{]} \\
-SWE & \color{negativenonsig}$\blacktriangleright\blacktriangleright$ & -0.2 & {[}-1.4{;} & +1.1{]} & \color{negativesig}$\blacktriangleright$ & -7.6 & {[}-8.8{;} & -6.2{]} & \color{positivesig}$\blacktriangleright$ & +7.4 & {[}+6.2{;} & +8.6{]} & \color{negativesig}$\blacktriangleright$ & -5.0 & {[}-3.8{;} & -6.3{]} \\
-SVN & \color{negativesig}$\blacktriangleright$ & -7.3 & {[}-9.9{;} & -4.4{]} & \color{negativesig}$\blacktriangleright$ & -10.4 & {[}-13.2{;} & -7.6{]} & \color{positivesig}$\blacktriangleright\blacktriangleright$ & +3.1 & {[}+0.5{;} & +5.9{]} & \color{negativesig}$\blacktriangleright$ & -8.4 & {[}-5.5{;} & -11.4{]} \\
-SVK & \color{negativesig}$\blacktriangleright$ & -33.1 & {[}-35.0{;} & -31.2{]} & \color{negativesig}$\blacktriangleright$ & -9.2 & {[}-11.1{;} & -7.5{]} & \color{negativesig}$\blacktriangleright$ & -23.8 & {[}-25.6{;} & -21.9{]} & \color{negativesig}$\blacktriangleright$ & -39.2 & {[}-37.3{;} & -41.0{]} \\
-USA & \color{negativesig}$\vartriangleleft$ & -28.1 & {[}-28.7{;} & -27.6{]} & \color{negativesig}$\blacktriangleright$ & -25.4 & {[}-25.9{;} & -25.0{]} & \color{negativesig}$\vartriangleleft$ & -2.7 & {[}-3.1{;} & -2.2{]} & \color{negativesig}$\blacktriangleright$ & -33.0 & {[}-32.4{;} & -33.5{]} \\ \bottomrule
-\end{tabular}
-\vspace{-5mm}
-\begin{minipage}{\linewidth}
-\textsuperscript{1}Attribution of life expectancy changes to \\
-mortality \emph{increases} among {\color{negativesig}primarily 60+$\blacktriangleright$}, {\color{negativesig}solely 60+$\blacktriangleright\blacktriangleright$}, {\color{negativesig}primarily \textless{}60$\vartriangleleft$}, {\color{negativesig}solely \textless{}60$\vartriangleleft\vartriangleleft$} \\
-mortality \emph{decreases} among {\color{positivesig}primarily 60+$\blacktriangleright$}, {\color{positivesig}solely 60+$\blacktriangleright\blacktriangleright$}, {\color{positivesig}primarily \textless{}60$\vartriangleleft$}, {\color{positivesig}solely \textless{}60$\vartriangleleft\vartriangleleft$} \\
-\textsuperscript{2}Central estimate in months \\
-\textsuperscript{3}95\% confidence interval \\
-\end{minipage}
-\caption{Months of life expectancy (LE) changes and deficits (labelled ES) since the start of the pandemic attributed to age-specific mortality changes (labelled AT). LE deficit is defined as observed minus expected life expectancy had pre-pandemic mortality trends continued.}
-\label{tab:arriaga}
-\end{table}
+Despite the shift towards a greater contribution of excess mortality from younger age groups in 2021, increased mortality among those aged 60+ remained the most important contributor to LE losses compared with pre-pandemic levels (Table \ref{tab:arriaga}). LE dropped in 28 out of the 29 countries analyzed from 2019 to 2021, with only Norway exceeding the 2019 levels.
+Excess mortality in ages 60+ was the main or sole contributor to these losses in 19 out of 28 countries (Austria, Bulgaria, Chile, Czech Republic, Germany, Estonia, Spain, France, England and Wales, Greece, Croatia, Hungary, Italy, Lithuania, Netherland, Poland, Portugal, Slovenia, Slovakia, $H_0: \mu \leq 50\%$ contribution of ages 60+ to life expectancy change, $p<0.05$), with the USA being the prominent exception.
+In 2020, the LE losses of every country witnessing significant losses were explained primarily or solely by mortality increases in ages 60+.
+The LE changes in 2021 were however sometimes driven by mortality dynamics below age 60. France stands out as the only country which suffered significant life expectancy losses since 2019 without increased mortality among those under-60 (Table \ref{tab:arriaga}, Figure \ref{fig:figure-2}).
 
-\begin{figure}[ht!]
-    \centering
-    \includegraphics{figure-2.pdf}
-    \caption{Age contributions to life expectancy changes since 2019 separated for 2020 and 2021. The position of the arrowhead indicates the total contribution of mortality changes in a given age group to the change in life expectancy at birth since 2019. The discontinuity in the arrow indicates those contributions separately for the years 2020 and 2021. Annual contributions can compound or reverse. The total life expectancy change from 2019 to 2021 in a given country is the sum of the arrowhead positions across age.}
-    \label{fig:figure-2}
-\end{figure}
+\par\medskip
+\emph{Figure 2 around here}
+\par\medskip
 
-\subsection*{Sex differences in life expectancy changes}
+\subsubsection*{Sex differences in life expectancy changes}
 
-Recent trends of a decreasing gap in LE between females and males\citealp{Zarulli2021} were disrupted by the pandemic. Consistent with previous research, females showed higher life expectancy in the 29 countries in our analysis. However, our results show that the female advantage in LE increased in most of the 29 countries during the pandemic, thereby widening the sex gap (Figure \ref{fig:figure-3}). This finding indicates that for most countries males were more affected by excess death. The magnitude of the gap varies from 3 years in the Netherlands to more than 9.7 years in Lithuania. The biggest increase in the sex gap was observed in the USA, where the gap increased by almost a year from 5.72 to 6.69 years. Significant reductions in the LE gap were observed in Bulgaria and Lithuania. See Extended Data Figures \ref{fig:figure-a4}--\ref{fig:figure-a7}, and Extended Data Tables \ref{tab:table-a1}--\ref{tab:table-a2} for further sex specific results on life expectancy levels and changes.
+Recent trends of a decreasing gap in LE between females and males\cite{Zarulli2021} were disrupted by the pandemic. Consistent with previous research, females showed higher life expectancy in the 29 countries in our analysis.
+The magnitude of the gap in 2021 varied from 3.17 years in Norway (CI 2.95 to 3.37, $H_0: \mu \leq 0$, $p < 0.001$) to more than 9.65 years in Lithuania (CI 9.20 to 9.90, $p < 0.001$).
+However, our results show that the female advantage in LE significantly ($H_0: \mu \leq 0$, $p<0.05$) increased in 16 of the 29 countries during the pandemic, thereby widening the sex gap (Figure \ref{fig:figure-3}).
+This finding indicates that for most countries males were more affected by excess death.
+The biggest increase in the sex gap was observed in the USA, where the gap increased by almost a year from 5.72 to 6.69 years ($+0.97$ years, CI 0.90 to 1.04, $H_0: \mu \leq 0$, $p < 0.001$).
+The narrowing sex gaps observed in 6 countries were not significant. See Extended Data Figures \ref{fig:figure-a4}--\ref{fig:figure-a7}, and Extended Data Tables \ref{tab:table-a1}--\ref{tab:table-a2} for further sex specific results on life expectancy levels and changes.
 
-\begin{figure}[ht!]
-    \centering
-    \includegraphics{figure-3.pdf}
-    \caption{Change in the female life expectancy advantage from 2019 through 2021. Blue colors indicate an increase and red colors a decrease in the female life expectancy advantage. Muted colors indicate non-significant changes.}
-    \label{fig:figure-3}
-\end{figure}
+\par\medskip
+\emph{Figure 3 around here}
+\par\medskip
 
-\subsection*{Life expectancy deficit contributions by cause of death and age}
+\subsubsection*{Life expectancy deficit contributions by cause of death and age}
 
 Officially registered COVID-19 deaths explained most of the LE deficit in the year 2021 across Europe, the USA and Chile (Figure \ref{fig:figure-4}). The Netherlands is the single exception where causes other than COVID-19 explained more than half of the 2021 LE deficit. Conversely, France and Slovenia stand out as two countries where mortality due to non-COVID deaths was lower than expected in 2021. In most countries the age group 60--79 contributed the most to the LE deficit in 2021. Exceptions were Scotland and Germany, the former having the largest contributions among ages 40--59, the latter among ages 80+. Note that COVID-19 related deaths are counted differently across countries and that some cross-country differences will be explained by different reporting conventions as outlined in the discussion.
 
-\begin{figure}[ht!]
-    \centering
-    \includegraphics{figure-4.pdf}
-    \caption{Life expectancy deficit in 2021 decomposed into contributions by age and cause of death. LE deficit is defined as observed minus expected life expectancy had pre-pandemic mortality trends continued.}
-    \label{fig:figure-4}
-\end{figure}
+\par\medskip
+\emph{Figure 4 around here}
+\par\medskip
 
-\subsection*{Life expectancy deficit by vaccination uptake}
-
-\begin{figure}[ht!]
-    \centering
-    \includegraphics{figure-5.pdf}
-    \caption{Years of life expectancy deficit during October through December 2021 contributed by ages <60 and 60+ against \% of population twice vaccinated by October 1st in the respective age groups. LE deficit is defined as the counterfactual LE from a Lee-Carter mortality forecast based on death rates for the fourth quarter of the years 2015 to 2019 minus observed LE.}
-    \label{fig:figure-5}
-\end{figure}
+\subsubsection*{Life expectancy deficit by vaccination uptake}
 
 Higher vaccination uptake by October 2021 was associated with smaller LE deficits in 2021 across countries (Figure \ref{fig:figure-5}). Eastern Europe, especially Bulgaria, which had lower vaccination uptake showed bigger deficits in LE, while the opposite was true for most Central and Western European countries.
+
+\par\medskip
+\emph{Figure 5 around here}
+\par\medskip
 
 The direction of this association was the same when comparing the contributions of the age groups <60 and 60+ to the LE deficit in 2021, albeit with variation in strength of the association. Vaccination uptake for people 60+ showed a stronger association with LE deficits.
 
 Prominent outliers indicate a confounded relationship between vaccination uptake and LE losses. For those under age 60 the USA saw a far higher LE deficit compared to countries with comparable overall vaccination shares, e.g. the Netherlands, Austria, or Switzerland. For ages 60+, Slovakia, Croatia, and Hungary stand out as countries with surprisingly high LE deficits given their vaccination uptake. Finer-grained details of the age prioritization of vaccine roll-out and the types of vaccines used may account for some of these differences, as well as correlations between vaccine uptake and compliance with non-pharmaceutical interventions or the overall health care system capacity.
 
-\subsection*{Comparison with past mortality shocks}
+\subsubsection*{Comparison with past mortality shocks}
 
 To contextualize the severity of the LE losses during the COVID-19 pandemic, we examined historical mortality crises over the past 120 years and compared them with LE declines since 2019. As shown in Figure~\ref{fig:figure-6}, the first-half of the 20th century witnessed several mortality shocks leading to LE declines across consecutive years, but in most cases these were followed by immediate bounce-backs. In the past 40 years, the frequency of mortality crises fell markedly. Table \ref{tab:table-a3} in the Appendix shows the total negative or overall change in LE during the period of a mortality crisis and the year at which recovery to pre-crisis LE was reached.
 
 During World War One (WW-I) and the Spanish flu epidemic, all countries for which historical data are available experienced substantial losses in LE -- the largest annual declines in LE in the past 120 years. In most countries, LE declined continuously throughout the 4-year period of the crises but the losses were largest in 1918. The steepest declines in LE during 1914--1918 were seen in Italy and France. Denmark, similarly to patterns during COVID-19, experienced the lowest decline in LE during Spanish flu -- only 1 year. Notably, even after all these substantial losses to LE, the recovery to pre-crisis levels was achieved in 1 or 2 years (Table~\ref{tab:table-a3}) .
 
-Mortality patterns during WW-II were somewhat different. While most countries suffered some years with substantial LE declines during 1939-1945, the bounce-backs occurred during the war or just after it. In the Netherlands, the famine known as ``Hunger Winter'' caused LE declines in 1945 of 5.7 years, but the recovery to pre-war (1938) levels was already  by 1946.\citealp{Lumey1994}
+Mortality patterns during WW-II were somewhat different. While most countries suffered some years with substantial LE declines during 1939-1945, the bounce-backs occurred during the war or just after it. In the Netherlands, the famine known as ``Hunger Winter'' caused LE declines in 1945 of 5.7 years, but the recovery to pre-war (1938) levels was already  by 1946.\cite{Lumey1994}
 
-\begin{figure}[ht!]
-    \centering
-    \Oldincludegraphics[angle=90,height=0.92\textheight]{figure-6.pdf}
-    \caption{Life expectancy declines since 1900 and periods of widespread mortality increases.}
-    \label{fig:figure-6}
-\end{figure}
+\par\medskip
+\emph{Figure 6 around here}
+\par\medskip
 
-Numerous flu epidemics occurred over the second half of the 20th century, but  LE during these flu seasons usually declined only very slightly, if at all. Moreover, bounce-backs were always immediate, except in cases of wider health crises, such as the recovery from the 2015 influenza season in Scotland and USA, where LE was already stagnating before the epidemic\citealp{Fenton2019}. Overall, the losses during these flu epidemics were substantially smaller than the declines in LE during the COVID-19 pandemic.
+Numerous flu epidemics occurred over the second half of the 20th century, but  LE during these flu seasons usually declined only very slightly, if at all. Moreover, bounce-backs were always immediate, except in cases of wider health crises, such as the recovery from the 2015 influenza season in Scotland and USA, where LE was already stagnating before the epidemic\cite{Fenton2019}. Overall, the losses during these flu epidemics were substantially smaller than the declines in LE during the COVID-19 pandemic.
 
-The most prominent example of a protracted mortality crisis in the past 50 years is provided by Russia and Eastern Bloc countries. From 1960s onward, these countries experienced an extended period of continuous stagnation in LE, in which bounce-backs to pre-decline levels were only attained in the 21st century.\citealp{Shkolnikov2013} These patterns reflect the deep-rooted structural nature of the mortality crisis in the populations that failed to proceed with the health transition.\citealp{Timonin2016} The most pronounced drop in LE happened in these countries in late 1980s and early 1990s (Figure~\ref{fig:figure-6}), which mirrored the previous brief period of success in lowering mortality\citealp{Zakharov1999} as a direct result of Gorbachev's Anti-alcohol campaign.\citealp{Leon2009} In contrast to epidemic or war-related shocks, the mortality crisis in the formerly Eastern Bloc countries was structural and the bounce-backs of LE were very slow. The magnitude of LE losses witnessed during COVID-19 in the formerly Eastern Bloc countries are comparable to those observed during the Soviet mortality crisis.
+The most prominent example of a protracted mortality crisis in the past 50 years is provided by Russia and Eastern Bloc countries. From 1960s onward, these countries experienced an extended period of continuous stagnation in LE, in which bounce-backs to pre-decline levels were only attained in the 21st century.\cite{Shkolnikov2013} These patterns reflect the deep-rooted structural nature of the mortality crisis in the populations that failed to proceed with the health transition.\cite{Timonin2016} The most pronounced drop in LE happened in these countries in late 1980s and early 1990s (Figure~\ref{fig:figure-6}), which mirrored the previous brief period of success in lowering mortality\cite{Zakharov1999} as a direct result of Gorbachev's Anti-alcohol campaign.\cite{Leon2009} In contrast to epidemic or war-related shocks, the mortality crisis in the formerly Eastern Bloc countries was structural and the bounce-backs of LE were very slow. The magnitude of LE losses witnessed during COVID-19 in the formerly Eastern Bloc countries are comparable to those observed during the Soviet mortality crisis.
 
-\section*{Discussion}
+\subsection*{Discussion}
 
 The COVID-19 pandemic led to global mortality increases and declines in period life expectancy which are without precedent over the last 70 years. The scale of these losses was clear by the end of 2020. By the end of 2021, it was clear that the pandemic induced a protracted mortality shock in the USA and many European countries, measured as either compounded LE losses or persistent LE below pre-pandemic levels. Even the best performing countries were lagging behind their life expectancy projections for 2021 given a continuation of pre-pandemic trends. Nevertheless, in 2021 Sweden, Switzerland, Belgium, and France managed to bounce-back from substantial LE losses in 2020 to pre-pandemic levels. Demographically, they achieved this by reducing mortality among ages 60+ back to 2019 levels while avoiding the mortality burden shift to younger ages as seen in other countries during 2021.
 
@@ -324,17 +260,17 @@ Denmark, Finland, and Norway, while lagging behind their projected LE for 2021, 
 
 It is important to note that even for those countries which approached pre-pandemic levels of life expectancy in 2021, significant damage was already done. This is especially relevant for Sweden which experienced pre-pandemic levels of LE in 2021, but unlike its Scandinavian neighbors, suffered a substantial LE loss in 2020. While period mortality, and consequentially LE can revert back to normal levels, the years of life lost during the period of elevated mortality and declining LE cannot be regained. As a measure of the current mortality conditions in a population, a return to pre-pandemic LE levels simply indicates a normalization of the mortality risk in a population.
 
-We observed stark cross-country differences in 2021 LE deficits with bigger losses in countries with lower pre-pandemic LE. Geographically, this presents as an East-West division in Europe which is also aligned with differences in vaccination uptake during 2021, with generally lower vaccination rates in Eastern Europe compared to the West. This pattern raises questions regarding the future of European mortality convergence, a stated goal of the European Union.\citealp{EuropeanComission2009}
+We observed stark cross-country differences in 2021 LE deficits with bigger losses in countries with lower pre-pandemic LE. Geographically, this presents as an East-West division in Europe which is also aligned with differences in vaccination uptake during 2021, with generally lower vaccination rates in Eastern Europe compared to the West. This pattern raises questions regarding the future of European mortality convergence, a stated goal of the European Union.\cite{EuropeanComission2009}
 
-Eastern European countries had a rather distinctive pattern of mortality development in the 20th century. Early on, highly centralized governance and directive economies contributed to mortality reductions through implementation of public health measures, and these countries were very successful in the early stages of their epidemiological transition.\citealp{Vishnevsky2015} Yet, in the second part of the century these countries witnessed mortality stagnation as these centralized channels were less effective at curbing mortality linked to behavioural factors such as smoking and alcohol.\citealp{Omran1971, Vallin2005} Recent years have seen rapid catch-up life expectancy convergence between Eastern and Western Europe, after the periods of LE declines seen in the 1980s and 90s.\citealp{Aburto2018, Timonin2016} It remains to be seen if persistent COVID-19 losses in Eastern Europe compared to diminishing losses in Western Europe will create a new East/West divide and divergence in life expectancy in the years to come.
+Eastern European countries had a rather distinctive pattern of mortality development in the 20th century. Early on, highly centralized governance and directive economies contributed to mortality reductions through implementation of public health measures, and these countries were very successful in the early stages of their epidemiological transition.\cite{Vishnevsky2015} Yet, in the second part of the century these countries witnessed mortality stagnation as these centralized channels were less effective at curbing mortality linked to behavioural factors such as smoking and alcohol.\cite{Omran1971, Vallin2005} Recent years have seen rapid catch-up life expectancy convergence between Eastern and Western Europe, after the periods of LE declines seen in the 1980s and 90s.\cite{Aburto2018, Timonin2016} It remains to be seen if persistent COVID-19 losses in Eastern Europe compared to diminishing losses in Western Europe will create a new East/West divide and divergence in life expectancy in the years to come.
 
-In the USA the pandemic has accentuated the pre-existing mid-life mortality crisis. This is clear from the strong contribution of increasing mortality below age 60 to LE losses in 2020 and 2021. Because non-COVID mortality also increased in these ages this may be interpreted as the continuation and worsening of a pre-existing mortality crisis among working age adults.\citealp{Woolf2019} In 2020, the largest share of non-COVID excess deaths in USA males was from external causes (primarily due to drug overdoses and homicides), nearly 80\% of which occurred at working ages.\citealp{Glei2021}  Preliminary data show continued increases in deaths due to drug overdoses in 2021.\citealp{Dyer2021} However, part of the effect may be due to under-registration of COVID-19 deaths among the working age population. Differences in vaccine uptake by age may also have contributed to the shift to younger mortality in the USA. By July 1st when vaccines where already available in the USA, only 66.9\% of 50--64 year-olds were fully vaccinated compared to 82.3\% of 65--74 year-olds (as per CDC Covid Data Tracker). This means that older age groups were relatively better protected during the large Delta wave in the USA in the summer/autumn of 2021 compared to previous waves. Pre-pandemic differences in underlying conditions such as obesity and diabetes also may also have contributed to an increased mortality burden in working age USA adults compared to European counterparts.\citealp{Pongiglione2022} Regarding global comparisons, the evidence for co-morbidity prevalence as an important predictor of cross-country COVID-19 mortality differences is still weak.\citealp{Thakur2021}
+In the USA the pandemic has accentuated the pre-existing mid-life mortality crisis. This is clear from the strong contribution of increasing mortality below age 60 to LE losses in 2020 and 2021. Because non-COVID mortality also increased in these ages this may be interpreted as the continuation and worsening of a pre-existing mortality crisis among working age adults.\cite{Woolf2019} In 2020, the largest share of non-COVID excess deaths in USA males was from external causes (primarily due to drug overdoses and homicides), nearly 80\% of which occurred at working ages.\cite{Glei2021}  Preliminary data show continued increases in deaths due to drug overdoses in 2021.\cite{Dyer2021} However, part of the effect may be due to under-registration of COVID-19 deaths among the working age population. Differences in vaccine uptake by age may also have contributed to the shift to younger mortality in the USA. By July 1st when vaccines where already available in the USA, only 66.9\% of 50--64 year-olds were fully vaccinated compared to 82.3\% of 65--74 year-olds (as per CDC Covid Data Tracker). This means that older age groups were relatively better protected during the large Delta wave in the USA in the summer/autumn of 2021 compared to previous waves. Pre-pandemic differences in underlying conditions such as obesity and diabetes also may also have contributed to an increased mortality burden in working age USA adults compared to European counterparts.\cite{Pongiglione2022} Regarding global comparisons, the evidence for co-morbidity prevalence as an important predictor of cross-country COVID-19 mortality differences is still weak.\cite{Thakur2021}
 
-In 2021 the pandemic's death toll shifted to younger ages. While most countries reduced mortality at older ages, countries that bounced back were able to  avoid the mortality increases in those under-60 that accounted for a higher share of losses in 2021. Whether this shift towards the young reflects differences in vaccine protection, behavioral responses, or deaths from indirect causes remains to be understood. The inconsistent registration of deaths due to COVID-19 across countries\citealp{Garcia2021} complicates any cause-of-death attribution analysis, including ours. We found lower than expected mortality due to non-COVID-19 causes in 2021 in Belgium, England \& Wales, France, and Slovenia (Figure \ref{fig:figure-4}). If these results are an artefact of an overly broad definition of COVID-19 related deaths or point towards a genuine decline in non-COVID mortality due to e.g. mortality displacement or the lack of flu-deaths is unclear at this point. For France, over-counting COVID-19 deaths seems unlikely as the underlying data on COVID-19 death counts used here originates from Santé Publique France, which uses a very strict definition of ``death due to COVID-19''.\citealp{Garcia2021}
+In 2021 the pandemic's death toll shifted to younger ages. While most countries reduced mortality at older ages, countries that bounced back were able to avoid the mortality increases in those under-60 that accounted for a higher share of losses in 2021. Whether this shift towards the young reflects differences in vaccine protection, behavioral responses, or deaths from indirect causes remains to be understood. The inconsistent registration of deaths due to COVID-19 across countries\cite{Garcia2021} complicates any cause-of-death attribution analysis, including ours. We found lower than expected mortality due to non-COVID-19 causes in 2021 in Belgium, England \& Wales, France, and Slovenia (Figure \ref{fig:figure-4}). If these results are an artefact of an overly broad definition of COVID-19 related deaths or point towards a genuine decline in non-COVID mortality due to e.g. mortality displacement or the lack of flu-deaths is unclear at this point. For France, over-counting COVID-19 deaths seems unlikely as the underlying data on COVID-19 death counts used here originates from Santé Publique France, which uses a very strict definition of ``death due to COVID-19''.\cite{Garcia2021}
 
-COVID-19 was the largest contributor to the 2021 life expectancy deficit in all analyzed countries, but the Netherlands. This is despite different reporting standards and thus provides additional strong evidence for the direct effect of COVID-19 on increases mortality. The result for the Netherlands may be spurious as \citeauthor{Karlinsky2021}\citealp{Karlinsky2021} found indirect evidence of substantial under-reporting of deaths due to COVID-19 in the Netherlands during the fall/winter wave in 2021 when comparing excess deaths with COVID-19 deaths (we retrieved updated results for 2021 from the authors github repository at \href{https://github.com/dkobak/excess-mortality}{github.com/dkobak/excess-mortality} on February 15, 2021). However, because factors other than undercounting can influence the relationship between COVID-19 deaths and excess deaths, more detailed cause of death information is needed to assess the impact of non COVID-19 related mortality on 2021 LE deficits.
+COVID-19 was the largest contributor to the 2021 life expectancy deficit in all analyzed countries, but the Netherlands. This is despite different reporting standards and thus provides additional strong evidence for the direct effect of COVID-19 on increases mortality. The result for the Netherlands may be spurious as Karlinsky and Kobak\cite{Karlinsky2021} found indirect evidence of substantial under-reporting of deaths due to COVID-19 in the Netherlands during the fall/winter wave in 2021 when comparing excess deaths with COVID-19 deaths (we retrieved updated results for 2021 from the authors github repository at \href{https://github.com/dkobak/excess-mortality}{github.com/dkobak/excess-mortality} on February 15, 2021). However, because factors other than undercounting can influence the relationship between COVID-19 deaths and excess deaths, more detailed cause of death information is needed to assess the impact of non COVID-19 related mortality on 2021 LE deficits.
 
-As the calculation of life expectancy losses requires timely data on population and death counts by age, we are limited in our analysis to those countries with a reliable vital statistics registration system. Consequently our international analysis based on 29 high and middle income countries may give a skewed impression of the global impact of COVID-19 on life expectancy. Indirect life expectancy estimates for 2020-21 based upon excess deaths \citealp{Heuveline2022} indicate substantial losses across South America, which match or exceed the losses we estimated for Eastern Europe. India and select countries in the Middle East likely had losses on par with the U.S. whereas Russia and Mexico suffered life expectancy losses in excess of the 42 months we estimated for Bulgaria. Little is known about the African continent, due to a lack of reliable death registration, or China, due to restrictive access to the data. Putting our results in context with these indirect estimates: while the life expectancy losses in Central, Western and Northern Europe over the first two years of the pandemic have been drastic given the long trend of declining mortality, they likely have been low when compared across the globe.
+As the calculation of life expectancy losses requires timely data on population and death counts by age, we are limited in our analysis to those countries with a reliable vital statistics registration system. Consequently our international analysis based on 29 high and middle income countries may give a skewed impression of the global impact of COVID-19 on life expectancy. Indirect life expectancy estimates for 2020-21 based upon excess deaths \cite{Heuveline2022} indicate substantial losses across South America, which match or exceed the losses we estimated for Eastern Europe. India and select countries in the Middle East likely had losses on par with the U.S. whereas Russia and Mexico suffered life expectancy losses in excess of the 42 months we estimated for Bulgaria. Little is known about the African continent, due to a lack of reliable death registration, or China, due to restrictive access to the data. Putting our results in context with these indirect estimates: while the life expectancy losses in Central, Western and Northern Europe over the first two years of the pandemic have been drastic given the long trend of declining mortality, they likely have been low when compared across the globe.
 
 In 2021 we saw divergence in the impact of the pandemic on population health. While some countries saw bounce-backs from stark life expectancy losses thanks to pharmaceutical and non-pharmaceutical public health interventions, others saw sustained and substantial life expectancy deficits. Human populations faced multiple mortality crises during the 20th century yet life expectancy kept increasing globally in the medium and long term, especially in the second-half of the 20th century. While COVID-19 has been the most severe global mortality shock since the Second World War, we will have to wait to know  whether and how longer term life expectancy trends are altered by the pandemic. Extrapolating our findings from 2021 it is plausible that countries with ineffective public health responses will see a protracted health crisis induced by the pandemic with medium-term stalls in life expectancy improvements, while other regions manage a smoother recovery to return to pre-pandemic trends.
 
@@ -342,9 +278,10 @@ In 2021 we saw divergence in the impact of the pandemic on population health. Wh
 
 \subsection*{LE estimation and decomposition}
 
-Calculation of period LE requires data on death counts and population exposures by single years of age. Timely information on death counts across all causes from 2015 through 2021 was sourced from the Short Term Mortality Fluctuations Input Database,\citealp{Jdanov2021, Nemeth2021} which continuously collects weekly death counts by age and sex from statistical offices. Data were downloaded on April 26, 2022. The 38 countries represented in the database have been selected based on completeness of their death registration and census data. To allow for a reliable estimation of life expectancy changes and their age contributions, we further selected those 29 countries for which death counts for 2020 and 2021 were reported across at least 10 distinct age groups. These weekly counts were aggregated into annual counts and, due to various age groupings used in the source data, harmonized into single age groups from 0 to 85+ using the Penalized Composite Link model (PCLM),\citealp{Rizzi2015, Pascariu2018} a non-parametric disaggregation technique for histograms of count data. Separate tables of harmonized counts were created for males, females and the total population in each country. Our methodology for age disaggregation follows that of Aburto et al. (2021)\citealp{Aburto2021b} and has been thoroughly validated for accurate LE estimates consistent with those based on unabridged data. Mid-year population estimates by age and sex for the years 2015--2021 were sourced from the United Nations World Population Prospects (WPP)\citealp{UnitedNations2021} and converted into person-years of exposures taking into account the varying number of weeks in an ISO-year \citealp{IOS2021} to be consistent with death-counts reporting in our raw data. For Scotland and England and Wales we projected mid-year population for 2020 and 2021 based on data by the respective national statistical offices. Sensitivity analysis with alternative population estimates taken from national statistical offices is provided in the Appendix. In order to attribute changes in LE to changes in mortality from deaths registered as due to COVID-19 we sourced age- and sex-specific COVID-19 death counts from the COVerAGE-DB database.\citealp{Riffe2021} All data were downloaded on April 26, 2022.
+Calculation of period LE requires data on death counts and population exposures by single years of age. Timely information on death counts across all causes from 2015 through 2021 was sourced from the Short Term Mortality Fluctuations Input Database,\cite{Jdanov2021, Nemeth2021} which continuously collects weekly death counts by age and sex from statistical offices. Data were downloaded on April 26, 2022. The 38 countries represented in the database have been selected based on completeness of their death registration and census data. To allow for a reliable estimation of life expectancy changes and their age contributions, we further selected those 29 countries for which death counts for 2020 and 2021 were reported across at least 10 distinct age groups. These weekly counts were aggregated into annual counts and, due to various age groupings used in the source data, harmonized into single age groups from 0 to 85+ using the Penalized Composite Link model (PCLM),\cite{Rizzi2015, Pascariu2018} a non-parametric disaggregation technique for histograms of count data. Separate tables of harmonized counts were created for males, females and the total population in each country. Our methodology for age disaggregation follows that of Aburto et al. (2021)\cite{Aburto2021b} and has been thoroughly validated for accurate LE estimates consistent with those based on unabridged data. Mid-year population estimates by age and sex for the years 2015--2021 were sourced from the United Nations World Population Prospects (WPP)\cite{UnitedNations2021} and converted into person-years of exposures taking into account the varying number of weeks in an ISO-year \cite{IOS2021} to be consistent with death-counts reporting in our raw data. For Scotland and England and Wales we projected mid-year population for 2020 and 2021 based on data by the respective national statistical offices. Sensitivity analysis with alternative population estimates taken from national statistical offices is provided in the Appendix. In order to attribute changes in LE to changes in mortality from deaths registered as due to COVID-19 we sourced age- and sex-specific COVID-19 death counts from the COVerAGE-DB database.\cite{Riffe2021} All data were downloaded on April 26, 2022.
 
-Annual period life tables calculated via standard demographic techniques\citealp{Chiang1979} were used to estimate LE from 2015 to 2021. To quantify the LE loss directly attributable to COVID-19 we further assembled cause-deleted life tables with ``deaths registered as due to COVID-19'' and ``other deaths'' as possible decrements.\citealp{Preston2001} Using the Arriaga decomposition technique\citealp{Arriaga1984} we attributed annual changes in LE to changes in age-specific all-cause and cause-specific mortality. Additionally, we calculated LE deficits for 2020 and 2021 defined as observed LE minus expected LE based on a continuation of pre-pandemic trends. These expected LE were derived from Lee-Carter forecasts\citealp{Lee1992} of age-specific death rates over the years 2015 through 2019. Confidence intervals around our LE estimates, LE differences, LE deficits, and LE decompositions were derived from 500 Poisson simulations of the harmonized death counts.
+Annual period life tables calculated via standard demographic techniques\cite{Chiang1979} were used to estimate LE from 2015 to 2021. To quantify the LE loss directly attributable to COVID-19 we further assembled cause-deleted life tables with ``deaths registered as due to COVID-19'' and ``other deaths'' as possible decrements.\cite{Preston2001} Using the Arriaga decomposition technique\cite{Arriaga1984} we attributed annual changes in LE to changes in age-specific all-cause and cause-specific mortality. Additionally, we calculated LE deficits for 2020 and 2021 defined as observed LE minus expected LE based on a continuation of pre-pandemic trends. These expected LE were derived from Lee-Carter forecasts\cite{Lee1992} of age-specific death rates over the years 2015 through 2019.
+Confidence intervals around our LE estimates, LE differences, LE deficits, LE decompositions, and LE sex differences were derived from 100 Poisson simulations of the harmonized death counts. Where applicable, we calculated associated p-values from a shifted empirical distribution function of the Poisson-bootstrapped estimates under the null.
 
 To analyze the cross-country relationship between life expectancy deficits and vaccination uptake during fall and winter 2021 we calculated life tables and life expectancy deficits for the fourth quarter of the year. To do so we used the weekly death counts over weeks 40 through 52 and adjusted population exposures.
 
@@ -352,7 +289,7 @@ The analyses are fully reproducible with source code and data archived with Zeno
 
 \subsection*{Estimation of age specific vaccination uptake}
 
-Data on age-specific vaccinations was collected from the COVerAGE-DB.\citealp{Riffe2021} Vaccination uptake was calculated with midyear population data for 2020 from WPP\citealp{UnitedNations2021} and the Human Mortality Database. Vaccination measures were age harmonized using the PCLM. Vaccination counts with missing age information were redistributed according to the observed age distribution of vaccinations in a given country. From the available data, for each country we calculated the share of population fully vaccinated as of October 1st 2021 separately for people below age 60 and above 60. A full vaccination was defined as either two vaccinations or a single vaccination of the vaccine from Johnson \& Johnson.
+Data on age-specific vaccinations was collected from the COVerAGE-DB.\cite{Riffe2021} Vaccination uptake was calculated with midyear population data for 2020 from WPP\cite{UnitedNations2021} and the Human Mortality Database. Vaccination measures were age harmonized using the PCLM. Vaccination counts with missing age information were redistributed according to the observed age distribution of vaccinations in a given country. From the available data, for each country we calculated the share of population fully vaccinated as of October 1st 2021 separately for people below age 60 and above 60. A full vaccination was defined as either two vaccinations or a single vaccination of the vaccine from Johnson \& Johnson.
 
 \subsection*{Population exposure sensitivity analysis}
 
@@ -372,12 +309,6 @@ We archived CSV files of the table and figure data (\href{https://zenodo.org/rec
 
 Scripts for the R programming language to download the source data for our analysis and to reproduce the results in this paper were archived with Zenodo (\href{https://zenodo.org/record/6653291}{DOI:  10.5281/zenodo.6653291}).
 
-\clearpage
-\bibliography{ex2021}
-
-\clearpage
-\appendix
-
 \section*{Acknowledgements}
 
 The authors like to thank Ariel Karlinsky for his help in determining the death count late registration quotas via his invaluable work on the World Mortality Database.
@@ -393,7 +324,567 @@ Conceptualization (J.S., J.M.A., I.K., M.S.K., H.J., R.K.); Data curation (J.S.,
 The authors declare no conflicts of interest.
 
 \clearpage
-\section*{Appendix}
+
+\section*{Tables (Main Text)}
+
+\begin{table}[ht]
+    \centering\footnotesize\addtolength{\tabcolsep}{-4pt}
+    \begin{tabular}{
+    l
+    l
+    S[table-format=-2.1]
+    S[table-format = -2.1,table-space-text-pre={[}]
+    S[table-format = -2.1,table-space-text-post={]}]
+    l
+    S[table-format=-2.1]
+    S[table-format = -2.1,table-space-text-pre={[}]
+    S[table-format = -2.1,table-space-text-post={]}]
+    l
+    S[table-format=-2.1]
+    S[table-format = -2.1,table-space-text-pre={[}]
+    S[table-format = -2.1,table-space-text-post={]}]
+    l
+    S[table-format=-2.1]
+    S[table-format = -2.1,table-space-text-pre={[}]
+    S[table-format = -2.1,table-space-text-post={]}]
+    }
+    \toprule
+     & \multicolumn{4}{c}{Net LE diff 2019 to 21} & \multicolumn{4}{c}{LE changes 2020} & \multicolumn{4}{c}{LE changes 2021} & \multicolumn{4}{c}{LE deficit 2021} \\
+    \cmidrule(lr){2-5} \cmidrule(lr){6-9} \cmidrule(lr){10-13} \cmidrule(lr){14-17}
+     & {AT\textsuperscript{1}} & {ES\textsuperscript{2}} & \multicolumn{2}{c}{CI\textsuperscript{3}} & {AT} & {ES} & \multicolumn{2}{c}{CI} & {AT} & {ES} & \multicolumn{2}{c}{CI} & {AT} & {ES} & \multicolumn{2}{c}{CI} \\
+     \midrule
+     AUT & $\downarrow^{\text{60+}}$ & -7.6 & {[}-8.8{;} & -6.4{]} & $\downarrow^{\text{60+}}$ & -8.1 & {[}-9.4{;} & -6.9{]} & $\uparrow^{\textbf{60+}}$ & +0.5 & {[}-1.1{;} & +1.7{]} & $\downarrow^{\text{60+}}$ & -12.0 & {[}-10.6{;} & -13.3{]} \\
+     BEL & $\downarrow^{\textbf{60+}}$ & -1.2 & {[}-2.2{;} & +0.1{]} & $\downarrow^{\text{60+}}$ & -12.0 & {[}-13.0{;} & -10.8{]} & $\uparrow^{\text{60+}}$ & +10.8 & {[}+9.7{;} & +11.9{]} & $\downarrow^{\text{60+}}$ & -6.8 & {[}-5.7{;} & -7.9{]} \\
+     BGR & $\downarrow^{\text{60+}}$ & -43.0 & {[}-44.5{;} & -41.4{]} & $\downarrow^{\text{60+}}$ & -17.8 & {[}-19.8{;} & -16.2{]} & $\downarrow^{\text{60+}}$ & -25.1 & {[}-26.6{;} & -23.4{]} & $\downarrow^{\text{60+}}$ & -46.2 & {[}-44.5{;} & -48.0{]} \\
+     CHE & $\downarrow^{\textbf{<60}}$ & -0.5 & {[}-1.7{;} & +0.6{]} & $\downarrow^{\text{60+}}$ & -8.2 & {[}-9.5{;} & -6.7{]} & $\uparrow^{\text{60+}}$ & +7.7 & {[}+6.4{;} & +8.8{]} & $\downarrow^{\text{60+}}$ & -6.2 & {[}-4.9{;} & -7.4{]} \\
+     CHL & $\downarrow^{\text{60+}}$ & -21.1 & {[}-22.3{;} & -19.9{]} & $\downarrow^{\text{60+}}$ & -13.1 & {[}-14.2{;} & -11.7{]} & $\downarrow^{\text{<60}}$ & -8.0 & {[}-9.0{;} & -7.0{]} & $\downarrow^{\text{60+}}$ & -24.4 & {[}-23.3{;} & -25.6{]} \\
+     CZE & $\downarrow^{\text{60+}}$ & -21.9 & {[}-22.8{;} & -20.8{]} & $\downarrow^{\text{60+}}$ & -11.6 & {[}-12.6{;} & -10.5{]} & $\downarrow^{\text{60+}}$ & -10.4 & {[}-11.5{;} & -9.4{]} & $\downarrow^{\text{60+}}$ & -26.0 & {[}-24.9{;} & -27.0{]} \\
+     DEU & $\downarrow^{\text{60+}}$ & -5.7 & {[}-6.2{;} & -5.3{]} & $\downarrow^{\textbf{60+}}$ & -2.6 & {[}-3.1{;} & -2.2{]} & $\downarrow^{\text{60+}}$ & -3.1 & {[}-3.5{;} & -2.7{]} & $\downarrow^{\text{60+}}$ & -10.2 & {[}-9.8{;} & -10.6{]} \\
+     DNK & $\downarrow^{\textbf{60+}}$ & -0.4 & {[}-1.9{;} & +1.4{]} & $\uparrow^{\text{60+}}$ & +1.1 & {[}-0.3{;} & +2.8{]} & $\downarrow^{\textbf{60+}}$ & -1.5 & {[}-3.3{;} & +0.1{]} & $\downarrow^{\text{60+}}$ & -3.9 & {[}-2.2{;} & -5.6{]} \\
+     EST & $\downarrow^{\text{60+}}$ & -23.2 & {[}-26.9{;} & -19.3{]} & $\downarrow^{\text{60+}}$ & -1.8 & {[}-6.5{;} & +3.0{]} & $\downarrow^{\text{60+}}$ & -21.5 & {[}-25.1{;} & -17.6{]} & $\downarrow^{\text{60+}}$ & -29.3 & {[}-25.6{;} & -32.7{]} \\
+     ESP & $\downarrow^{\text{60+}}$ & -7.4 & {[}-8.0{;} & -6.7{]} & $\downarrow^{\text{60+}}$ & -15.0 & {[}-15.5{;} & -14.4{]} & $\uparrow^{\textbf{60+}}$ & +7.6 & {[}+7.1{;} & +8.1{]} & $\downarrow^{\text{60+}}$ & -13.3 & {[}-12.8{;} & -14.0{]} \\
+     FIN & $\downarrow^{\textbf{60+}}$ & -0.3 & {[}-2.0{;} & +1.7{]} & $\downarrow^{\text{60+}}$ & -0.4 & {[}-1.9{;} & +1.4{]} & $\uparrow^{\textbf{<60}}$ & +0.1 & {[}-1.5{;} & +1.8{]} & $\downarrow^{\textbf{60+}}$ & -3.4 & {[}-1.2{;} & -5.1{]} \\
+     FRA & $\downarrow^{\textbf{60+}}$ & -1.2 & {[}-1.7{;} & -0.6{]} & $\downarrow^{\textbf{60+}}$ & -6.2 & {[}-6.7{;} & -5.6{]} & $\uparrow^{\text{60+}}$ & +5.0 & {[}+4.4{;} & +5.6{]} & $\downarrow^{\textbf{60+}}$ & -4.5 & {[}-3.7{;} & -5.1{]} \\
+     EAW & $\downarrow^{\text{60+}}$ & -9.3 & {[}-9.8{;} & -8.9{]} & $\downarrow^{\text{60+}}$ & -11.5 & {[}-12.1{;} & -11.0{]} & $\uparrow^{\textbf{60+}}$ & +2.1 & {[}+1.6{;} & +2.7{]} & $\downarrow^{\text{60+}}$ & -12.7 & {[}-12.1{;} & -13.3{]} \\
+     NIR & $\downarrow^{\text{60+}}$ & -9.5 & {[}-12.9{;} & -7.0{]} & $\downarrow^{\textbf{60+}}$ & -8.6 & {[}-11.4{;} & -5.4{]} & $\downarrow^{\textbf{<60}}$ & -0.9 & {[}-3.4{;} & +2.5{]} & $\downarrow^{\text{60+}}$ & -13.0 & {[}-9.4{;} & -15.8{]} \\
+     SCT & $\downarrow^{\text{60+}}$ & -9.6 & {[}-11.7{;} & -7.9{]} & $\downarrow^{\text{60+}}$ & -8.9 & {[}-10.7{;} & -7.3{]} & $\downarrow^{\textbf{<60}}$ & -0.7 & {[}-2.6{;} & +0.8{]} & $\downarrow^{\text{<60}}$ & -10.2 & {[}-8.5{;} & -11.5{]} \\
+     GRC & $\downarrow^{\text{60+}}$ & -15.5 & {[}-16.8{;} & -14.2{]} & $\downarrow^{\textbf{60+}}$ & -3.2 & {[}-4.3{;} & -1.8{]} & $\downarrow^{\text{60+}}$ & -12.4 & {[}-13.8{;} & -11.0{]} & $\downarrow^{\text{60+}}$ & -18.4 & {[}-17.2{;} & -19.7{]} \\
+     HRV & $\downarrow^{\text{60+}}$ & -21.0 & {[}-23.0{;} & -19.5{]} & $\downarrow^{\text{60+}}$ & -9.4 & {[}-11.7{;} & -7.6{]} & $\downarrow^{\text{60+}}$ & -11.6 & {[}-13.3{;} & -9.7{]} & $\downarrow^{\text{60+}}$ & -27.0 & {[}-25.0{;} & -28.9{]} \\
+     HUN & $\downarrow^{\text{60+}}$ & -24.6 & {[}-26.0{;} & -23.2{]} & $\downarrow^{\text{60+}}$ & -8.2 & {[}-9.3{;} & -7.0{]} & $\downarrow^{\text{60+}}$ & -16.4 & {[}-17.6{;} & -15.3{]} & $\downarrow^{\text{60+}}$ & -29.5 & {[}-28.3{;} & -30.9{]} \\
+     ISL & $\downarrow^{\textbf{<60}}$ & -2.1 & {[}-10.5{;} & +5.6{]} & $\downarrow^{\textbf{<60}}$ & -3.2 & {[}-10.6{;} & +4.0{]} & $\uparrow^{\textbf{60+}}$ & +1.0 & {[}-5.3{;} & +8.5{]} & $\downarrow^{\text{<60}}$ & -4.7 & {[}+3.1{;} & -14.3{]} \\
+     ITA & $\downarrow^{\text{60+}}$ & -7.4 & {[}-7.9{;} & -6.9{]} & $\downarrow^{\text{60+}}$ & -12.6 & {[}-13.0{;} & -12.1{]} & $\uparrow^{\textbf{60+}}$ & +5.1 & {[}+4.6{;} & +5.5{]} & $\downarrow^{\text{60+}}$ & -13.5 & {[}-13.0{;} & -14.1{]} \\
+     LTU & $\downarrow^{\text{60+}}$ & -25.7 & {[}-28.3{;} & -23.2{]} & $\downarrow^{\text{60+}}$ & -17.8 & {[}-20.4{;} & -15.2{]} & $\downarrow^{\text{60+}}$ & -7.9 & {[}-10.5{;} & -5.4{]} & $\downarrow^{\text{60+}}$ & -37.5 & {[}-34.9{;} & -39.9{]} \\
+     NLD & $\downarrow^{\text{60+}}$ & -7.4 & {[}-8.4{;} & -6.7{]} & $\downarrow^{\text{60+}}$ & -7.7 & {[}-8.5{;} & -6.8{]} & $\uparrow^{\textbf{60+}}$ & +0.3 & {[}-0.7{;} & +1.0{]} & $\downarrow^{\text{60+}}$ & -11.0 & {[}-10.1{;} & -12.0{]} \\
+     NOR & $\uparrow^{\text{<60}}$ & +1.7 & {[}+0.4{;} & +3.6{]} & $\uparrow^{\text{60+}}$ & +2.0 & {[}+0.4{;} & +3.9{]} & $\downarrow^{\textbf{60+}}$ & -0.3 & {[}-2.0{;} & +1.5{]} & $\downarrow^{\textbf{60+}}$ & -2.4 & {[}-0.9{;} & -4.4{]} \\
+     POL & $\downarrow^{\text{60+}}$ & -26.6 & {[}-27.4{;} & -25.8{]} & $\downarrow^{\text{60+}}$ & -14.5 & {[}-15.4{;} & -13.8{]} & $\downarrow^{\text{60+}}$ & -12.1 & {[}-12.7{;} & -11.3{]} & $\downarrow^{\text{60+}}$ & -30.5 & {[}-29.8{;} & -31.1{]} \\
+     PRT & $\downarrow^{\text{60+}}$ & -7.6 & {[}-9.1{;} & -6.5{]} & $\downarrow^{\text{60+}}$ & -8.3 & {[}-9.4{;} & -7.2{]} & $\uparrow^{\text{60+}}$ & +0.7 & {[}-0.8{;} & +2.0{]} & $\downarrow^{\text{60+}}$ & -10.8 & {[}-9.4{;} & -12.1{]} \\
+     SWE & $\downarrow^{\textbf{60+}}$ & -0.1 & {[}-1.1{;} & +1.0{]} & $\downarrow^{\text{60+}}$ & -7.6 & {[}-8.6{;} & -6.4{]} & $\uparrow^{\text{60+}}$ & +7.5 & {[}+6.0{;} & +8.6{]} & $\downarrow^{\text{60+}}$ & -4.9 & {[}-3.7{;} & -6.0{]} \\
+     SVN & $\downarrow^{\text{60+}}$ & -7.3 & {[}-10.8{;} & -4.8{]} & $\downarrow^{\text{60+}}$ & -10.4 & {[}-13.6{;} & -7.7{]} & $\uparrow^{\textbf{60+}}$ & +3.1 & {[}+0.4{;} & +5.7{]} & $\downarrow^{\text{60+}}$ & -8.5 & {[}-5.5{;} & -11.7{]} \\
+     SVK & $\downarrow^{\text{60+}}$ & -33.1 & {[}-34.8{;} & -31.6{]} & $\downarrow^{\text{60+}}$ & -9.2 & {[}-11.2{;} & -7.6{]} & $\downarrow^{\text{60+}}$ & -23.9 & {[}-25.7{;} & -22.3{]} & $\downarrow^{\text{60+}}$ & -39.1 & {[}-37.1{;} & -40.8{]} \\
+     USA & $\downarrow^{\text{<60}}$ & -28.2 & {[}-28.7{;} & -27.8{]} & $\downarrow^{\text{60+}}$ & -25.5 & {[}-26.0{;} & -25.1{]} & $\downarrow^{\textbf{<60}}$ & -2.7 & {[}-3.1{;} & -2.2{]} & $\downarrow^{\text{60+}}$ & -33.0 & {[}-32.4{;} & -33.5{]} \\
+     \bottomrule
+ \end{tabular}
+    \vspace{-5mm}
+    \begin{minipage}{\linewidth}
+    \textsuperscript{1}Attribution of life expectancy changes to \\
+    mortality \emph{increases} among
+    {primarily $\downarrow^{\text{60+}}$},
+    {solely $\downarrow^{\textbf{60+}}$},
+    {primarily $\downarrow^{\text{<60}}$},
+    {solely $\downarrow^{\textbf{<60}}$}, \\
+    mortality \emph{decreases} among
+    {primarily $\uparrow^{\text{60+}}$},
+    {solely $\uparrow^{\textbf{60+}}$},
+    {primarily $\uparrow^{\text{<60}}$},
+    {solely $\uparrow^{\textbf{<60}}$}. \\
+    \textsuperscript{2}Central estimate in months \\
+    \textsuperscript{3}95\% confidence interval \\
+    \end{minipage}
+    \caption{Months of life expectancy (LE) changes and deficits (labelled ES) since the start of the pandemic attributed to age-specific mortality changes (labelled AT). LE deficit is defined as observed minus expected life expectancy had pre-pandemic mortality trends continued.}
+    \label{tab:arriaga}
+    \end{table}
+
+\clearpage
+\section*{Figures (Main Text)}
+
+\begin{figure}[ht!]
+    \centering
+    %\includegraphics{figure-1.pdf}
+    \caption{Life expectancy changes 2019-20 and 2020-21 across countries. The countries are ordered by increasing cumulative life expectancy losses since 2019. The two line segments indicate the annual changes in life expectancy in 2020 and 2021 respectively. Red segments to the left indicate a life expectancy drop while gray arrows to the right indicate a rise in life expectancy. The position of the arrowhead indicates the total change in life expectancy from 2019 through 2021.
+    Grey dots and lines indicate the average annual LE changes over the years 2015 through 2019 along with 95\% confidence intervals.}
+    \label{fig:figure-1}
+\end{figure}
+
+\begin{figure}[ht!]
+    \centering
+    %\includegraphics{figure-2.pdf}
+    \caption{Age contributions to life expectancy changes since 2019 separated for 2020 and 2021. The position of the arrowhead indicates the contribution of mortality changes in a given age group to the change in life expectancy at birth since 2019. The discontinuity in the arrow indicates those contributions separately for the years 2020 and 2021. Annual contributions can compound or reverse. Red colors indicate negative contributions, gray indicates positive contributions. The total life expectancy change from 2019 to 2021 in a given country is the sum of the arrowhead positions across age.}
+    \label{fig:figure-2}
+\end{figure}
+
+\begin{figure}[ht!]
+    \centering
+    %\includegraphics{figure-3.pdf}
+    \caption{Change in the female life expectancy advantage from 2019 through 2021. Blue upwards arrows indicate an increase and red downwards arrows a decrease in the female life expectancy advantage. We tested the hypothesis of no change in the sex-gap between 2019 and 2021: (*) $p\leq0.05$, (**) $p\leq0.01$, (***) $p\leq0.001$.}
+    \label{fig:figure-3}
+\end{figure}
+
+\begin{figure}[ht!]
+    \centering
+    %\includegraphics{figure-4.pdf}
+    \caption{Life expectancy deficit in 2021 decomposed into contributions by age and cause of death. LE deficit is defined as observed minus expected life expectancy had pre-pandemic mortality trends continued.}
+    \label{fig:figure-4}
+\end{figure}
+
+\begin{figure}[ht!]
+    \centering
+    %\includegraphics{figure-5.pdf}
+    \caption{Years of life expectancy deficit during October through December 2021 contributed by ages <60 and 60+ against \% of population twice vaccinated by October 1st in the respective age groups. LE deficit is defined as the counterfactual LE from a Lee-Carter mortality forecast based on death rates for the fourth quarter of the years 2015 to 2019 minus observed LE.}
+    \label{fig:figure-5}
+\end{figure}
+
+\begin{figure}[ht!]
+    \centering
+    %\Oldincludegraphics[angle=90,height=0.92\textheight]{figure-6.pdf}
+    \caption{Life expectancy declines since 1900 and periods of widespread mortality increases.}
+    \label{fig:figure-6}
+\end{figure}
+
+\clearpage
+\emergencystretch=4em
+%\bibliography{ex2021.bib}
+
+\begin{thebibliography}{10}
+  \expandafter\ifx\csname url\endcsname\relax
+    \def\url#1{\burl{#1}}\fi
+  \expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+  \providecommand{\bibinfo}[2]{#2}
+  \providecommand{\eprint}[2][]{\url{#2}}
+  \providecommand{\doi}[1]{\url{https://doi.org/#1}}
+  \bibcommenthead
+
+  \bibitem{Riley2005}
+  \bibinfo{author}{Riley, J.~C.}
+  \newblock \bibinfo{title}{Estimates of regional and global life expectancy,
+    1800-2001}.
+  \newblock \emph{\bibinfo{journal}{Population and Development Review}}
+    \textbf{\bibinfo{volume}{31}}~(3), \bibinfo{pages}{537--543}
+    (\bibinfo{year}{2005}).
+  \newblock \doi{10.1111/j.1728-4457.2005.00083.x} .
+
+  \bibitem{Raleigh2019}
+  \bibinfo{author}{Raleigh, V.~S.}
+  \newblock \bibinfo{title}{Trends in life expectancy in {{EU}} and other
+    {{OECD}} countries: {{Why}} are improvements slowing?}
+  \newblock \emph{\bibinfo{journal}{OECD Health Working Papers}}
+    (\bibinfo{year}{2019}).
+  \newblock \doi{10.1787/223159ab-en} .
+
+  \bibitem{Ho2018}
+  \bibinfo{author}{Ho, J.~Y.} \& \bibinfo{author}{Hendi, A.~S.}
+  \newblock \bibinfo{title}{Recent trends in life expectancy across high income
+    countries: Retrospective observational study}.
+  \newblock \emph{\bibinfo{journal}{BMJ}} \textbf{\bibinfo{volume}{362}},
+    \bibinfo{pages}{k2562} (\bibinfo{year}{2018}).
+  \newblock \doi{10.1136/bmj.k2562},
+    \bibinfo{eprint}{{\href{https://arxiv.org/abs/30111634}{{pmid:30111634}}}} .
+
+  \bibitem{Hiam2018}
+  \bibinfo{author}{Hiam, L.}, \bibinfo{author}{Harrison, D.},
+    \bibinfo{author}{McKee, M.} \& \bibinfo{author}{Dorling, D.}
+  \newblock \bibinfo{title}{Why is life expectancy in {{England}} and {{Wales}}
+    ‘stalling’?}
+  \newblock \emph{\bibinfo{journal}{Journal of Epidemiology and Community
+    Health}} \textbf{\bibinfo{volume}{72}}~(5), \bibinfo{pages}{404--408}
+    (\bibinfo{year}{2018}).
+  \newblock \doi{10.1136/jech-2017-210401} .
+
+  \bibitem{Fenton2019}
+  \bibinfo{author}{Fenton, L.} \emph{et~al.}
+  \newblock \bibinfo{title}{Recent adverse mortality trends in {Scotland}:
+    comparison with other high-income countries}.
+  \newblock \emph{\bibinfo{journal}{{BMJ} Open}}
+    \textbf{\bibinfo{volume}{9}}~(10), \bibinfo{pages}{e029936}
+    (\bibinfo{year}{2019}).
+  \newblock \doi{10.1136/bmjopen-2019-029936} .
+
+  \bibitem{Aburto2021b}
+  \bibinfo{author}{Aburto, J.~M.} \emph{et~al.}
+  \newblock \bibinfo{title}{Quantifying impacts of the {COVID-19} pandemic
+    through life-expectancy losses: a population-level study of 29 countries}.
+  \newblock \emph{\bibinfo{journal}{International Journal of Epidemiology}}
+    (\bibinfo{year}{2021}).
+  \newblock \doi{10.1093/ije/dyab207} .
+
+  \bibitem{Islam2021a}
+  \bibinfo{author}{Islam, N.} \emph{et~al.}
+  \newblock \bibinfo{title}{Effects of {COVID-19} pandemic on life expectancy and
+    premature mortality in 2020: time series analysis in 37 countries}.
+  \newblock \emph{\bibinfo{journal}{{BMJ}}} \bibinfo{pages}{e066768}
+    (\bibinfo{year}{2021}).
+  \newblock \doi{10.1136/bmj-2021-066768} .
+
+  \bibitem{Andrasfay2021}
+  \bibinfo{author}{Andrasfay, T.} \& \bibinfo{author}{Goldman, N.}
+  \newblock \bibinfo{title}{Reductions in 2020 {{US}} life expectancy due to
+    {{COVID}}-19 and the disproportionate impact on the {{Black}} and {{Latino}}
+    populations}.
+  \newblock \emph{\bibinfo{journal}{Proceedings of the National Academy of
+    Sciences}} \textbf{\bibinfo{volume}{118}}~(5), \bibinfo{pages}{e2014746118}
+    (\bibinfo{year}{2021}).
+  \newblock \doi{10.1073/pnas.2014746118},
+    \bibinfo{eprint}{{\href{https://arxiv.org/abs/33446511}{{pmid:33446511}}}} .
+
+  \bibitem{Mazzuco2022}
+  \bibinfo{author}{Mazzuco, S.} \& \bibinfo{author}{Campostrini, S.}
+  \newblock \bibinfo{title}{Life expectancy drop in 2020. {E}stimates based on
+    {Human Mortality Database}}.
+  \newblock \emph{\bibinfo{journal}{{PLOS} {ONE}}}
+    \textbf{\bibinfo{volume}{17}}~(1), \bibinfo{pages}{e0262846}
+    (\bibinfo{year}{2022}).
+  \newblock \doi{10.1371/journal.pone.0262846} .
+
+  \bibitem{Yadav2021}
+  \bibinfo{author}{Yadav, S.}, \bibinfo{author}{Yadav, P.~K.} \&
+    \bibinfo{author}{Yadav, N.}
+  \newblock \bibinfo{title}{Impact of {COVID}-19 on life expectancy at birth in
+    {India}: a decomposition analysis}.
+  \newblock \emph{\bibinfo{journal}{{BMC} Public Health}}
+    \textbf{\bibinfo{volume}{21}}~(1) (\bibinfo{year}{2021}).
+  \newblock \doi{doi.org/10.1186/s12889-021-11690-z} .
+
+  \bibitem{Castro2021}
+  \bibinfo{author}{Castro, M.~C.} \emph{et~al.}
+  \newblock \bibinfo{title}{Reduction in life expectancy in {Brazil} after
+    {COVID}-19}.
+  \newblock \emph{\bibinfo{journal}{Nature Medicine}}
+    \textbf{\bibinfo{volume}{27}}~(9), \bibinfo{pages}{1629--1635}
+    (\bibinfo{year}{2021}).
+  \newblock \doi{10.1038/s41591-021-01437-z} .
+
+  \bibitem{GarciaGuerrero2021}
+  \bibinfo{author}{Garc{\'{\i}}a-Guerrero, V.~M.} \&
+    \bibinfo{author}{Beltr{\'{a}}n-S{\'{a}}nchez, H.}
+  \newblock \bibinfo{title}{Heterogeneity in excess mortality and its impact on
+    loss of life expectancy due to {COVID}-19: {E}vidence from {M}exico}.
+  \newblock \emph{\bibinfo{journal}{Canadian Studies in Population}}
+    \textbf{\bibinfo{volume}{48}}~(2-3), \bibinfo{pages}{165--200}
+    (\bibinfo{year}{2021}).
+  \newblock \doi{10.1007/s42650-021-00051-1} .
+
+  \bibitem{Lima2021}
+  \bibinfo{author}{Lima, E. E.~C.} \emph{et~al.}
+  \newblock \bibinfo{title}{Investigating regional excess mortality during 2020
+    {COVID}-19 pandemic in selected {L}atin {A}merican countries}.
+  \newblock \emph{\bibinfo{journal}{Genus}} \textbf{\bibinfo{volume}{77}}~(1),
+    \bibinfo{pages}{1--20} (\bibinfo{year}{2021}).
+  \newblock \doi{10.1186/s41118-021-00139-1} .
+
+  \bibitem{CanudasRomo2022}
+  \bibinfo{author}{Canudas-Romo, V.}, \bibinfo{author}{Houle, B.} \&
+    \bibinfo{author}{Adair, T.}
+  \newblock \bibinfo{title}{Quantifying impacts of the {COVID}-19 pandemic on
+    {Australian} life expectancy}.
+  \newblock \emph{\bibinfo{journal}{International Journal of Epidemiology}}
+    (\bibinfo{year}{2022}).
+  \newblock \doi{10.1093/ije/dyab273} .
+
+  \bibitem{Rizzi2021a}
+  \bibinfo{author}{Rizzi, S.}, \bibinfo{author}{S{\o}gaard, J.} \&
+    \bibinfo{author}{Vaupel, J.~W.}
+  \newblock \bibinfo{title}{High excess deaths in {S}weden during the first wave
+    of {COVID}-19: Policy deficiencies or `dry tinder'?}
+  \newblock \emph{\bibinfo{journal}{Scandinavian Journal of Public Health}}
+    \textbf{\bibinfo{volume}{50}}~(1), \bibinfo{pages}{33--37}
+    (\bibinfo{year}{2021}).
+  \newblock \doi{10.1177/14034948211027818} .
+
+  \bibitem{Saha2013}
+  \bibinfo{author}{Saha, M.~V.}, \bibinfo{author}{Davis, R.~E.} \&
+    \bibinfo{author}{Hondula, D.~M.}
+  \newblock \bibinfo{title}{Mortality displacement as a function of heat event
+    strength in 7 {US} cities}.
+  \newblock \emph{\bibinfo{journal}{American Journal of Epidemiology}}
+    \textbf{\bibinfo{volume}{179}}~(4), \bibinfo{pages}{467--474}
+    (\bibinfo{year}{2013}).
+  \newblock \doi{10.1093/aje/kwt264} .
+
+  \bibitem{Kissler2021}
+  \bibinfo{author}{Kissler, S.~M.} \& \bibinfo{author}{Grad, Y.~H.}
+  \newblock \bibinfo{title}{The anticipated artificial increase in life
+    expectancy from {COVID}-19}.
+  \newblock \emph{\bibinfo{journal}{medRxiv}}  (\bibinfo{year}{2021}).
+  \newblock \doi{10.1101/2021.09.09.21263351} .
+
+  \bibitem{Heuveline2022}
+  \bibinfo{author}{Heuveline, P.}
+  \newblock \bibinfo{title}{Global and national declines in life expectancy: An
+    end-of-2021 assessment}.
+  \newblock \emph{\bibinfo{journal}{Population and Development Review}}
+    \textbf{\bibinfo{volume}{48}}~(1), \bibinfo{pages}{31--50}
+    (\bibinfo{year}{2022}).
+  \newblock \doi{10.1111/padr.12477} .
+
+  \bibitem{Nemeth2021}
+  \bibinfo{author}{N{\'{e}}meth, L.}, \bibinfo{author}{Jdanov, D.~A.} \&
+    \bibinfo{author}{Shkolnikov, V.~M.}
+  \newblock \bibinfo{title}{An open-sourced, web-based application to analyze
+    weekly excess mortality based on the {S}hort-term {M}ortality {F}luctuations
+    data series}.
+  \newblock \emph{\bibinfo{journal}{{PLOS} {ONE}}}
+    \textbf{\bibinfo{volume}{16}}~(2), \bibinfo{pages}{e0246663}
+    (\bibinfo{year}{2021}).
+  \newblock \doi{10.1371/journal.pone.0246663} .
+
+  \bibitem{Zarulli2021}
+  \bibinfo{author}{Zarulli, V.}, \bibinfo{author}{Kashnitsky, I.} \&
+    \bibinfo{author}{Vaupel, J.~W.}
+  \newblock \bibinfo{title}{Death rates at specific life stages mold the sex gap
+    in life expectancy}.
+  \newblock \emph{\bibinfo{journal}{Proceedings of the National Academy of
+    Sciences}} \textbf{\bibinfo{volume}{118}}~(20), \bibinfo{pages}{e2010588118}
+    (\bibinfo{year}{2021}).
+  \newblock \doi{10.1073/pnas.2010588118} .
+
+  \bibitem{Lumey1994}
+  \bibinfo{author}{Lumey, L.~H.} \& \bibinfo{author}{van Poppel, F. W.~A.}
+  \newblock \bibinfo{title}{The dutch famine of 1944-45: Mortality and morbidity
+    in past and present generations}.
+  \newblock \emph{\bibinfo{journal}{Social History of Medicine}}
+    \textbf{\bibinfo{volume}{7}}~(2), \bibinfo{pages}{229--246}
+    (\bibinfo{year}{1994}).
+  \newblock \doi{10.1093/shm/7.2.229} .
+
+  \bibitem{Shkolnikov2013}
+  \bibinfo{author}{Shkolnikov, V.~M.}, \bibinfo{author}{Andreev, E.~M.},
+    \bibinfo{author}{McKee, M.} \& \bibinfo{author}{Leon, D.~A.}
+  \newblock \bibinfo{title}{Components and possible determinants of decrease in
+    {Russian} mortality in 2004-2010}.
+  \newblock \emph{\bibinfo{journal}{Demographic Research}}
+    \textbf{\bibinfo{volume}{28}}, \bibinfo{pages}{917--950}
+    (\bibinfo{year}{2013}).
+  \newblock \doi{10.4054/DemRes.2013.28.32} .
+
+  \bibitem{Timonin2016}
+  \bibinfo{author}{Timonin, S.} \emph{et~al.}
+  \newblock \bibinfo{title}{Disparities in length of life across developed
+    countries: measuring and decomposing changes over time within and between
+    country groups}.
+  \newblock \emph{\bibinfo{journal}{Population Health Metrics}}
+    \textbf{\bibinfo{volume}{14}}~(1) (\bibinfo{year}{2016}).
+  \newblock \doi{10.1186/s12963-016-0094-0} .
+
+  \bibitem{Zakharov1999}
+  \bibinfo{author}{Zakharov, S.}
+  \newblock \bibinfo{title}{Cohort analysis of the {Russia's} population
+    mortality: Long- and short-term effects of generations' inequality in the
+    face of death}.
+  \newblock \emph{\bibinfo{journal}{Studies on Russian Economic Development}}
+    \textbf{\bibinfo{volume}{10}}~(2) (\bibinfo{year}{1999}).
+  \newblock
+    \urlprefix\url{http://www.demoscope.ru/center/zacharov/zachar_eng.html} .
+
+  \bibitem{Leon2009}
+  \bibinfo{author}{Leon, D.~A.}, \bibinfo{author}{Shkolnikov, V.~M.} \&
+    \bibinfo{author}{McKee, M.}
+  \newblock \bibinfo{title}{Alcohol and {Russian} mortality: a continuing
+    crisis}.
+  \newblock \emph{\bibinfo{journal}{Addiction}}
+    \textbf{\bibinfo{volume}{104}}~(10), \bibinfo{pages}{1630--1636}
+    (\bibinfo{year}{2009}).
+  \newblock \doi{10.1111/j.1360-0443.2009.02655.x} .
+
+  \bibitem{EuropeanComission2009}
+  \bibinfo{author}{{{European Comission}}}.
+  \newblock \bibinfo{title}{Solidarity in health: reducing health inequalities in
+    the {EU}}.
+  \newblock \bibinfo{type}{Communication}, \bibinfo{institution}{{European
+    Comission}} (\bibinfo{year}{2009}).
+  \newblock \bibinfo{note}{COM(2009) 567}.
+
+  \bibitem{Vishnevsky2015}
+  \bibinfo{author}{Vishnevsky, A.}
+  \newblock \bibinfo{title}{Mortality in {Russia}: the second epidemiological
+    revolution that never was}.
+  \newblock \emph{\bibinfo{journal}{Demographic Review}}
+    \textbf{\bibinfo{volume}{2}}~(5), \bibinfo{pages}{4--33}
+    (\bibinfo{year}{2015}).
+  \newblock \doi{10.17323/demreview.v2i5.5581} .
+
+  \bibitem{Omran1971}
+  \bibinfo{author}{Omran, A.~R.}
+  \newblock \bibinfo{title}{The epidemiologic transition: A theory of the
+    epidemiology of population change}.
+  \newblock \emph{\bibinfo{journal}{The Milbank Memorial Fund Quarterly}}
+    \textbf{\bibinfo{volume}{49}}~(4), \bibinfo{pages}{509--538}
+    (\bibinfo{year}{1971}).
+  \newblock \doi{10.1111/j.1468-0009.2005.00398.x} .
+
+  \bibitem{Vallin2005}
+  \bibinfo{author}{Vallin, J.} \& \bibinfo{author}{Meslé, F.}
+  \newblock \bibinfo{title}{Convergences and divergences: An analytical framework
+    of national and sub-national trends in life expectancy.}
+  \newblock \emph{\bibinfo{journal}{Genus}} \textbf{\bibinfo{volume}{61}}~(1),
+    \bibinfo{pages}{83--124} (\bibinfo{year}{2005}).
+  \newblock \doi{10.2307/29788837} .
+
+  \bibitem{Aburto2018}
+  \bibinfo{author}{Aburto, J.~M.} \& \bibinfo{author}{van Raalte, A.}
+  \newblock \bibinfo{title}{Lifespan dispersion in times of life expectancy
+    fluctuation: {The} case of {{Central}} and {{Eastern Europe}}}.
+  \newblock \emph{\bibinfo{journal}{Demography}}
+    \textbf{\bibinfo{volume}{55}}~(6), \bibinfo{pages}{2071--2096}
+    (\bibinfo{year}{2018}).
+  \newblock \doi{10.1007/s13524-018-0729-9} .
+
+  \bibitem{Woolf2019}
+  \bibinfo{author}{Woolf, S.~H.} \& \bibinfo{author}{Schoomaker, H.}
+  \newblock \bibinfo{title}{Life expectancy and mortality rates in the {United
+    States}, 1959-2017}.
+  \newblock \emph{\bibinfo{journal}{{JAMA}}} \textbf{\bibinfo{volume}{322}}~(20),
+    \bibinfo{pages}{1996} (\bibinfo{year}{2019}).
+  \newblock \doi{10.1001/jama.2019.16932} .
+
+  \bibitem{Glei2021}
+  \bibinfo{author}{Glei, D.~A.}
+  \newblock \bibinfo{title}{The {U.S.} midlife mortality crisis continues:
+    Increased death rates from causes other than {COVID}-19 during 2020}.
+  \newblock \emph{\bibinfo{journal}{medRxiv}}  (\bibinfo{year}{2021}).
+  \newblock \doi{10.1101/2021.05.17.21257241} .
+
+  \bibitem{Dyer2021}
+  \bibinfo{author}{Dyer, O.}
+  \newblock \bibinfo{title}{A record 100000 people in the {US} died from
+    overdoses in 12 months of the pandemic, says {CDC}}.
+  \newblock \emph{\bibinfo{journal}{{BMJ}}} \bibinfo{pages}{n2865}
+    (\bibinfo{year}{2021}).
+  \newblock \doi{10.1136/bmj.n2865} .
+
+  \bibitem{Pongiglione2022}
+  \bibinfo{author}{Pongiglione, B.}, \bibinfo{author}{Ploubidis, G.} \&
+    \bibinfo{author}{Dowd, J.~B.}
+  \newblock \bibinfo{title}{Older adults in the {US} have worse cardiometabolic
+    health compared to {E}ngland}.
+  \newblock \emph{\bibinfo{journal}{The Journals of Gerontology: Series B}}
+    ~(gbac023) (\bibinfo{year}{2022}).
+  \newblock \doi{10.1093/geronb/gbac023} .
+
+  \bibitem{Thakur2021}
+  \bibinfo{author}{Thakur, B.} \emph{et~al.}
+  \newblock \bibinfo{title}{A systematic review and meta-analysis of geographic
+    differences in comorbidities and associated severity and mortality among
+    individuals with {COVID}-19}.
+  \newblock \emph{\bibinfo{journal}{Scientific Reports}}
+    \textbf{\bibinfo{volume}{11}}~(1) (\bibinfo{year}{2021}).
+  \newblock \doi{10.1038/s41598-021-88130-w} .
+
+  \bibitem{Garcia2021}
+  \bibinfo{author}{Garcia, J.} \emph{et~al.}
+  \newblock \bibinfo{title}{Diff{\'{e}}rences de mortalit{\'{e}} par {Covid-19}:
+    cons{\'{e}}quence des imperfections et de la diversit{\'{e}} des
+    syst{\`{e}}mes de collecte des donn{\'{e}}es}.
+  \newblock \emph{\bibinfo{journal}{Population}}
+    \textbf{\bibinfo{volume}{76}}~(1), \bibinfo{pages}{37--76}
+    (\bibinfo{year}{2021}).
+  \newblock \doi{10.3917/popu.2101.0037} .
+
+  \bibitem{Karlinsky2021}
+  \bibinfo{author}{Karlinsky, A.} \& \bibinfo{author}{Kobak, D.}
+  \newblock \bibinfo{title}{Tracking excess mortality across countries during the
+    {COVID-19} pandemic with the {World Mortality Dataset}}.
+  \newblock \emph{\bibinfo{journal}{{eLife}}} \textbf{\bibinfo{volume}{10}},
+    \bibinfo{pages}{e69336} (\bibinfo{year}{2021}).
+  \newblock \doi{10.7554/eLife.69336} .
+
+  \bibitem{Jdanov2021}
+  \bibinfo{author}{Jdanov, D.}, \bibinfo{author}{Shkolnikov, V.~M.},
+    \bibinfo{author}{Galarza, A.~A.}, \bibinfo{author}{Boe, C.} \&
+    \bibinfo{author}{Barbieri, M.}
+  \newblock \bibinfo{title}{{S}hort-{T}erm {M}ortality {F}luctuations
+    {D}ataseries methods protocol}.
+  \newblock \bibinfo{type}{Tech. Rep.}, \bibinfo{institution}{Max Planck
+    Institute for Demographic Research} (\bibinfo{year}{2021}).
+  \newblock \urlprefix\url{https://mortality.org/Public/STMF_DOC/STMFNote.pdf}.
+
+  \bibitem{Rizzi2015}
+  \bibinfo{author}{Rizzi, S.}, \bibinfo{author}{Gampe, J.} \&
+    \bibinfo{author}{Eilers, P. H.~C.}
+  \newblock \bibinfo{title}{Efficient estimation of smooth distributions from
+    coarsely grouped data}.
+  \newblock \emph{\bibinfo{journal}{American Journal of Epidemiology}}
+    \textbf{\bibinfo{volume}{182}}~(2), \bibinfo{pages}{138--147}
+    (\bibinfo{year}{2015}).
+  \newblock \urlprefix\url{http://www.ncbi.nlm.nih.gov/pubmed/26081676}.
+  \newblock \doi{10.1093/aje/kwv020} .
+
+  \bibitem{Pascariu2018}
+  \bibinfo{author}{Pascariu, M.~D.}, \bibinfo{author}{Da{\'n}ko, M.~J.},
+    \bibinfo{author}{Sch{\"o}ley, J.} \& \bibinfo{author}{Rizzi, S.}
+  \newblock \bibinfo{title}{ungroup: An r package for efficient estimation of
+    smooth distributions from coarsely binned data}.
+  \newblock \emph{\bibinfo{journal}{The Journal of Open Source Software}}
+    (\bibinfo{year}{2018}).
+  \newblock \doi{10.21105/joss.00937} .
+
+  \bibitem{UnitedNations2021}
+  \bibinfo{author}{{United Nations}}.
+  \newblock \bibinfo{title}{World {{Population Prospects}} - {{Population
+    Division}} - {{United Nations}}} (\bibinfo{year}{2021}).
+  \newblock
+    \urlprefix\url{https://population.un.org/wpp/Download/Standard/Population/}.
+
+  \bibitem{IOS2021}
+  \bibinfo{author}{{International Organization for Standardization}}.
+  \newblock \bibinfo{title}{{{ISO}} week date} (\bibinfo{year}{2021}).
+  \newblock
+    \urlprefix\url{https://en.wikipedia.org/w/index.php?title=ISO_week_date&oldid=1007765520}.
+
+  \bibitem{Riffe2021}
+  \bibinfo{author}{Riffe, T.}, \bibinfo{author}{Acosta, E.} \&
+    \bibinfo{author}{{{COVerAGE-DB-collaborators}}}.
+  \newblock \bibinfo{title}{Data resource profile: {COVerAGE}-{DB}: a global
+    demographic database of {COVID}-19 cases and deaths}.
+  \newblock \emph{\bibinfo{journal}{International Journal of Epidemiology}}
+    \textbf{\bibinfo{volume}{50}}~(2), \bibinfo{pages}{390--390f}
+    (\bibinfo{year}{2021}).
+  \newblock \doi{10.1093/ije/dyab027} .
+
+  \bibitem{Chiang1979}
+  \bibinfo{author}{Chiang, C.~L.}
+  \newblock \bibinfo{title}{Life table and mortality analysis}.
+  \newblock \bibinfo{type}{Tech. Rep.}, \bibinfo{institution}{{World Health
+    Organisation}} (\bibinfo{year}{1979}).
+  \newblock \urlprefix\url{http://www.who.int/iris/handle/10665/62916}.
+
+  \bibitem{Preston2001}
+  \bibinfo{author}{Preston, S.~H.}, \bibinfo{author}{Heuveline, P.} \&
+    \bibinfo{author}{Guillot, M.}
+  \newblock \emph{\bibinfo{title}{Demography}}  (\bibinfo{publisher}{Blackwell},
+    \bibinfo{address}{Oxford, UK}, \bibinfo{year}{2001}).
+
+  \bibitem{Arriaga1984}
+  \bibinfo{author}{Arriaga, E.~E.}
+  \newblock \bibinfo{title}{Measuring and explaining the change in life
+    expectancies}.
+  \newblock \emph{\bibinfo{journal}{Demography}}
+    \textbf{\bibinfo{volume}{21}}~(1), \bibinfo{pages}{83--96}
+    (\bibinfo{year}{1984}).
+  \newblock \doi{10.2307/2061029} .
+
+  \bibitem{Lee1992}
+  \bibinfo{author}{Lee, R.~D.} \& \bibinfo{author}{Carter, L.~R.}
+  \newblock \bibinfo{title}{Modeling and forecasting {U.S.} mortality}.
+  \newblock \emph{\bibinfo{journal}{Journal of the American Statistical
+    Association}} \textbf{\bibinfo{volume}{87}}~(419), \bibinfo{pages}{659--671}
+    (\bibinfo{year}{1992}).
+  \newblock \doi{10.1080/01621459.1992.10475265} .
+
+  \end{thebibliography}
+
+\clearpage
+\appendix
+
+\section*{Extended data items}
 
 \renewcommand\thefigure{a\arabic{figure}}
 \setcounter{figure}{0}
@@ -404,21 +895,21 @@ The authors declare no conflicts of interest.
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics{figure-a1.pdf}
+    %\includegraphics{figure-a1.pdf}
     \caption{Actual and forecast total population life expectancy change since 2015. LE forecasts are based the Lee-Carter model based on the assumption that pre-pandemic mortality trends would have continued into 2020 and 2021.}
     \label{fig:figure-a1}
 \end{figure}
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics{figure-a2.pdf}
+    %\includegraphics{figure-a2.pdf}
     \caption{Actual and forecast female life expectancy change since 2015. LE forecasts are based the Lee-Carter model based on the assumption that pre-pandemic mortality trends would have continued into 2020 and 2021.}
     \label{fig:figure-a2}
 \end{figure}
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics{figure-a3.pdf}
+    %\includegraphics{figure-a3.pdf}
     \caption{Actual and forecast female male expectancy change since 2015. LE forecasts are based the Lee-Carter model based on the assumption that pre-pandemic mortality trends would have continued into 2020 and 2021.}
     \label{fig:figure-a3}
 \end{figure}
@@ -429,16 +920,16 @@ The authors declare no conflicts of interest.
 
 \begin{figure}[hb!]
     \centering
-    \includegraphics{figure-a4.pdf}
-    \caption{Female life expectancy changes 2019-20 and 2020-21 across countries. The countries are ordered by increasing cumulative life expectancy losses since 2019. The two line segments indicate the annual changes in life expectancy in 2020 and 2021 respectively. Red segments to the left indicate a life expectancy drop while grey arrows to the right indicate a rise in life expectancy. The position of the arrowhead indicates the total change in life expectancy from 2019 through 2021.
+    %\includegraphics{figure-a4.pdf}
+    \caption{Female life expectancy changes 2019-20 and 2020-21 across countries. The countries are ordered by increasing cumulative life expectancy losses since 2019. The two line segments indicate the annual changes in life expectancy in 2020 and 2021 respectively. Red segments to the left indicate a life expectancy drop while gray arrows to the right indicate a rise in life expectancy. The position of the arrowhead indicates the total change in life expectancy from 2019 through 2021.
     Grey dots and lines indicate the average annual LE changes over the years 2015 through 2019 along with 95\% confidence intervals.}
     \label{fig:figure-a4}
 \end{figure}
 
 \begin{figure}[hb!]
     \centering
-    \includegraphics{figure-a5.pdf}
-    \caption{Male life expectancy changes 2019-20 and 2020-21 across countries. The countries are ordered by increasing cumulative life expectancy losses since 2019.  The two line segments indicate the annual changes in life expectancy in 2020 and 2021 respectively. Red segments to the left indicate a life expectancy drop while grey arrows to the right indicate a rise in life expectancy. The position of the arrowhead indicates the total change in life expectancy from 2019 through 2021.
+    %\includegraphics{figure-a5.pdf}
+    \caption{Male life expectancy changes 2019-20 and 2020-21 across countries. The countries are ordered by increasing cumulative life expectancy losses since 2019.  The two line segments indicate the annual changes in life expectancy in 2020 and 2021 respectively. Red segments to the left indicate a life expectancy drop while gray arrows to the right indicate a rise in life expectancy. The position of the arrowhead indicates the total change in life expectancy from 2019 through 2021.
     Grey dots and lines indicate the average annual LE changes over the years 2015 through 2019 along with 95\% confidence intervals.}
     \label{fig:figure-a5}
 \end{figure}
@@ -472,45 +963,53 @@ The authors declare no conflicts of interest.
      & \multicolumn{4}{c}{Net LE diff 2019 to 21} & \multicolumn{4}{c}{LE changes 2020} & \multicolumn{4}{c}{LE changes 2021} & \multicolumn{4}{c}{LE deficit 2021} \\
     \cmidrule(lr){2-5} \cmidrule(lr){6-9} \cmidrule(lr){10-13} \cmidrule(lr){14-17}
      & {AT\textsuperscript{1}} & {ES\textsuperscript{2}} & \multicolumn{2}{c}{CI\textsuperscript{3}} & {AT} & {ES} & \multicolumn{2}{c}{CI} & {AT} & {ES} & \multicolumn{2}{c}{CI} & {AT} & {ES} & \multicolumn{2}{c}{CI} \\
-    \midrule
-    AUT & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -5.0 & {[}-6.7{;} & -3.4{]} & \color{negativesig}$\blacktriangleright$ & -6.7 & {[}-8.3{;} & -4.9{]} & \color{positivesig}$\blacktriangleright$ & +1.7 & {[}+0.0{;} & +3.4{]} & \color{negativesig}$\blacktriangleright$ & -8.4 & {[}-6.8{;} & -10.2{]} \\
-    BEL & \color{positivenonsig}$\vartriangleleft$ & +1.2 & {[}-0.2{;} & +2.6{]} & \color{negativesig}$\blacktriangleright$ & -11.1 & {[}-12.8{;} & -9.5{]} & \color{positivesig}$\blacktriangleright$ & +12.3 & {[}+10.6{;} & +13.8{]} & \color{negativesig}$\blacktriangleright$ & -3.9 & {[}-2.2{;} & -5.5{]} \\
-    BGR & \color{negativesig}$\blacktriangleright$ & -42.3 & {[}-44.5{;} & -40.1{]} & \color{negativesig}$\blacktriangleright$ & -15.0 & {[}-17.3{;} & -12.9{]} & \color{negativesig}$\blacktriangleright$ & -27.3 & {[}-29.2{;} & -25.0{]} & \color{negativesig}$\blacktriangleright$ & -43.1 & {[}-41.0{;} & -45.4{]} \\
-    CHE & \color{positivenonsig}$\blacktriangleright$ & +1.3 & {[}-0.1{;} & +3.0{]} & \color{negativesig}$\blacktriangleright$ & -5.6 & {[}-7.0{;} & -3.8{]} & \color{positivesig}$\blacktriangleright$ & +6.9 & {[}+5.4{;} & +8.6{]} & \color{negativesig}$\blacktriangleright$ & -2.8 & {[}-1.0{;} & -4.8{]} \\
-    CHL & \color{negativesig}$\blacktriangleright$ & -17.6 & {[}-19.3{;} & -16.0{]} & \color{negativesig}$\blacktriangleright$ & -9.4 & {[}-11.0{;} & -8.0{]} & \color{negativesig}$\blacktriangleright$ & -8.2 & {[}-9.7{;} & -6.8{]} & \color{negativesig}$\blacktriangleright$ & -20.7 & {[}-18.7{;} & -22.2{]} \\
-    CZE & \color{negativesig}$\blacktriangleright$ & -17.5 & {[}-19.5{;} & -15.7{]} & \color{negativesig}$\blacktriangleright$ & -9.4 & {[}-11.1{;} & -7.9{]} & \color{negativesig}$\blacktriangleright$ & -8.1 & {[}-9.8{;} & -6.6{]} & \color{negativesig}$\blacktriangleright$ & -21.2 & {[}-19.8{;} & -22.9{]} \\
-    DEU & \color{negativesig}$\blacktriangleright$ & -3.9 & {[}-4.5{;} & -3.4{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -1.7 & {[}-2.3{;} & -1.2{]} & \color{negativesig}$\blacktriangleright$ & -2.2 & {[}-2.8{;} & -1.6{]} & \color{negativesig}$\blacktriangleright$ & -8.0 & {[}-7.5{;} & -8.7{]} \\
-    DNK & \color{negativenonsig}$\blacktriangleright$ & -1.6 & {[}-3.5{;} & +0.6{]} & \color{positivenonsig}$\blacktriangleright$ & +1.1 & {[}-0.6{;} & +3.9{]} & \color{negativesig}$\blacktriangleright$ & -2.7 & {[}-4.5{;} & -0.3{]} & \color{negativesig}$\blacktriangleright$ & -3.9 & {[}-1.3{;} & -6.2{]} \\
-    EST & \color{negativesig}$\blacktriangleright$ & -18.6 & {[}-22.5{;} & -14.4{]} & \color{negativenonsig}$\blacktriangleright$ & -1.5 & {[}-6.6{;} & +2.6{]} & \color{negativesig}$\blacktriangleright$ & -17.1 & {[}-21.6{;} & -12.4{]} & \color{negativesig}$\blacktriangleright$ & -23.3 & {[}-18.1{;} & -28.9{]} \\
-    ESP & \color{negativesig}$\blacktriangleright$ & -5.5 & {[}-6.2{;} & -4.7{]} & \color{negativesig}$\blacktriangleright$ & -14.1 & {[}-15.0{;} & -13.4{]} & \color{positivesig}$\blacktriangleright\blacktriangleright$ & +8.7 & {[}+7.8{;} & +9.4{]} & \color{negativesig}$\blacktriangleright$ & -11.1 & {[}-10.4{;} & -12.0{]} \\
-    FIN & \color{negativenonsig}$\blacktriangleright\blacktriangleright$ & -0.6 & {[}-2.8{;} & +2.1{]} & \color{positivenonsig}$\vartriangleleft$ & +0.9 & {[}-1.3{;} & +3.3{]} & \color{negativenonsig}$\vartriangleleft$ & -1.6 & {[}-3.5{;} & +0.7{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -2.8 & {[}-0.5{;} & -4.9{]} \\
-    FRA & \color{positivenonsig}$\vartriangleleft$ & +0.1 & {[}-0.9{;} & +0.9{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -5.0 & {[}-5.8{;} & -4.3{]} & \color{positivesig}$\blacktriangleright$ & +5.1 & {[}+4.4{;} & +5.9{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -2.2 & {[}-1.3{;} & -2.9{]} \\
-    EAW & \color{negativesig}$\blacktriangleright$ & -7.0 & {[}-7.7{;} & -6.3{]} & \color{negativesig}$\blacktriangleright$ & -9.4 & {[}-10.2{;} & -8.7{]} & \color{positivesig}$\blacktriangleright\blacktriangleright$ & +2.4 & {[}+1.5{;} & +3.2{]} & \color{negativesig}$\blacktriangleright$ & -10.6 & {[}-9.7{;} & -11.5{]} \\
-    NIR & \color{negativesig}$\blacktriangleright$ & -8.3 & {[}-13.2{;} & -3.7{]} & \color{negativesig}$\blacktriangleright$ & -8.4 & {[}-12.1{;} & -5.2{]} & \color{positivenonsig}$\blacktriangleright\blacktriangleright$ & +0.0 & {[}-3.7{;} & +4.4{]} & \color{negativesig}$\blacktriangleright$ & -11.4 & {[}-7.2{;} & -15.9{]} \\
-    SCT & \color{negativesig}$\blacktriangleright$ & -8.4 & {[}-11.2{;} & -6.3{]} & \color{negativesig}$\blacktriangleright$ & -5.4 & {[}-8.0{;} & -3.2{]} & \color{negativesig}$\vartriangleleft$ & -3.0 & {[}-4.8{;} & -0.4{]} & \color{negativesig}$\blacktriangleright$ & -8.3 & {[}-5.7{;} & -10.6{]} \\
-    GRC & \color{negativesig}$\blacktriangleright$ & -12.4 & {[}-14.2{;} & -11.2{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -2.5 & {[}-4.1{;} & -0.5{]} & \color{negativesig}$\blacktriangleright$ & -10.0 & {[}-11.7{;} & -8.3{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -11.0 & {[}-9.2{;} & -12.6{]} \\
-    HRV & \color{negativesig}$\blacktriangleright$ & -19.7 & {[}-21.8{;} & -17.4{]} & \color{negativesig}$\blacktriangleright$ & -8.8 & {[}-11.2{;} & -6.6{]} & \color{negativesig}$\blacktriangleright$ & -10.9 & {[}-13.2{;} & -8.3{]} & \color{negativesig}$\blacktriangleright$ & -25.7 & {[}-23.4{;} & -28.3{]} \\
-    HUN & \color{negativesig}$\blacktriangleright$ & -21.5 & {[}-23.1{;} & -19.8{]} & \color{negativesig}$\blacktriangleright$ & -7.5 & {[}-9.2{;} & -5.8{]} & \color{negativesig}$\blacktriangleright$ & -14.1 & {[}-15.5{;} & -12.4{]} & \color{negativesig}$\blacktriangleright$ & -26.4 & {[}-24.7{;} & -28.0{]} \\
-    ISL & \color{negativenonsig}$\blacktriangleright$ & -3.7 & {[}-13.9{;} & +4.6{]} & \color{negativenonsig}$\vartriangleleft$ & -3.7 & {[}-13.6{;} & +5.2{]} & \color{negativenonsig}$\blacktriangleright\blacktriangleright$ & -0.0 & {[}-10.1{;} & +8.4{]} & \color{negativenonsig}$\blacktriangleright\blacktriangleright$ & -4.7 & {[}+6.2{;} & -15.8{]} \\
-    ITA & \color{negativesig}$\blacktriangleright$ & -6.0 & {[}-6.6{;} & -5.4{]} & \color{negativesig}$\blacktriangleright$ & -10.0 & {[}-10.7{;} & -9.4{]} & \color{positivesig}$\blacktriangleright\blacktriangleright$ & +4.0 & {[}+3.4{;} & +4.6{]} & \color{negativesig}$\blacktriangleright$ & -11.6 & {[}-10.9{;} & -12.4{]} \\
-    LTU & \color{negativesig}$\blacktriangleright$ & -26.0 & {[}-29.7{;} & -22.8{]} & \color{negativesig}$\blacktriangleright$ & -14.2 & {[}-18.0{;} & -10.9{]} & \color{negativesig}$\blacktriangleright$ & -11.8 & {[}-15.3{;} & -9.0{]} & \color{negativesig}$\blacktriangleright$ & -35.7 & {[}-32.7{;} & -38.8{]} \\
-    NLD & \color{negativesig}$\blacktriangleright$ & -6.2 & {[}-7.4{;} & -4.8{]} & \color{negativesig}$\blacktriangleright$ & -5.7 & {[}-6.9{;} & -4.2{]} & \color{negativenonsig}$\vartriangleleft$ & -0.5 & {[}-1.8{;} & +0.8{]} & \color{negativesig}$\blacktriangleright$ & -8.8 & {[}-7.5{;} & -10.1{]} \\
-    NOR & \color{positivenonsig}$\vartriangleleft$ & +0.3 & {[}-2.6{;} & +2.5{]} & \color{positivenonsig}$\blacktriangleright$ & +2.1 & {[}-0.1{;} & +4.0{]} & \color{negativenonsig}$\blacktriangleright\blacktriangleright$ & -1.8 & {[}-3.8{;} & +0.7{]} & \color{negativenonsig}$\blacktriangleright$ & -2.5 & {[}+0.0{;} & -4.7{]} \\
-    POL & \color{negativesig}$\blacktriangleright$ & -23.8 & {[}-24.6{;} & -22.9{]} & \color{negativesig}$\blacktriangleright$ & -10.5 & {[}-11.4{;} & -9.6{]} & \color{negativesig}$\blacktriangleright$ & -13.3 & {[}-14.1{;} & -12.6{]} & \color{negativesig}$\blacktriangleright$ & -27.1 & {[}-26.3{;} & -27.9{]} \\
-    PRT & \color{negativesig}$\blacktriangleright$ & -5.7 & {[}-7.4{;} & -3.8{]} & \color{negativesig}$\blacktriangleright$ & -6.9 & {[}-8.7{;} & -5.2{]} & \color{positivenonsig}$\blacktriangleright\blacktriangleright$ & +1.1 & {[}-0.8{;} & +2.6{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -7.8 & {[}-6.3{;} & -9.4{]} \\
-    SWE & \color{positivenonsig}$\blacktriangleright$ & +1.5 & {[}-0.1{;} & +3.2{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -5.3 & {[}-6.6{;} & -3.8{]} & \color{positivesig}$\blacktriangleright$ & +6.8 & {[}+5.2{;} & +8.5{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -2.6 & {[}-1.0{;} & -4.2{]} \\
-    SVN & \color{negativesig}$\blacktriangleright$ & -4.1 & {[}-7.2{;} & -0.7{]} & \color{negativesig}$\blacktriangleright$ & -10.2 & {[}-13.2{;} & -6.4{]} & \color{positivesig}$\blacktriangleright$ & +6.1 & {[}+2.7{;} & +9.2{]} & \color{negativesig}$\blacktriangleright$ & -7.7 & {[}-4.5{;} & -11.0{]} \\
-    SVK & \color{negativesig}$\blacktriangleright$ & -30.3 & {[}-32.6{;} & -28.1{]} & \color{negativesig}$\blacktriangleright$ & -8.5 & {[}-11.2{;} & -6.5{]} & \color{negativesig}$\blacktriangleright$ & -21.8 & {[}-24.2{;} & -19.5{]} & \color{negativesig}$\blacktriangleright$ & -35.6 & {[}-33.4{;} & -38.4{]} \\
-    USA & \color{negativesig}$\vartriangleleft$ & -21.4 & {[}-22.2{;} & -20.4{]} & \color{negativesig}$\blacktriangleright$ & -22.6 & {[}-23.3{;} & -21.9{]} & \color{positivesig}$\blacktriangleright\blacktriangleright$ & +1.2 & {[}+0.4{;} & +2.0{]} & \color{negativesig}$\blacktriangleright$ & -28.1 & {[}-27.0{;} & -29.0{]} \\
-    \bottomrule
+     \midrule
+     AUT & $\downarrow^{\textbf{60+}}$ & -5.0 & {[}-6.7{;} & -3.4{]} & $\downarrow^{\text{60+}}$ & -6.7 & {[}-8.3{;} & -4.9{]} & $\uparrow^{\text{60+}}$ & +1.7 & {[}+0.0{;} & +3.4{]} & $\downarrow^{\text{60+}}$ & -8.4 & {[}-6.8{;} & -10.2{]} \\
+     BEL & $\uparrow^{\text{<60}}$ & +1.2 & {[}-0.2{;} & +2.6{]} & $\downarrow^{\text{60+}}$ & -11.1 & {[}-12.8{;} & -9.5{]} & $\uparrow^{\text{60+}}$ & +12.3 & {[}+10.6{;} & +13.8{]} & $\downarrow^{\text{60+}}$ & -3.9 & {[}-2.2{;} & -5.5{]} \\
+     BGR & $\downarrow^{\text{60+}}$ & -42.3 & {[}-44.5{;} & -40.1{]} & $\downarrow^{\text{60+}}$ & -15.0 & {[}-17.3{;} & -12.9{]} & $\downarrow^{\text{60+}}$ & -27.3 & {[}-29.2{;} & -25.0{]} & $\downarrow^{\text{60+}}$ & -43.1 & {[}-41.0{;} & -45.4{]} \\
+     CHE & $\uparrow^{\text{60+}}$ & +1.3 & {[}-0.1{;} & +3.0{]} & $\downarrow^{\text{60+}}$ & -5.6 & {[}-7.0{;} & -3.8{]} & $\uparrow^{\text{60+}}$ & +6.9 & {[}+5.4{;} & +8.6{]} & $\downarrow^{\text{60+}}$ & -2.8 & {[}-1.0{;} & -4.8{]} \\
+     CHL & $\downarrow^{\text{60+}}$ & -17.6 & {[}-19.3{;} & -16.0{]} & $\downarrow^{\text{60+}}$ & -9.4 & {[}-11.0{;} & -8.0{]} & $\downarrow^{\text{60+}}$ & -8.2 & {[}-9.7{;} & -6.8{]} & $\downarrow^{\text{60+}}$ & -20.7 & {[}-18.7{;} & -22.2{]} \\
+     CZE & $\downarrow^{\text{60+}}$ & -17.5 & {[}-19.5{;} & -15.7{]} & $\downarrow^{\text{60+}}$ & -9.4 & {[}-11.1{;} & -7.9{]} & $\downarrow^{\text{60+}}$ & -8.1 & {[}-9.8{;} & -6.6{]} & $\downarrow^{\text{60+}}$ & -21.2 & {[}-19.8{;} & -22.9{]} \\
+     DEU & $\downarrow^{\text{60+}}$ & -3.9 & {[}-4.5{;} & -3.4{]} & $\downarrow^{\textbf{60+}}$ & -1.7 & {[}-2.3{;} & -1.2{]} & $\downarrow^{\text{60+}}$ & -2.2 & {[}-2.8{;} & -1.6{]} & $\downarrow^{\text{60+}}$ & -8.0 & {[}-7.5{;} & -8.7{]} \\
+     DNK & $\downarrow^{\text{60+}}$ & -1.6 & {[}-3.5{;} & +0.6{]} & $\uparrow^{\text{60+}}$ & +1.1 & {[}-0.6{;} & +3.9{]} & $\downarrow^{\text{60+}}$ & -2.7 & {[}-4.5{;} & -0.3{]} & $\downarrow^{\text{60+}}$ & -3.9 & {[}-1.3{;} & -6.2{]} \\
+     EST & $\downarrow^{\text{60+}}$ & -18.6 & {[}-22.5{;} & -14.4{]} & $\downarrow^{\text{60+}}$ & -1.5 & {[}-6.6{;} & +2.6{]} & $\downarrow^{\text{60+}}$ & -17.1 & {[}-21.6{;} & -12.4{]} & $\downarrow^{\text{60+}}$ & -23.3 & {[}-18.1{;} & -28.9{]} \\
+     ESP & $\downarrow^{\text{60+}}$ & -5.5 & {[}-6.2{;} & -4.7{]} & $\downarrow^{\text{60+}}$ & -14.1 & {[}-15.0{;} & -13.4{]} & $\uparrow^{\textbf{60+}}$ & +8.7 & {[}+7.8{;} & +9.4{]} & $\downarrow^{\text{60+}}$ & -11.1 & {[}-10.4{;} & -12.0{]} \\
+     FIN & $\downarrow^{\textbf{60+}}$ & -0.6 & {[}-2.8{;} & +2.1{]} & $\uparrow^{\textbf{<60}}$ & +0.9 & {[}-1.3{;} & +3.3{]} & $\downarrow^{\text{<60}}$ & -1.6 & {[}-3.5{;} & +0.7{]} & $\downarrow^{\textbf{60+}}$ & -2.8 & {[}-0.5{;} & -4.9{]} \\
+     FRA & $\uparrow^{\textbf{<60}}$ & +0.1 & {[}-0.9{;} & +0.9{]} & $\downarrow^{\textbf{60+}}$ & -5.0 & {[}-5.8{;} & -4.3{]} & $\uparrow^{\text{60+}}$ & +5.1 & {[}+4.4{;} & +5.9{]} & $\downarrow^{\textbf{60+}}$ & -2.2 & {[}-1.3{;} & -2.9{]} \\
+     EAW & $\downarrow^{\text{60+}}$ & -7.0 & {[}-7.7{;} & -6.3{]} & $\downarrow^{\text{60+}}$ & -9.4 & {[}-10.2{;} & -8.7{]} & $\uparrow^{\textbf{60+}}$ & +2.4 & {[}+1.5{;} & +3.2{]} & $\downarrow^{\text{60+}}$ & -10.6 & {[}-9.7{;} & -11.5{]} \\
+     NIR & $\downarrow^{\text{60+}}$ & -8.3 & {[}-13.2{;} & -3.7{]} & $\downarrow^{\text{60+}}$ & -8.4 & {[}-12.1{;} & -5.2{]} & $\uparrow^{\textbf{60+}}$ & +0.0 & {[}-3.7{;} & +4.4{]} & $\downarrow^{\text{60+}}$ & -11.4 & {[}-7.2{;} & -15.9{]} \\
+     SCT & $\downarrow^{\text{60+}}$ & -8.4 & {[}-11.2{;} & -6.3{]} & $\downarrow^{\text{60+}}$ & -5.4 & {[}-8.0{;} & -3.2{]} & $\downarrow^{\textbf{<60}}$ & -3.0 & {[}-4.8{;} & -0.4{]} & $\downarrow^{\text{60+}}$ & -8.3 & {[}-5.7{;} & -10.6{]} \\
+     GRC & $\downarrow^{\text{60+}}$ & -12.4 & {[}-14.2{;} & -11.2{]} & $\downarrow^{\textbf{60+}}$ & -2.5 & {[}-4.1{;} & -0.5{]} & $\downarrow^{\text{60+}}$ & -10.0 & {[}-11.7{;} & -8.3{]} & $\downarrow^{\textbf{60+}}$ & -11.0 & {[}-9.2{;} & -12.6{]} \\
+     HRV & $\downarrow^{\text{60+}}$ & -19.7 & {[}-21.8{;} & -17.4{]} & $\downarrow^{\text{60+}}$ & -8.8 & {[}-11.2{;} & -6.6{]} & $\downarrow^{\text{60+}}$ & -10.9 & {[}-13.2{;} & -8.3{]} & $\downarrow^{\text{60+}}$ & -25.7 & {[}-23.4{;} & -28.3{]} \\
+     HUN & $\downarrow^{\text{60+}}$ & -21.5 & {[}-23.1{;} & -19.8{]} & $\downarrow^{\text{60+}}$ & -7.5 & {[}-9.2{;} & -5.8{]} & $\downarrow^{\text{60+}}$ & -14.1 & {[}-15.5{;} & -12.4{]} & $\downarrow^{\text{60+}}$ & -26.4 & {[}-24.7{;} & -28.0{]} \\
+     ISL & $\downarrow^{\text{60+}}$ & -3.7 & {[}-13.9{;} & +4.6{]} & $\downarrow^{\text{<60}}$ & -3.7 & {[}-13.6{;} & +5.2{]} & $\downarrow^{\textbf{60+}}$ & -0.0 & {[}-10.1{;} & +8.4{]} & $\downarrow^{\textbf{60+}}$ & -4.7 & {[}+6.2{;} & -15.8{]} \\
+     ITA & $\downarrow^{\text{60+}}$ & -6.0 & {[}-6.6{;} & -5.4{]} & $\downarrow^{\text{60+}}$ & -10.0 & {[}-10.7{;} & -9.4{]} & $\uparrow^{\textbf{60+}}$ & +4.0 & {[}+3.4{;} & +4.6{]} & $\downarrow^{\text{60+}}$ & -11.6 & {[}-10.9{;} & -12.4{]} \\
+     LTU & $\downarrow^{\text{60+}}$ & -26.0 & {[}-29.7{;} & -22.8{]} & $\downarrow^{\text{60+}}$ & -14.2 & {[}-18.0{;} & -10.9{]} & $\downarrow^{\text{60+}}$ & -11.8 & {[}-15.3{;} & -9.0{]} & $\downarrow^{\text{60+}}$ & -35.7 & {[}-32.7{;} & -38.8{]} \\
+     NLD & $\downarrow^{\text{60+}}$ & -6.2 & {[}-7.4{;} & -4.8{]} & $\downarrow^{\text{60+}}$ & -5.7 & {[}-6.9{;} & -4.2{]} & $\downarrow^{\textbf{<60}}$ & -0.5 & {[}-1.8{;} & +0.8{]} & $\downarrow^{\text{60+}}$ & -8.8 & {[}-7.5{;} & -10.1{]} \\
+     NOR & $\uparrow^{\textbf{<60}}$ & +0.3 & {[}-2.6{;} & +2.5{]} & $\uparrow^{\text{60+}}$ & +2.1 & {[}-0.1{;} & +4.0{]} & $\downarrow^{\textbf{60+}}$ & -1.8 & {[}-3.8{;} & +0.7{]} & $\downarrow^{\text{60+}}$ & -2.5 & {[}+0.0{;} & -4.7{]} \\
+     POL & $\downarrow^{\text{60+}}$ & -23.8 & {[}-24.6{;} & -22.9{]} & $\downarrow^{\text{60+}}$ & -10.5 & {[}-11.4{;} & -9.6{]} & $\downarrow^{\text{60+}}$ & -13.3 & {[}-14.1{;} & -12.6{]} & $\downarrow^{\text{60+}}$ & -27.1 & {[}-26.3{;} & -27.9{]} \\
+     PRT & $\downarrow^{\text{60+}}$ & -5.7 & {[}-7.4{;} & -3.8{]} & $\downarrow^{\text{60+}}$ & -6.9 & {[}-8.7{;} & -5.2{]} & $\uparrow^{\textbf{60+}}$ & +1.1 & {[}-0.8{;} & +2.6{]} & $\downarrow^{\textbf{60+}}$ & -7.8 & {[}-6.3{;} & -9.4{]} \\
+     SWE & $\uparrow^{\text{60+}}$ & +1.5 & {[}-0.1{;} & +3.2{]} & $\downarrow^{\textbf{60+}}$ & -5.3 & {[}-6.6{;} & -3.8{]} & $\uparrow^{\text{60+}}$ & +6.8 & {[}+5.2{;} & +8.5{]} & $\downarrow^{\textbf{60+}}$ & -2.6 & {[}-1.0{;} & -4.2{]} \\
+     SVN & $\downarrow^{\text{60+}}$ & -4.1 & {[}-7.2{;} & -0.7{]} & $\downarrow^{\text{60+}}$ & -10.2 & {[}-13.2{;} & -6.4{]} & $\uparrow^{\text{60+}}$ & +6.1 & {[}+2.7{;} & +9.2{]} & $\downarrow^{\text{60+}}$ & -7.7 & {[}-4.5{;} & -11.0{]} \\
+     SVK & $\downarrow^{\text{60+}}$ & -30.3 & {[}-32.6{;} & -28.1{]} & $\downarrow^{\text{60+}}$ & -8.5 & {[}-11.2{;} & -6.5{]} & $\downarrow^{\text{60+}}$ & -21.8 & {[}-24.2{;} & -19.5{]} & $\downarrow^{\text{60+}}$ & -35.6 & {[}-33.4{;} & -38.4{]} \\
+     USA & $\downarrow^{\text{<60}}$ & -21.4 & {[}-22.2{;} & -20.4{]} & $\downarrow^{\text{60+}}$ & -22.6 & {[}-23.3{;} & -21.9{]} & $\uparrow^{\textbf{60+}}$ & +1.2 & {[}+0.4{;} & +2.0{]} & $\downarrow^{\text{60+}}$ & -28.1 & {[}-27.0{;} & -29.0{]} \\
+     \bottomrule
     \end{tabular}
     \vspace{-5mm}
     \begin{minipage}{\linewidth}
-    \textsuperscript{1}Attribution of life expectancy changes to \\
-    mortality \emph{increases} among {\color{negativesig}primarily 60+$\blacktriangleright$}, {\color{negativesig}solely 60+$\blacktriangleright\blacktriangleright$}, {\color{negativesig}primarily \textless{}60$\vartriangleleft$}, {\color{negativesig}solely \textless{}60$\vartriangleleft\vartriangleleft$} \\
-    mortality \emph{decreases} among {\color{positivesig}primarily 60+$\blacktriangleright$}, {\color{positivesig}solely 60+$\blacktriangleright\blacktriangleright$}, {\color{positivesig}primarily \textless{}60$\vartriangleleft$}, {\color{positivesig}solely \textless{}60$\vartriangleleft\vartriangleleft$} \\
-    \textsuperscript{2}Central estimate in months \\
-    \textsuperscript{3}95\% confidence interval \\
+        \textsuperscript{1}Attribution of life expectancy changes to \\
+        mortality \emph{increases} among
+        {primarily $\downarrow^{\text{60+}}$},
+        {solely $\downarrow^{\textbf{60+}}$},
+        {primarily $\downarrow^{\text{<60}}$},
+        {solely $\downarrow^{\textbf{<60}}$}, \\
+        mortality \emph{decreases} among
+        {primarily $\uparrow^{\text{60+}}$},
+        {solely $\uparrow^{\textbf{60+}}$},
+        {primarily $\uparrow^{\text{<60}}$},
+        {solely $\uparrow^{\textbf{<60}}$}. \\
+        \textsuperscript{2}Central estimate in months \\
+        \textsuperscript{3}95\% confidence interval \\
     \end{minipage}
     \caption{Months of female life expectancy (LE) changes and deficits (labelled ES) since the start of the pandemic attributed to age-specific mortality changes (labelled AT). LE deficit is defined as observed minus expected life expectancy had pre-pandemic mortality trends continued.}
     \label{tab:table-a1}
@@ -541,45 +1040,53 @@ S[table-format = -2.1,table-space-text-post={]}]
  & \multicolumn{4}{c}{Net LE diff 2019 to 21} & \multicolumn{4}{c}{LE changes 2020} & \multicolumn{4}{c}{LE changes 2021} & \multicolumn{4}{c}{LE deficit 2021} \\
 \cmidrule(lr){2-5} \cmidrule(lr){6-9} \cmidrule(lr){10-13} \cmidrule(lr){14-17}
  & {AT\textsuperscript{1}} & {ES\textsuperscript{2}} & \multicolumn{2}{c}{CI\textsuperscript{3}} & {AT} & {ES} & \multicolumn{2}{c}{CI} & {AT} & {ES} & \multicolumn{2}{c}{CI} & {AT} & {ES} & \multicolumn{2}{c}{CI} \\
-\midrule
-AUT & \color{negativesig}$\blacktriangleright$ & -9.6 & {[}-11.4{;} & -7.4{]} & \color{negativesig}$\blacktriangleright$ & -9.1 & {[}-10.7{;} & -7.0{]} & \color{negativenonsig}$\vartriangleleft$ & -0.5 & {[}-2.4{;} & +1.3{]} & \color{negativesig}$\blacktriangleright$ & -15.1 & {[}-13.2{;} & -17.2{]} \\
-BEL & \color{negativesig}$\blacktriangleright$ & -3.1 & {[}-4.6{;} & -1.1{]} & \color{negativesig}$\blacktriangleright$ & -12.2 & {[}-14.1{;} & -10.7{]} & \color{positivesig}$\blacktriangleright$ & +9.1 & {[}+7.8{;} & +10.6{]} & \color{negativesig}$\blacktriangleright$ & -9.4 & {[}-7.9{;} & -11.0{]} \\
-BGR & \color{negativesig}$\blacktriangleright$ & -41.2 & {[}-43.8{;} & -38.3{]} & \color{negativesig}$\blacktriangleright$ & -19.0 & {[}-21.4{;} & -16.5{]} & \color{negativesig}$\blacktriangleright$ & -22.2 & {[}-24.2{;} & -20.3{]} & \color{negativesig}$\blacktriangleright$ & -43.4 & {[}-41.5{;} & -45.9{]} \\
-CHE & \color{negativenonsig}$\vartriangleleft$ & -1.6 & {[}-3.2{;} & +0.1{]} & \color{negativesig}$\blacktriangleright$ & -10.0 & {[}-12.0{;} & -8.1{]} & \color{positivesig}$\blacktriangleright$ & +8.4 & {[}+6.6{;} & +10.2{]} & \color{negativesig}$\blacktriangleright$ & -8.9 & {[}-6.7{;} & -10.7{]} \\
-CHL & \color{negativesig}$\blacktriangleright$ & -22.7 & {[}-24.3{;} & -21.0{]} & \color{negativesig}$\blacktriangleright$ & -15.6 & {[}-16.9{;} & -14.2{]} & \color{negativesig}$\vartriangleleft$ & -7.2 & {[}-8.5{;} & -5.6{]} & \color{negativesig}$\blacktriangleright$ & -26.6 & {[}-25.0{;} & -28.2{]} \\
-CZE & \color{negativesig}$\blacktriangleright$ & -24.2 & {[}-25.6{;} & -22.7{]} & \color{negativesig}$\blacktriangleright$ & -12.6 & {[}-14.0{;} & -11.0{]} & \color{negativesig}$\blacktriangleright$ & -11.7 & {[}-13.4{;} & -10.2{]} & \color{negativesig}$\blacktriangleright$ & -28.9 & {[}-27.4{;} & -30.6{]} \\
-DEU & \color{negativesig}$\blacktriangleright$ & -7.2 & {[}-7.8{;} & -6.6{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -3.3 & {[}-3.9{;} & -2.6{]} & \color{negativesig}$\vartriangleleft$ & -3.8 & {[}-4.4{;} & -3.2{]} & \color{negativesig}$\blacktriangleright$ & -12.3 & {[}-11.7{;} & -13.0{]} \\
-DNK & \color{positivenonsig}$\vartriangleleft$ & +1.0 & {[}-1.3{;} & +3.8{]} & \color{positivenonsig}$\blacktriangleright$ & +1.2 & {[}-0.7{;} & +3.3{]} & \color{negativenonsig}$\blacktriangleright\blacktriangleright$ & -0.2 & {[}-2.2{;} & +2.2{]} & \color{negativenonsig}$\blacktriangleright$ & -2.0 & {[}+0.4{;} & -4.8{]} \\
-EST & \color{negativesig}$\blacktriangleright$ & -25.1 & {[}-30.4{;} & -20.0{]} & \color{negativenonsig}$\vartriangleleft$ & -1.6 & {[}-6.5{;} & +3.5{]} & \color{negativesig}$\blacktriangleright$ & -23.4 & {[}-27.8{;} & -18.8{]} & \color{negativesig}$\blacktriangleright$ & -31.8 & {[}-26.9{;} & -36.6{]} \\
-ESP & \color{negativesig}$\blacktriangleright$ & -8.6 & {[}-9.6{;} & -7.7{]} & \color{negativesig}$\blacktriangleright$ & -15.1 & {[}-15.9{;} & -14.3{]} & \color{positivesig}$\blacktriangleright\blacktriangleright$ & +6.5 & {[}+5.4{;} & +7.3{]} & \color{negativesig}$\blacktriangleright$ & -14.6 & {[}-13.9{;} & -15.7{]} \\
-FIN & \color{positivenonsig}$\vartriangleleft$ & +0.0 & {[}-2.7{;} & +2.4{]} & \color{negativenonsig}$\vartriangleleft$ & -1.6 & {[}-4.2{;} & +0.9{]} & \color{positivenonsig}$\vartriangleleft$ & +1.6 & {[}-0.7{;} & +4.3{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -3.9 & {[}-1.5{;} & -6.9{]} \\
-FRA & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -2.0 & {[}-2.9{;} & -1.1{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -6.8 & {[}-7.7{;} & -6.1{]} & \color{positivesig}$\blacktriangleright$ & +4.8 & {[}+3.9{;} & +5.6{]} & \color{negativesig}$\blacktriangleright$ & -6.4 & {[}-5.5{;} & -7.2{]} \\
-EAW & \color{negativesig}$\blacktriangleright$ & -11.1 & {[}-11.9{;} & -10.4{]} & \color{negativesig}$\blacktriangleright$ & -12.8 & {[}-13.7{;} & -11.9{]} & \color{positivesig}$\blacktriangleright\blacktriangleright$ & +1.7 & {[}+0.9{;} & +2.7{]} & \color{negativesig}$\blacktriangleright$ & -14.5 & {[}-13.5{;} & -15.3{]} \\
-NIR & \color{negativesig}$\vartriangleleft$ & -9.8 & {[}-13.7{;} & -5.6{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -8.2 & {[}-12.0{;} & -3.7{]} & \color{negativenonsig}$\vartriangleleft$ & -1.6 & {[}-6.5{;} & +2.7{]} & \color{negativesig}$\blacktriangleright$ & -11.7 & {[}-7.1{;} & -15.8{]} \\
-SCT & \color{negativesig}$\blacktriangleright$ & -10.6 & {[}-12.8{;} & -8.4{]} & \color{negativesig}$\blacktriangleright$ & -11.9 & {[}-14.0{;} & -9.7{]} & \color{positivenonsig}$\blacktriangleright\blacktriangleright$ & +1.4 & {[}-1.0{;} & +3.5{]} & \color{negativesig}$\blacktriangleright$ & -12.0 & {[}-9.8{;} & -14.5{]} \\
-GRC & \color{negativesig}$\blacktriangleright$ & -18.1 & {[}-19.8{;} & -16.2{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -3.8 & {[}-5.9{;} & -1.9{]} & \color{negativesig}$\blacktriangleright$ & -14.3 & {[}-16.0{;} & -12.5{]} & \color{negativesig}$\blacktriangleright$ & -21.4 & {[}-19.4{;} & -23.2{]} \\
-HRV & \color{negativesig}$\blacktriangleright$ & -20.8 & {[}-23.4{;} & -17.7{]} & \color{negativesig}$\blacktriangleright$ & -9.5 & {[}-12.7{;} & -7.1{]} & \color{negativesig}$\blacktriangleright$ & -11.3 & {[}-14.1{;} & -8.3{]} & \color{negativesig}$\blacktriangleright$ & -26.1 & {[}-24.0{;} & -28.3{]} \\
-HUN & \color{negativesig}$\blacktriangleright$ & -25.6 & {[}-27.6{;} & -23.7{]} & \color{negativesig}$\blacktriangleright$ & -8.5 & {[}-10.5{;} & -6.3{]} & \color{negativesig}$\blacktriangleright$ & -17.1 & {[}-19.1{;} & -15.5{]} & \color{negativesig}$\blacktriangleright$ & -30.5 & {[}-28.7{;} & -32.5{]} \\
-ISL & \color{negativenonsig}$\vartriangleleft$ & -1.2 & {[}-11.0{;} & +9.6{]} & \color{negativenonsig}$\vartriangleleft$ & -3.2 & {[}-14.8{;} & +8.1{]} & \color{positivenonsig}$\blacktriangleright\blacktriangleright$ & +2.0 & {[}-7.2{;} & +13.4{]} & \color{negativenonsig}$\vartriangleleft$ & -1.3 & {[}+8.9{;} & -12.4{]} \\
-ITA & \color{negativesig}$\blacktriangleright$ & -8.3 & {[}-9.0{;} & -7.6{]} & \color{negativesig}$\blacktriangleright$ & -14.2 & {[}-15.0{;} & -13.4{]} & \color{positivesig}$\blacktriangleright\blacktriangleright$ & +5.9 & {[}+5.2{;} & +6.6{]} & \color{negativesig}$\blacktriangleright$ & -15.0 & {[}-14.4{;} & -15.7{]} \\
-LTU & \color{negativesig}$\blacktriangleright$ & -23.2 & {[}-27.2{;} & -18.9{]} & \color{negativesig}$\blacktriangleright$ & -20.4 & {[}-24.6{;} & -16.3{]} & \color{negativenonsig}$\blacktriangleright$ & -2.8 & {[}-6.9{;} & +0.5{]} & \color{negativesig}$\blacktriangleright$ & -35.8 & {[}-31.5{;} & -40.1{]} \\
-NLD & \color{negativesig}$\blacktriangleright$ & -7.8 & {[}-8.9{;} & -6.5{]} & \color{negativesig}$\blacktriangleright$ & -9.0 & {[}-10.4{;} & -7.5{]} & \color{positivenonsig}$\blacktriangleright\blacktriangleright$ & +1.2 & {[}-0.1{;} & +2.2{]} & \color{negativesig}$\blacktriangleright$ & -11.2 & {[}-10.0{;} & -12.5{]} \\
-NOR & \color{positivenonsig}$\vartriangleleft$ & +3.2 & {[}-0.1{;} & +5.7{]} & \color{positivenonsig}$\blacktriangleright$ & +1.8 & {[}-0.6{;} & +4.5{]} & \color{positivenonsig}$\vartriangleleft$ & +1.3 & {[}-1.2{;} & +4.1{]} & \color{negativenonsig}$\blacktriangleright\blacktriangleright$ & -2.1 & {[}+1.0{;} & -4.3{]} \\
-POL & \color{negativesig}$\blacktriangleright$ & -27.1 & {[}-28.2{;} & -26.0{]} & \color{negativesig}$\blacktriangleright$ & -16.9 & {[}-17.8{;} & -15.8{]} & \color{negativesig}$\vartriangleleft$ & -10.2 & {[}-11.1{;} & -9.2{]} & \color{negativesig}$\blacktriangleright$ & -31.7 & {[}-30.6{;} & -32.8{]} \\
-PRT & \color{negativesig}$\blacktriangleright$ & -9.0 & {[}-10.8{;} & -7.2{]} & \color{negativesig}$\blacktriangleright$ & -9.4 & {[}-11.0{;} & -7.6{]} & \color{positivenonsig}$\vartriangleleft$ & +0.4 & {[}-1.2{;} & +2.3{]} & \color{negativesig}$\blacktriangleright$ & -12.2 & {[}-10.3{;} & -13.8{]} \\
-SWE & \color{negativenonsig}$\vartriangleleft$ & -1.3 & {[}-2.7{;} & +0.3{]} & \color{negativesig}$\blacktriangleright$ & -9.2 & {[}-11.3{;} & -7.5{]} & \color{positivesig}$\blacktriangleright$ & +7.9 & {[}+6.4{;} & +9.6{]} & \color{negativesig}$\blacktriangleright$ & -6.8 & {[}-5.0{;} & -8.3{]} \\
-SVN & \color{negativesig}$\blacktriangleright$ & -9.1 & {[}-12.9{;} & -4.5{]} & \color{negativesig}$\blacktriangleright\blacktriangleright$ & -9.4 & {[}-14.1{;} & -5.0{]} & \color{positivenonsig}$\blacktriangleright\blacktriangleright$ & +0.3 & {[}-3.7{;} & +5.0{]} & \color{negativesig}$\blacktriangleright$ & -10.5 & {[}-6.1{;} & -13.9{]} \\
-SVK & \color{negativesig}$\blacktriangleright$ & -33.5 & {[}-36.0{;} & -31.2{]} & \color{negativesig}$\blacktriangleright$ & -9.5 & {[}-11.7{;} & -7.0{]} & \color{negativesig}$\blacktriangleright$ & -23.9 & {[}-26.3{;} & -21.4{]} & \color{negativesig}$\blacktriangleright$ & -40.5 & {[}-38.1{;} & -43.7{]} \\
-USA & \color{negativesig}$\vartriangleleft$ & -33.0 & {[}-33.5{;} & -32.6{]} & \color{negativesig}$\blacktriangleright$ & -27.0 & {[}-27.4{;} & -26.5{]} & \color{negativesig}$\vartriangleleft$ & -6.0 & {[}-6.5{;} & -5.6{]} & \color{negativesig}$\vartriangleleft$ & -36.0 & {[}-35.5{;} & -36.6{]} \\
-\bottomrule
+ \midrule
+ AUT & $\downarrow^{\text{60+}}$ & -9.6 & {[}-11.4{;} & -7.4{]} & $\downarrow^{\text{60+}}$ & -9.1 & {[}-10.7{;} & -7.0{]} & $\downarrow^{\textbf{<60}}$ & -0.5 & {[}-2.4{;} & +1.3{]} & $\downarrow^{\text{60+}}$ & -15.1 & {[}-13.2{;} & -17.2{]} \\
+ BEL & $\downarrow^{\text{60+}}$ & -3.1 & {[}-4.6{;} & -1.1{]} & $\downarrow^{\text{60+}}$ & -12.2 & {[}-14.1{;} & -10.7{]} & $\uparrow^{\text{60+}}$ & +9.1 & {[}+7.8{;} & +10.6{]} & $\downarrow^{\text{60+}}$ & -9.4 & {[}-7.9{;} & -11.0{]} \\
+ BGR & $\downarrow^{\text{60+}}$ & -41.2 & {[}-43.8{;} & -38.3{]} & $\downarrow^{\text{60+}}$ & -19.0 & {[}-21.4{;} & -16.5{]} & $\downarrow^{\text{60+}}$ & -22.2 & {[}-24.2{;} & -20.3{]} & $\downarrow^{\text{60+}}$ & -43.4 & {[}-41.5{;} & -45.9{]} \\
+ CHE & $\downarrow^{\text{<60}}$ & -1.6 & {[}-3.2{;} & +0.1{]} & $\downarrow^{\text{60+}}$ & -10.0 & {[}-12.0{;} & -8.1{]} & $\uparrow^{\text{60+}}$ & +8.4 & {[}+6.6{;} & +10.2{]} & $\downarrow^{\text{60+}}$ & -8.9 & {[}-6.7{;} & -10.7{]} \\
+ CHL & $\downarrow^{\text{60+}}$ & -22.7 & {[}-24.3{;} & -21.0{]} & $\downarrow^{\text{60+}}$ & -15.6 & {[}-16.9{;} & -14.2{]} & $\downarrow^{\text{<60}}$ & -7.2 & {[}-8.5{;} & -5.6{]} & $\downarrow^{\text{60+}}$ & -26.6 & {[}-25.0{;} & -28.2{]} \\
+ CZE & $\downarrow^{\text{60+}}$ & -24.2 & {[}-25.6{;} & -22.7{]} & $\downarrow^{\text{60+}}$ & -12.6 & {[}-14.0{;} & -11.0{]} & $\downarrow^{\text{60+}}$ & -11.7 & {[}-13.4{;} & -10.2{]} & $\downarrow^{\text{60+}}$ & -28.9 & {[}-27.4{;} & -30.6{]} \\
+ DEU & $\downarrow^{\text{60+}}$ & -7.2 & {[}-7.8{;} & -6.6{]} & $\downarrow^{\textbf{60+}}$ & -3.3 & {[}-3.9{;} & -2.6{]} & $\downarrow^{\text{<60}}$ & -3.8 & {[}-4.4{;} & -3.2{]} & $\downarrow^{\text{60+}}$ & -12.3 & {[}-11.7{;} & -13.0{]} \\
+ DNK & $\uparrow^{\textbf{<60}}$ & +1.0 & {[}-1.3{;} & +3.8{]} & $\uparrow^{\text{60+}}$ & +1.2 & {[}-0.7{;} & +3.3{]} & $\downarrow^{\textbf{60+}}$ & -0.2 & {[}-2.2{;} & +2.2{]} & $\downarrow^{\text{60+}}$ & -2.0 & {[}+0.4{;} & -4.8{]} \\
+ EST & $\downarrow^{\text{60+}}$ & -25.1 & {[}-30.4{;} & -20.0{]} & $\downarrow^{\text{<60}}$ & -1.6 & {[}-6.5{;} & +3.5{]} & $\downarrow^{\text{60+}}$ & -23.4 & {[}-27.8{;} & -18.8{]} & $\downarrow^{\text{60+}}$ & -31.8 & {[}-26.9{;} & -36.6{]} \\
+ ESP & $\downarrow^{\text{60+}}$ & -8.6 & {[}-9.6{;} & -7.7{]} & $\downarrow^{\text{60+}}$ & -15.1 & {[}-15.9{;} & -14.3{]} & $\uparrow^{\textbf{60+}}$ & +6.5 & {[}+5.4{;} & +7.3{]} & $\downarrow^{\text{60+}}$ & -14.6 & {[}-13.9{;} & -15.7{]} \\
+ FIN & $\uparrow^{\textbf{<60}}$ & +0.0 & {[}-2.7{;} & +2.4{]} & $\downarrow^{\text{<60}}$ & -1.6 & {[}-4.2{;} & +0.9{]} & $\uparrow^{\textbf{<60}}$ & +1.6 & {[}-0.7{;} & +4.3{]} & $\downarrow^{\textbf{60+}}$ & -3.9 & {[}-1.5{;} & -6.9{]} \\
+ FRA & $\downarrow^{\textbf{60+}}$ & -2.0 & {[}-2.9{;} & -1.1{]} & $\downarrow^{\textbf{60+}}$ & -6.8 & {[}-7.7{;} & -6.1{]} & $\uparrow^{\text{60+}}$ & +4.8 & {[}+3.9{;} & +5.6{]} & $\downarrow^{\text{60+}}$ & -6.4 & {[}-5.5{;} & -7.2{]} \\
+ EAW & $\downarrow^{\text{60+}}$ & -11.1 & {[}-11.9{;} & -10.4{]} & $\downarrow^{\text{60+}}$ & -12.8 & {[}-13.7{;} & -11.9{]} & $\uparrow^{\textbf{60+}}$ & +1.7 & {[}+0.9{;} & +2.7{]} & $\downarrow^{\text{60+}}$ & -14.5 & {[}-13.5{;} & -15.3{]} \\
+ NIR & $\downarrow^{\text{<60}}$ & -9.8 & {[}-13.7{;} & -5.6{]} & $\downarrow^{\textbf{60+}}$ & -8.2 & {[}-12.0{;} & -3.7{]} & $\downarrow^{\textbf{<60}}$ & -1.6 & {[}-6.5{;} & +2.7{]} & $\downarrow^{\text{60+}}$ & -11.7 & {[}-7.1{;} & -15.8{]} \\
+ SCT & $\downarrow^{\text{60+}}$ & -10.6 & {[}-12.8{;} & -8.4{]} & $\downarrow^{\text{60+}}$ & -11.9 & {[}-14.0{;} & -9.7{]} & $\uparrow^{\textbf{60+}}$ & +1.4 & {[}-1.0{;} & +3.5{]} & $\downarrow^{\text{60+}}$ & -12.0 & {[}-9.8{;} & -14.5{]} \\
+ GRC & $\downarrow^{\text{60+}}$ & -18.1 & {[}-19.8{;} & -16.2{]} & $\downarrow^{\textbf{60+}}$ & -3.8 & {[}-5.9{;} & -1.9{]} & $\downarrow^{\text{60+}}$ & -14.3 & {[}-16.0{;} & -12.5{]} & $\downarrow^{\text{60+}}$ & -21.4 & {[}-19.4{;} & -23.2{]} \\
+ HRV & $\downarrow^{\text{60+}}$ & -20.8 & {[}-23.4{;} & -17.7{]} & $\downarrow^{\text{60+}}$ & -9.5 & {[}-12.7{;} & -7.1{]} & $\downarrow^{\text{60+}}$ & -11.3 & {[}-14.1{;} & -8.3{]} & $\downarrow^{\text{60+}}$ & -26.1 & {[}-24.0{;} & -28.3{]} \\
+ HUN & $\downarrow^{\text{60+}}$ & -25.6 & {[}-27.6{;} & -23.7{]} & $\downarrow^{\text{60+}}$ & -8.5 & {[}-10.5{;} & -6.3{]} & $\downarrow^{\text{60+}}$ & -17.1 & {[}-19.1{;} & -15.5{]} & $\downarrow^{\text{60+}}$ & -30.5 & {[}-28.7{;} & -32.5{]} \\
+ ISL & $\downarrow^{\textbf{<60}}$ & -1.2 & {[}-11.0{;} & +9.6{]} & $\downarrow^{\textbf{<60}}$ & -3.2 & {[}-14.8{;} & +8.1{]} & $\uparrow^{\textbf{60+}}$ & +2.0 & {[}-7.2{;} & +13.4{]} & $\downarrow^{\textbf{<60}}$ & -1.3 & {[}+8.9{;} & -12.4{]} \\
+ ITA & $\downarrow^{\text{60+}}$ & -8.3 & {[}-9.0{;} & -7.6{]} & $\downarrow^{\text{60+}}$ & -14.2 & {[}-15.0{;} & -13.4{]} & $\uparrow^{\textbf{60+}}$ & +5.9 & {[}+5.2{;} & +6.6{]} & $\downarrow^{\text{60+}}$ & -15.0 & {[}-14.4{;} & -15.7{]} \\
+ LTU & $\downarrow^{\text{60+}}$ & -23.2 & {[}-27.2{;} & -18.9{]} & $\downarrow^{\text{60+}}$ & -20.4 & {[}-24.6{;} & -16.3{]} & $\downarrow^{\text{60+}}$ & -2.8 & {[}-6.9{;} & +0.5{]} & $\downarrow^{\text{60+}}$ & -35.8 & {[}-31.5{;} & -40.1{]} \\
+ NLD & $\downarrow^{\text{60+}}$ & -7.8 & {[}-8.9{;} & -6.5{]} & $\downarrow^{\text{60+}}$ & -9.0 & {[}-10.4{;} & -7.5{]} & $\uparrow^{\textbf{60+}}$ & +1.2 & {[}-0.1{;} & +2.2{]} & $\downarrow^{\text{60+}}$ & -11.2 & {[}-10.0{;} & -12.5{]} \\
+ NOR & $\uparrow^{\text{<60}}$ & +3.2 & {[}-0.1{;} & +5.7{]} & $\uparrow^{\text{60+}}$ & +1.8 & {[}-0.6{;} & +4.5{]} & $\uparrow^{\text{<60}}$ & +1.3 & {[}-1.2{;} & +4.1{]} & $\downarrow^{\textbf{60+}}$ & -2.1 & {[}+1.0{;} & -4.3{]} \\
+ POL & $\downarrow^{\text{60+}}$ & -27.1 & {[}-28.2{;} & -26.0{]} & $\downarrow^{\text{60+}}$ & -16.9 & {[}-17.8{;} & -15.8{]} & $\downarrow^{\text{<60}}$ & -10.2 & {[}-11.1{;} & -9.2{]} & $\downarrow^{\text{60+}}$ & -31.7 & {[}-30.6{;} & -32.8{]} \\
+ PRT & $\downarrow^{\text{60+}}$ & -9.0 & {[}-10.8{;} & -7.2{]} & $\downarrow^{\text{60+}}$ & -9.4 & {[}-11.0{;} & -7.6{]} & $\uparrow^{\textbf{<60}}$ & +0.4 & {[}-1.2{;} & +2.3{]} & $\downarrow^{\text{60+}}$ & -12.2 & {[}-10.3{;} & -13.8{]} \\
+ SWE & $\downarrow^{\text{<60}}$ & -1.3 & {[}-2.7{;} & +0.3{]} & $\downarrow^{\text{60+}}$ & -9.2 & {[}-11.3{;} & -7.5{]} & $\uparrow^{\text{60+}}$ & +7.9 & {[}+6.4{;} & +9.6{]} & $\downarrow^{\text{60+}}$ & -6.8 & {[}-5.0{;} & -8.3{]} \\
+ SVN & $\downarrow^{\text{60+}}$ & -9.1 & {[}-12.9{;} & -4.5{]} & $\downarrow^{\textbf{60+}}$ & -9.4 & {[}-14.1{;} & -5.0{]} & $\uparrow^{\textbf{60+}}$ & +0.3 & {[}-3.7{;} & +5.0{]} & $\downarrow^{\text{60+}}$ & -10.5 & {[}-6.1{;} & -13.9{]} \\
+ SVK & $\downarrow^{\text{60+}}$ & -33.5 & {[}-36.0{;} & -31.2{]} & $\downarrow^{\text{60+}}$ & -9.5 & {[}-11.7{;} & -7.0{]} & $\downarrow^{\text{60+}}$ & -23.9 & {[}-26.3{;} & -21.4{]} & $\downarrow^{\text{60+}}$ & -40.5 & {[}-38.1{;} & -43.7{]} \\
+ USA & $\downarrow^{\text{<60}}$ & -33.0 & {[}-33.5{;} & -32.6{]} & $\downarrow^{\text{60+}}$ & -27.0 & {[}-27.4{;} & -26.5{]} & $\downarrow^{\textbf{<60}}$ & -6.0 & {[}-6.5{;} & -5.6{]} & $\downarrow^{\text{<60}}$ & -36.0 & {[}-35.5{;} & -36.6{]} \\
+  \bottomrule
 \end{tabular}
 \vspace{-5mm}
 \begin{minipage}{\linewidth}
-\textsuperscript{1}Attribution of life expectancy changes to \\
-mortality \emph{increases} among {\color{negativesig}primarily 60+$\blacktriangleright$}, {\color{negativesig}solely 60+$\blacktriangleright\blacktriangleright$}, {\color{negativesig}primarily \textless{}60$\vartriangleleft$}, {\color{negativesig}solely \textless{}60$\vartriangleleft\vartriangleleft$} \\
-mortality \emph{decreases} among {\color{positivesig}primarily 60+$\blacktriangleright$}, {\color{positivesig}solely 60+$\blacktriangleright\blacktriangleright$}, {\color{positivesig}primarily \textless{}60$\vartriangleleft$}, {\color{positivesig}solely \textless{}60$\vartriangleleft\vartriangleleft$} \\
-\textsuperscript{2}Central estimate in months \\
-\textsuperscript{3}95\% confidence interval \\
+    \textsuperscript{1}Attribution of life expectancy changes to \\
+    mortality \emph{increases} among
+    {primarily $\downarrow^{\text{60+}}$},
+    {solely $\downarrow^{\textbf{60+}}$},
+    {primarily $\downarrow^{\text{<60}}$},
+    {solely $\downarrow^{\textbf{<60}}$}, \\
+    mortality \emph{decreases} among
+    {primarily $\uparrow^{\text{60+}}$},
+    {solely $\uparrow^{\textbf{60+}}$},
+    {primarily $\uparrow^{\text{<60}}$},
+    {solely $\uparrow^{\textbf{<60}}$}. \\
+    \textsuperscript{2}Central estimate in months \\
+    \textsuperscript{3}95\% confidence interval \\
 \end{minipage}
 \caption{Months of male life expectancy (LE) changes and deficits (labelled ES) since the start of the pandemic attributed to age-specific mortality changes (labelled AT). LE deficit is defined as observed minus expected life expectancy had pre-pandemic mortality trends continued.}
 \label{tab:table-a2}
@@ -591,14 +1098,14 @@ mortality \emph{decreases} among {\color{positivesig}primarily 60+$\blacktriangl
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics{figure-a6.pdf}
+    %\includegraphics{figure-a6.pdf}
     \caption{Female life expectancy deficit in 2021 decomposed into contributions by age and cause of death. LE deficit is defined as observed minus expected life expectancy had pre-pandemic mortality trends continued.}
     \label{fig:figure-a6}
 \end{figure}
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics{figure-a7.pdf}
+    %\includegraphics{figure-a7.pdf}
     \caption{Male life expectancy deficit in 2021 decomposed into contributions by age and cause of death. LE deficit is defined as observed minus expected life expectancy had pre-pandemic mortality trends continued.}
     \label{fig:figure-a7}
 \end{figure}
@@ -678,7 +1185,7 @@ USA            & 70.2 & {.} & -0.1 & 1965      & 79.1 & -0.1 & 2019      & \mult
 \end{tabular}
 \vspace{-5mm}
 \begin{minipage}{\linewidth}
-Data by Human Mortality Database\\(PLE) LE prior to the event; (TLL) Total LE loss over duration of event; (TLC) Total LE change over duration of event; (YER) Year of return to prior LE
+Data by Human Mortality Database. (PLE) LE prior to the event; (TLL) Total LE loss over duration of event; (TLC) Total LE change over duration of event; (YER) Year of return to prior LE
 \end{minipage}
 \endgroup
 \caption{Life expectancy losses and bounce-backs during six selected mortality shock events in the 20th century.}
@@ -745,7 +1252,7 @@ USA & 32906.5 & 32833.0 & -73.5 & 33100.3 & 32948.4 & -151.9 & 33291.5 & 33499.8
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics{figure-a8.pdf}
+    %\includegraphics{figure-a8.pdf}
     \caption{Life expectancy (e0) estimates for 2019, 2020 and when available 2021, using population estimates from national statistical offices (NSOs) (x-axis) and UN World Population Prospects (WPP) (y-axis). Black line indicates x=y line.}
     \label{fig:figure-a8}
 \end{figure}

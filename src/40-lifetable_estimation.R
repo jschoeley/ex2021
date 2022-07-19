@@ -26,14 +26,18 @@ paths$output <- list(
   tmpdir = paths$input$tmpdir,
   lifetables = './out/40-lifetables.rds',
   lifetables_csv = './tmp/40-lifetables.csv',
+  lifetables_sim = './tmp/40-lifetables_sim.rds',
   sexdiff = './out/40-sexdiff.rds',
   sexdiff_csv = './tmp/40-sexdiff.csv',
+  sexdiff_sim = './tmp/40-sexdiff_sim.rds',
   e0avgdiff = './out/40-e0avgdiff.rds',
   e0avgdiff_csv = './tmp/40-e0avgdiff.csv',
   codecomp = './out/40-codecomp.rds',
   codecomp_csv = './tmp/40-codecomp.csv',
+  codecomp_sim = './tmp/40-codecomp_sim.rds',
   arriaga_cntfc = './out/40-arriaga_cntfc.rds',
-  arriaga_cntfc_csv = './tmp/40-arriaga_cntfc.csv'
+  arriaga_cntfc_csv = './tmp/40-arriaga_cntfc.csv',
+  arriaga_cntfc_sim = './tmp/40-arriaga_cntfc_sim.rds'
 )
 
 # global configuration
@@ -838,19 +842,27 @@ saveRDS(lifetables$ci_df, paths$output$lifetables)
 lifetables$ci_df %>%
   mutate(across(.cols = where(is.numeric), .fns = ~round(.x,6))) %>%
   write_csv(paths$output$lifetables_csv)
+saveRDS(lifetables$simulation, paths$output$lifetables_sim)
+
 saveRDS(sexdiff$ci_df, paths$output$sexdiff)
 sexdiff$ci_df %>%
   mutate(across(.cols = where(is.numeric), .fns = ~round(.x,6))) %>%
   write_csv(paths$output$sexdiff_csv)
+saveRDS(sexdiff$simulation, paths$output$sexdiff_sim)
+
 saveRDS(e0avgdiff$ci_df, paths$output$e0avgdiff)
 e0avgdiff$ci_df %>%
   mutate(across(.cols = where(is.numeric), .fns = ~round(.x,6))) %>%
   write_csv(paths$output$e0avgdiff_csv)
+
 saveRDS(codecomp$ci_df, paths$output$codecomp)
 codecomp$ci_df %>%
   mutate(across(.cols = where(is.numeric), .fns = ~round(.x,6))) %>%
   write_csv(paths$output$codecomp_csv)
+saveRDS(codecomp$simulation, paths$output$codecomp_sim)
+
 saveRDS(arriaga_cntfc$ci_df, paths$output$arriaga_cntfc)
 arriaga_cntfc$ci_df %>%
   mutate(across(.cols = where(is.numeric), .fns = ~round(.x,6))) %>%
   write_csv(paths$output$arriaga_cntfc_csv)
+saveRDS(arriaga_cntfc$simulation, paths$output$arriaga_cntfc_sim)
