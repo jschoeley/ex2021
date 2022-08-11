@@ -1,15 +1,15 @@
-# Bounce backs amid continued losses: Life expectancy changes since COVID-19
+# Life expectancy changes since COVID-19
 
 ![github tag](https://img.shields.io/github/v/tag/jschoeley/ex2021?style=flat-square)
-[![Zenodo Code DOI](https://img.shields.io/badge/Zenodo%20Code%20DOI-10.5281%2Fzenodo.6224983-%23FCB525?style=flat-square)](https://doi.org/10.5281/zenodo.6224983)
-[![Zenodo life-table data DOI](https://img.shields.io/badge/Zenodo%20life%20table%20data%20DOI-10.5281%2Fzenodo.6241024-%23FCB525?style=flat-square)](https://doi.org/10.5281/zenodo.6241024)
-[![Zenodo figure and table data DOI](https://img.shields.io/badge/Zenodo%20figure%20and%20table%20data%20DOI-10.5281%2Fzenodo.6224375-%23FCB525?style=flat-square)](https://doi.org/10.5281/zenodo.6224375)
+[![Zenodo Code DOI](https://img.shields.io/badge/Code%20DOI-10.5281%2Fzenodo.6224983-%23FCB525?style=flat-square)](https://doi.org/10.5281/zenodo.6224983)
+[![Zenodo life-table data DOI](https://img.shields.io/badge/Data%20DOI-10.5281%2Fzenodo.6241024-%23FCB525?style=flat-square)](https://doi.org/10.5281/zenodo.6241024)
+[![Zenodo figure and table data DOI](https://img.shields.io/badge/Figure%20and%20table%20DOI-10.5281%2Fzenodo.6224375-%23FCB525?style=flat-square)](https://doi.org/10.5281/zenodo.6224375)
 
 ![](ass/50-e0diffT.png)
 
 ## Introduction
 
-This is a repository to accompany 'Bounce backs amid continued losses: Life expectancy changes since COVID-19', forthcoming in Nature Human Behavior. The replication files for this paper include customised functionality written in the [**R**](https://www.r-project.org/) statistical programming language.
+This is a repository to accompany 'Life expectancy changes since COVID-19', forthcoming in Nature Human Behavior. The replication files for this paper include customised functionality written in the [**R**](https://www.r-project.org/) statistical programming language.
 
 ## Prerequisites
 
