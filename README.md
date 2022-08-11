@@ -1,6 +1,6 @@
 # Bounce backs amid continued losses: Life expectancy changes since COVID-19
 
-v0.98
+v0.99
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6861804.svg)](https://zenodo.org/record/6861804)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6861866.svg)](https://zenodo.org/record/6861866)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6861843.svg)](https://zenodo.org/record/6861843)
