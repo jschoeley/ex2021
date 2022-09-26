@@ -29,6 +29,11 @@ input-symbols = {-}
 \setlength{\parskip}{0.5ex}
 \setlength{\parindent}{0cm}
 
+% table captions on top
+\usepackage{float}
+\floatstyle{plaintop}
+\restylefloat{table}
+
 \graphicspath{ {fig/} }
 \hyphenation{}
 
@@ -80,14 +85,16 @@ $^7$ London School of Hygiene and Tropical Medicine.\par
 
 \end{titlepage}
 
-\renewcommand\thefigure{S\arabic{figure}}
+\renewcommand{\figurename}{Supplementary Figure}
+\renewcommand\thefigure{\arabic{figure}}
 \setcounter{figure}{0}
-\renewcommand\thetable{S\arabic{table}}
+\renewcommand{\tablename}{Supplementary Table}
+\renewcommand\thetable{\arabic{table}}
 \setcounter{table}{0}
 
 %--- Main text ---------------------------------------------------------
 
-\subsection*{Age attributed life expectancy losses and deficits by sex}
+\section*{Supplementary Tables}
 
 \begin{table}[ht]
     \centering\footnotesize\addtolength{\tabcolsep}{-4pt}
@@ -245,8 +252,6 @@ S[table-format = -2.1,table-space-text-post={]}]
 
 \clearpage
 
-\section*{Historic life expectancy losses}
-
 \begin{table}[ht!]
 \begingroup
 \renewcommand{\arraystretch}{0.8}
@@ -327,8 +332,6 @@ Data by Human Mortality Database. (PLE) LE prior to the event; (TLL) Total LE lo
 
 \clearpage
 
-\section*{Population exposures sensitivity analysis}
-
 \begin{table}[ht]
 \centering\footnotesize
 \caption{Deviation of overall midyear population estimates (in 10,000) between UN World Population Prospect (WPP) and National Statistical Office (NSO) estimates.}
@@ -384,6 +387,10 @@ USA & 32906.5 & 32833.0 & -73.5 & 33100.3 & 32948.4 & -151.9 & 33291.5 & 33499.8
 \multicolumn{9}{l}{\textsuperscript{1}Differences between the WPP and NSO midyear population estimates.} \\
 \end{tabular}
 \end{table}
+
+\clearpage
+
+\section*{Supplementary Figures}
 
 \begin{figure}[ht!]
     \centering
